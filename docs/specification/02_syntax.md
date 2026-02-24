@@ -25,6 +25,7 @@
 
 3. Полная ISO EBNF-грамматика синтаксиса
 
+```
 program         = { function_decl }, main_decl ;
 
 main_decl       =

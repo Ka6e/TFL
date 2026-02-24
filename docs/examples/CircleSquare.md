@@ -5,7 +5,8 @@
 >_Данная программа печатает площадь круга_
 
 ```
-main {
+main 
+{
     const PI: float = 3.14;
     var r: float = 3.0;
     var area: float;

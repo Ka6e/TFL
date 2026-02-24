@@ -5,16 +5,20 @@
 >_Данная программа складывает строку с подстрокой и считает длину полученной строки_
 
 ```
-main {
-    var s1: string = "Hello, World";
-    var s2: string = "Swiston";
+main 
+{
+    var s1: string = "Hello, ";
+    var name: string;
+    var res: string;
+    var len: int;
+    print("Введите ваше имя: \n");
+    read(name);
+    res = s1 + name;
 
-    var sub: string = substr(s1, 0, 5);   # "Hello"
-    var result: string = sub + " " + s2;  # "Hello Swiston"
+    len = length(res);
 
-    var len: int = length(result);        # 13
+    print(res);
+    print(len);
 
-    print(result);  # Вывод: Hello Swiston
-    print(len);     # Вывод: 13
 }
 ```

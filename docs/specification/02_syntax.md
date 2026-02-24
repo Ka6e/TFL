@@ -1,77 +1,46 @@
-02 — Синтаксис языка Swiston
+# Синтаксис языка Swiston
 
-1. Общая структура программы
-	•	Программа состоит из:
-	1	произвольного числа объявлений функций
-	2	ровно одной функции main
+## 1. Общая структура программы
 
-⸻
+  Свойство                   Требование
+  -------------------------- -----------------------------
+  Файл                       Один
+  Точка входа                Ровно один блок `main`
+  Пользовательские функции   Не поддерживаются в Эпике 1
 
-2. Приоритет и ассоциативность операторов
+------------------------------------------------------------------------
+
+## 2. Приоритет и ассоциативность операторов
 
 От высшего к низшему:
 
-Приоритет	Операторы	Ассоциативность
-1	!	правая
-2	* / %	левая
-3	+ -	левая
-4	< <= > >=	левая
-5	== !=	левая
-6	&&	левая
-7	`
+Приоритет   Операторы   Ассоциативность
+  ----------- ----------- -----------------
+  1           `*` `/` `%`      Левая
+  2           `+` `-`        Левая
 
+------------------------------------------------------------------------
 
-⸻
+## 3. Полная ISO EBNF-грамматика
 
-3. Полная ISO EBNF-грамматика синтаксиса
-
-```
-program         = { function_decl }, main_decl ;
-
-main_decl       =
+``` ebnf
+program =
     "main",
     block ;
 
-function_decl   =
-    "func",
-    identifier,
-    "(",
-    [ parameter_list ],
-    ")",
-    ":",
-    type,
-    block ;
-
-parameter_list  =
-    parameter,
-    { ",", parameter } ;
-
-parameter       =
-    identifier, ":", type ;
-
-type            =
-      "int"
-    | "float"
-    | "string"
-    | "bool" ;
-
-block           =
+block =
     "{",
     { statement },
     "}" ;
 
-statement       =
+statement =
       var_decl
     | const_decl
     | assignment
-    | if_stmt
-    | while_stmt
-    | return_stmt
-    | break_stmt
-    | continue_stmt
-    | expr_stmt ;
+    | print_stmt
+    | read_stmt ;
 
-var_decl        =
+var_decl =
     "var",
     identifier,
     ":",
@@ -79,7 +48,7 @@ var_decl        =
     [ "=", expression ],
     ";" ;
 
-const_decl      =
+const_decl =
     "const",
     identifier,
     ":",
@@ -88,93 +57,54 @@ const_decl      =
     expression,
     ";" ;
 
-assignment      =
+assignment =
     identifier,
     "=",
     expression,
     ";" ;
 
-if_stmt         =
-    "if",
+print_stmt =
+    "print",
     "(",
     expression,
     ")",
-    block,
-    [ "else", block ] ;
+    ";" ;
 
-while_stmt      =
-    "while",
+read_stmt =
+    "read",
     "(",
-    expression,
+    identifier,
     ")",
-    block ;
-
-return_stmt     =
-    "return",
-    [ expression ],
     ";" ;
 
-break_stmt      =
-    "break",
-    ";" ;
+type =
+      "int"
+    | "float"
+    | "string" ;
 
-continue_stmt   =
-    "continue",
-    ";" ;
+expression = equality ;
 
-expr_stmt       =
-    expression,
-    ";" ;
+equality =
+    additive,
+    { ( "==" | "!=" ), additive } ;
 
-expression      = logical_or ;
+additive =
+    multiplicative,
+    { ( "+" | "-" ), multiplicative } ;
 
-logical_or      =
-    logical_and,
-    { "||", logical_and } ;
+multiplicative =
+    primary,
+    { ( "*" | "/" | "%" ), primary } ;
 
-logical_and     =
-    equality,
-    { "&&", equality } ;
-
-equality        =
-    comparison,
-    { ( "==" | "!=" ), comparison } ;
-
-comparison      =
-    term,
-    { ( "<" | "<=" | ">" | ">=" ), term } ;
-
-term            =
-    factor,
-    { ( "+" | "-" ), factor } ;
-
-factor          =
-    unary,
-    { ( "*" | "/" | "%" ), unary } ;
-
-unary           =
-      "!", unary
-    | primary ;
-
-primary         =
+primary =
       literal
     | identifier
-    | function_call
-    | "(", expression, ")" ;
+    | "(",
+      expression,
+      ")" ;
 
-function_call   =
-    identifier,
-    "(",
-    [ argument_list ],
-    ")" ;
-
-argument_list   =
-    expression,
-    { ",", expression } ;
-
-literal         =
+literal =
       int_literal
     | float_literal
-    | string_literal
-    | bool_literal ;
-
+    | string_literal ;
+```

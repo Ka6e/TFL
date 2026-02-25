@@ -1,4 +1,4 @@
-# ConcatSubString
+# ConcatString
 
 ## Пример кода на языке Swiston:
 

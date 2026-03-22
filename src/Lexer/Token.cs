@@ -1,4 +1,6 @@
-﻿namespace Lexer;
+﻿using System.Text;
+
+namespace Lexer;
 
 public class Token(
         TokenType type,
@@ -24,4 +26,15 @@ public class Token(
         return HashCode.Combine((int)Type, Value);
     }
 
+    public override string ToString()
+    {
+        StringBuilder sb = new();
+        sb.Append(Type.ToString());
+        if (Value != null)
+        {
+            sb.Append($"{Value}");
+        }
+
+        return sb.ToString();
+    }
 }

@@ -7,7 +7,6 @@ public class Lexer
         { "main", TokenType.Main },
         { "var", TokenType.Var },
         { "const", TokenType.Const },
-        { "read", TokenType.Read },
         { "int", TokenType.IntegerType },
         { "float", TokenType.FloatType },
         { "string", TokenType.StringType },

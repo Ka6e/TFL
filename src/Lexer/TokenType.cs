@@ -18,16 +18,6 @@ public enum TokenType
     Const,
 
     /// <summary>
-    /// Ключевое слово
-    /// </summary>
-    Read,
-
-    /// <summary>
-    /// 
-    /// </summary>
-    Print,
-
-    /// <summary>
     /// Идентификатор 
     /// </summary>
     Identifier,
@@ -63,7 +53,7 @@ public enum TokenType
     StringType,
 
     /// <summary>
-    /// Точка с запятой
+    /// Запятая
     /// </summary>
     Comma,
 
@@ -96,6 +86,46 @@ public enum TokenType
     /// Закрывающая фигурная скобка
     /// </summary>
     CloseBrace,
+
+    /// <summary>
+    /// Оператор присваивания =
+    /// </summary>
+    Assign,
+
+    /// <summary>
+    /// Оператор сложения/конкатенации +
+    /// </summary>
+    Plus,
+
+    /// <summary>
+    /// Оператор вычитания -
+    /// </summary>
+    Minus,
+
+    /// <summary>
+    /// Оператор умножения *
+    /// </summary>
+    Multiply,
+
+    /// <summary>
+    /// Оператор деления /
+    /// </summary>
+    Divide,
+
+    /// <summary>
+    /// Оператор остатка от деления %
+    /// </summary>
+    Modulus,
+
+    /// <summary>
+    /// Оператор равенства ==
+    /// </summary>
+    Equal,
+
+    /// <summary>
+    /// Оператор неравенства !=
+    /// </summary>
+    NotEqual,
 
     /// <summary>
     /// Конец потока токенов

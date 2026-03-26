@@ -18,7 +18,7 @@ public enum TokenType
     Const,
 
     /// <summary>
-    /// Идентификатор 
+    /// Идентификатор
     /// </summary>
     Identifier,
 
@@ -28,29 +28,9 @@ public enum TokenType
     IntLiteral,
 
     /// <summary>
-    /// Литерал вещественного числа
-    /// </summary>
-    FloatLiteral,
-
-    /// <summary>
-    /// Литерал строки
-    /// </summary>
-    StringLiteral,
-
-    /// <summary>
     /// Целочисленный тип
     /// </summary>
     IntegerType,
-
-    /// <summary>
-    /// Вещщественный тип
-    /// </summary>
-    FloatType,
-
-    /// <summary>
-    /// Строковый тип
-    /// </summary>
-    StringType,
 
     /// <summary>
     /// Запятая

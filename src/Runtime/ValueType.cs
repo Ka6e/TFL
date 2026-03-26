@@ -1,9 +1,38 @@
-﻿namespace Runtime;
+﻿using System.Runtime.CompilerServices;
 
-public enum ValueType
+namespace Runtime;
+
+public class ValueType
 {
+
     /// <summary>
-    /// Целочисленное значение
+    /// Целочисленное значение.
     /// </summary>
-    Int,
+    public static readonly ValueType Int = new("int");
+
+    private readonly string _name;
+
+    public ValueType(string name)
+    {
+        _name = name;
+    }
+
+    public static bool operator ==(ValueType a, ValueType b) => a.Equals(b);
+
+    public static bool operator !=(ValueType a, ValueType b) => !a.Equals(b);
+
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return RuntimeHelpers.GetHashCode(this);
+    }
+
+    public override string ToString()
+    {
+        return _name;
+    }
 }

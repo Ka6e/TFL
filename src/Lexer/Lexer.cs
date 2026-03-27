@@ -1,4 +1,4 @@
-﻿namespace Lexer;
+﻿namespace Lexemes;
 
 public class Lexer
 {

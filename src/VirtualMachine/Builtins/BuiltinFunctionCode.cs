@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace VirtualMachine.Builtins;
 
-namespace VirtualMachine.Builtins
+/// <summary>
+/// Код встроенной функции.
+/// </summary>
+public enum BuiltinFunctionCode
 {
-    internal class BuiltinFunctionCode
-    {
-    }
+    /// <summary>
+    /// `printi(i: int)` — выводит целое число в стандартный поток вывода 
+    /// </summary>
+    Print = 1,
+
+    /// <summary>
+    /// readi() -> int — читает целое число из стандартного потока ввода и возвращает его
+    /// </summary>
+    ReadI = 2,
 }

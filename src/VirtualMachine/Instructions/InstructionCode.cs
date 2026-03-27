@@ -1,10 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace VirtualMachine.Instructions;
 
-namespace VirtualMachine.Instructions
+public enum InstructionCode
 {
-    internal class InstructionCode
-    {
-    }
+    /// <summary>
+    /// Добавляет значение в стек вычислений.
+    /// </summary>
+    Push,
+
+    /// <summary>
+    /// Удаляет значение с вершины стека вычислений.
+    /// </summary>
+    Pop,
+
+    /// <summary>
+    /// Складывает два числа на стеке вычислений.
+    /// </summary>
+    Add,
+
+    /// <summary>
+    /// Вычитает два числа на стеке вычислений.
+    /// </summary>
+    Subtract,
+
+    /// <summary>
+    /// Умножает два числа на стеке вычислений.
+    /// </summary>
+    Multiply,
+
+    /// <summary>
+    /// Делит два числа на стеке вычислений.
+    /// </summary>
+    Divide,
+
+    /// <summary>
+    /// Делит по модулю два числа на стеке вычислений.
+    /// </summary>
+    Modulo,
+
+    /// <summary>
+    /// Выполняет вызов встроенной функции с указанным именем.
+    /// Забирает аргументы со стека вычислений.
+    /// Возвращает результат вызова в стек вычислений.
+    /// </summary>
+    CallBuiltin,
+
+    /// <summary>
+    /// Останавливает выполнение программы.
+    /// Снимает значение со стека вычислений, используя его как целочисленный код возврата.
+    /// </summary>
+    Halt,
 }

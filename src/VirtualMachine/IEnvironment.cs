@@ -1,7 +1,8 @@
-﻿namespace VirtualMachine
-{
-    public class Class1
-    {
+﻿namespace VirtualMachine;
 
-    }
+public interface IEnvironment
+{
+    int ReadInt();
+
+    void PrintInt(int value);
 }

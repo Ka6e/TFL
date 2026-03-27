@@ -1,10 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
-namespace VirtualMachine.Instructions
+using Runtime;
+
+using VirtualMachine.Instructions;
+
+namespace PsTiger.VirtualMachine.Instructions;
+
+public class Instruction
 {
-    internal class Instruction
+    public Instruction(InstructionCode code)
     {
+        Code = code;
+        Operand = Value.Void;
+    }
+
+    public Instruction(InstructionCode code, int value)
+    {
+        Code = code;
+        Operand = new Value(value);
+    }
+
+    public Instruction(InstructionCode code, string value)
+    {
+        Code = code;
+        Operand = new Value(value);
+    }
+
+    public Instruction(InstructionCode code, Value value)
+    {
+        Code = code;
+        Operand = value;
+    }
+
+    public InstructionCode Code { get; }
+
+    public Value Operand { get; }
+
+    /// <summary>
+    /// Печатает инструкцию в формате "Code Operand" либо просто "Code".
+    /// </summary>
+    public override string ToString()
+    {
+        StringBuilder sb = new();
+        sb.Append(Code);
+        if (!Operand.IsVoid())
+        {
+            sb.Append(' ');
+            sb.Append(Operand);
+        }
+
+        return sb.ToString();
     }
 }

@@ -6,7 +6,7 @@
 public enum BuiltinFunctionCode
 {
     /// <summary>
-    /// `printi(i: int)` — выводит целое число в стандартный поток вывода 
+    /// `print(i: int)` — выводит целое число в стандартный поток вывода 
     /// </summary>
     Print = 1,
 

@@ -116,7 +116,16 @@ public class Lexer
 
     private Token ParseIdentifierOrKeyword()
     {
+        char first = _scanner.Peek();
+
+        if (!(char.IsLetter(first) || first == '_'))
+        {
+            return new Token(TokenType.Error, new TokenValue(first.ToString()));
+        }
+
         string value = "";
+        value += first;
+        _scanner.Advance();
 
         while (char.IsLetterOrDigit(_scanner.Peek()) || _scanner.Peek() == '_')
         {

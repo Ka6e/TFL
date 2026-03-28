@@ -2,7 +2,7 @@
 
 namespace VirtualMachine;
 
-internal class VariablesTable
+public class VariablesTable
 {
     private readonly Dictionary<string, Value> _variables = new();
 

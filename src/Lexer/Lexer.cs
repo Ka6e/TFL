@@ -151,7 +151,7 @@ public class Lexer
             _scanner.Advance();
         }
 
-        decimal value = 0;
+        int value = 0;
 
         while (char.IsDigit(_scanner.Peek()))
         {

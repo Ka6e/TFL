@@ -2,9 +2,7 @@
 
 using Runtime;
 
-using VirtualMachine.Instructions;
-
-namespace PsTiger.VirtualMachine.Instructions;
+namespace VirtualMachine.Instructions;
 
 public class Instruction
 {

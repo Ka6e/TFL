@@ -42,6 +42,7 @@ public class TokenValue
         {
             return false;
         }
+
         return _value.Equals(other._value);
     }
 

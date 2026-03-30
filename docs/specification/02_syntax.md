@@ -40,7 +40,8 @@ statement =
     | const_decl
     | assignment
     | print_stmt
-    | read_stmt ;
+    | read_stmt
+    | block ;
 
 var_decl =
     "var",

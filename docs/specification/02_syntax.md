@@ -31,7 +31,7 @@ program =
 
 block =
     "{",
-    { statement },
+    [statement],
     "}" ;
 
 statement =

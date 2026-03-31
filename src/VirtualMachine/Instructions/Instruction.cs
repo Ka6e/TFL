@@ -29,8 +29,12 @@ public class Instruction
     {
         StringBuilder sb = new();
         sb.Append(Code);
-        sb.Append(' ');
-        sb.Append(Operand);
+        if (!Operand.IsVoid())
+        {
+            sb.Append(' ');
+            sb.Append(Operand);
+        }
+
         return sb.ToString();
     }
 }

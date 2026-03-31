@@ -1,4 +1,4 @@
-﻿namespace Lexer;
+﻿namespace Lexemes;
 
 public enum TokenType
 {
@@ -95,7 +95,7 @@ public enum TokenType
     /// <summary>
     /// Оператор остатка от деления %
     /// </summary>
-    Modulus,
+    Module,
 
     /// <summary>
     /// Оператор равенства ==

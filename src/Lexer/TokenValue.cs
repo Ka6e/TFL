@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Lexer;
+namespace Lexemes;
 
 public class TokenValue
 {
@@ -42,6 +42,7 @@ public class TokenValue
         {
             return false;
         }
+
         return _value.Equals(other._value);
     }
 

@@ -17,7 +17,4 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\ExampleLib\ExampleLib.csproj" />
-  </ItemGroup>
 </Project>

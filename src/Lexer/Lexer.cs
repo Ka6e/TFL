@@ -8,6 +8,8 @@ public class Lexer
         { "var", TokenType.Var },
         { "const", TokenType.Const },
         { "int", TokenType.IntegerType },
+        { "read", TokenType.Read },
+        { "print", TokenType.Print },
     };
 
     private readonly TextScanner _scanner;
@@ -58,7 +60,7 @@ public class Lexer
 
             case '%':
                 _scanner.Advance();
-                return new Token(TokenType.Modulus);
+                return new Token(TokenType.Module);
 
             case '=':
                 if (_scanner.Peek(1) == '=')

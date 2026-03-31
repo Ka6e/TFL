@@ -18,6 +18,16 @@ public enum TokenType
     Const,
 
     /// <summary>
+    /// Ключевое слово read
+    /// </summary>
+    Read,
+
+    /// <summary>
+    /// Ключевое слово print
+    /// </summary>
+    Print,
+
+    /// <summary>
     /// Идентификатор
     /// </summary>
     Identifier,

@@ -1,4 +1,4 @@
-﻿namespace Lexer;
+﻿namespace Lexemes;
 
 public enum TokenType
 {
@@ -18,7 +18,17 @@ public enum TokenType
     Const,
 
     /// <summary>
-    /// Идентификатор 
+    /// Ключевое слово read
+    /// </summary>
+    Read,
+
+    /// <summary>
+    /// Ключевое слово print
+    /// </summary>
+    Print,
+
+    /// <summary>
+    /// Идентификатор
     /// </summary>
     Identifier,
 
@@ -28,29 +38,9 @@ public enum TokenType
     IntLiteral,
 
     /// <summary>
-    /// Литерал вещественного числа
-    /// </summary>
-    FloatLiteral,
-
-    /// <summary>
-    /// Литерал строки
-    /// </summary>
-    StringLiteral,
-
-    /// <summary>
     /// Целочисленный тип
     /// </summary>
     IntegerType,
-
-    /// <summary>
-    /// Вещщественный тип
-    /// </summary>
-    FloatType,
-
-    /// <summary>
-    /// Строковый тип
-    /// </summary>
-    StringType,
 
     /// <summary>
     /// Запятая
@@ -115,7 +105,7 @@ public enum TokenType
     /// <summary>
     /// Оператор остатка от деления %
     /// </summary>
-    Modulus,
+    Module,
 
     /// <summary>
     /// Оператор равенства ==

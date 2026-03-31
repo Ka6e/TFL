@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Lexer;
+namespace Lexemes;
 
 public class Token(
         TokenType type,

@@ -1,4 +1,4 @@
-﻿namespace Lexer;
+﻿namespace Lexemes;
 
 public class TextScanner(string str)
 {
@@ -17,6 +17,9 @@ public class TextScanner(string str)
         _position++;
     }
 
+    /// <summary>
+    /// Проверяет, достигли ли мы конца входных данных.
+    /// </summary>
     public bool IsEnd()
     {
         return _position >= _str.Length;

@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Lexer;
+namespace Lexemes;
 
 public class TokenValue
 {
@@ -11,9 +11,19 @@ public class TokenValue
         _value = value;
     }
 
-    public TokenValue(decimal value)
+    public TokenValue(int value)
     {
         _value = value;
+    }
+
+    public int ToInt()
+    {
+        return _value switch
+        {
+            int i => i,
+            string s => int.Parse(s, CultureInfo.InvariantCulture),
+            _ => throw new NotImplementedException(),
+        };
     }
 
     public override string ToString()
@@ -21,34 +31,19 @@ public class TokenValue
         return _value switch
         {
             string s => s,
-            decimal d => d.ToString(CultureInfo.InvariantCulture),
-            _ => throw new NotImplementedException(),
-        };
-    }
-
-    public decimal ToDecimal()
-    {
-        return _value switch
-        {
-            string s => decimal.Parse(s, CultureInfo.InvariantCulture),
-            decimal d => d,
+            int i => i.ToString(),
             _ => throw new NotImplementedException(),
         };
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is TokenValue other)
+        if (obj is not TokenValue other)
         {
-            return _value switch
-            {
-                string s => (string)other._value == s,
-                decimal d => (decimal)other._value == d,
-                _ => throw new NotImplementedException(),
-            };
+            return false;
         }
 
-        return false;
+        return _value.Equals(other._value);
     }
 
     public override int GetHashCode()

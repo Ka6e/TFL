@@ -4,6 +4,10 @@ namespace Runtime;
 
 public class ValueType
 {
+    /// <summary>
+    /// Значение отсутствует.
+    /// </summary>
+    public static readonly ValueType Void = new("void");
 
     /// <summary>
     /// Целочисленное значение.

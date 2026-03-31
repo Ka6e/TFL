@@ -8,6 +8,8 @@ public class Lexer
         { "var", TokenType.Var },
         { "const", TokenType.Const },
         { "int", TokenType.IntegerType },
+        { "read", TokenType.Read },
+        { "print", TokenType.Print },
     };
 
     private readonly TextScanner _scanner;

@@ -2,16 +2,12 @@
 
 namespace Ast.Statements;
 
-public sealed class AssignmentStatement : Statement
+public sealed class PrintStatement : Statement
 {
-
-    public AssignmentStatement(string name, Expression expression)
+    public PrintStatement(Expression expression)
     {
-        Name = name;
-        Expression = expression;
+         Expression = expression;
     }
-
-    public string Name { get; }
 
     public Expression Expression { get; }
 

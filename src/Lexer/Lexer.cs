@@ -58,7 +58,7 @@ public class Lexer
 
             case '%':
                 _scanner.Advance();
-                return new Token(TokenType.Modulus);
+                return new Token(TokenType.Module);
 
             case '=':
                 if (_scanner.Peek(1) == '=')

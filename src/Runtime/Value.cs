@@ -4,9 +4,15 @@ namespace Runtime;
 
 public class Value
 {
+    public static readonly Value Void = new(VoidValue.Value);
     private readonly object _value;
 
     public Value(int value)
+    {
+        _value = value;
+    }
+
+    public Value(object value)
     {
         _value = value;
     }
@@ -36,6 +42,18 @@ public class Value
     }
 
     /// <summary>
+    /// Определяет, является ли значение пустым (неопределённым).
+    /// </summary>
+    public bool IsVoid()
+    {
+        return _value switch
+        {
+            VoidValue => true,
+            _ => false,
+        };
+    }
+
+    /// <summary>
     /// Возвращает значение как целое число либо бросает исключение.
     /// </summary>
     public int AsInt()
@@ -55,6 +73,7 @@ public class Value
         return _value switch
         {
             int i => i.ToString(CultureInfo.InvariantCulture),
+            VoidValue v => v.ToString(),
             _ => throw new InvalidOperationException($"Unexpected value {_value} of type {_value.GetType()}"),
         };
     }
@@ -74,6 +93,7 @@ public class Value
         return _value switch
         {
             int i => other.AsInt() == i,
+            VoidValue => true,
             _ => throw new NotImplementedException(),
         };
     }

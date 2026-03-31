@@ -1,4 +1,4 @@
-﻿namespace Ast.Statement;
+﻿namespace Ast.Statements;
 
 public abstract class Statement : AstNode
 {

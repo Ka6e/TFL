@@ -1,8 +1,20 @@
-﻿using Ast.Statement;
+﻿using Ast.Expressions;
+using Ast.Program;
+using Ast.Statements;
 
 namespace Ast;
 
 public interface IAstVisitor
 {
+    void Visit(ProgramNode p);
+
+    void Visit(LiteralExpression e);
+
+    void Visit(BlockStatement s);
+
     void Visit(AssignmentStatement s);
+
+    void Visit(VariableDeclarationStatement s);
+
+    void Visit(ConstDeclarationStatement s);
 }

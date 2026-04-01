@@ -35,7 +35,7 @@ public class Lexer
             return ParseIdentifierOrKeyword();
         }
 
-        if (char.IsDigit(c) || (c == '-' && char.IsDigit(_scanner.Peek(1))))
+        if (char.IsDigit(c))
         {
             return ParseNumericLiteral();
         }
@@ -145,25 +145,12 @@ public class Lexer
 
     private Token ParseNumericLiteral()
     {
-        bool isNegative = false;
-
-        if (_scanner.Peek() == '-')
-        {
-            isNegative = true;
-            _scanner.Advance();
-        }
-
         int value = 0;
 
         while (char.IsDigit(_scanner.Peek()))
         {
             value = value * 10 + GetDigitValue(_scanner.Peek());
             _scanner.Advance();
-        }
-
-        if (isNegative)
-        {
-            value = -value;
         }
 
         return new Token(TokenType.IntLiteral, new TokenValue(value));

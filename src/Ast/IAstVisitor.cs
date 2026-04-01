@@ -17,4 +17,8 @@ public interface IAstVisitor
     void Visit(VariableDeclarationStatement s);
 
     void Visit(ConstDeclarationStatement s);
+
+    void Visit(ReadStatement s);
+
+    void Visit(PrintStatement s);
 }

@@ -4,7 +4,7 @@ using Ast.Expressions;
 
 using ValueType = Runtime.ValueType;
 
-public class VariableDeclarationStatement : Statement
+public sealed class VariableDeclarationStatement : Statement
 {
     public VariableDeclarationStatement(string name, ValueType type, Expression? value)
     {

@@ -1,12 +1,56 @@
 ﻿using Ast;
-using Ast.Statement;
+using Ast.Expressions;
+using Ast.Program;
+using Ast.Statements;
 
 namespace Semantics.Passes;
 
 public abstract class AbstractPass : IAstVisitor
 {
-    public void Visit(AssignmentStatement s)
+    public virtual void Visit(ProgramNode p)
     {
-        throw new NotImplementedException();
+        p.Block.Accept(this);
+    }
+
+    public virtual void Visit(LiteralExpression e)
+    {
+    }
+
+    public virtual void Visit(BlockStatement s)
+    {
+        foreach (Statement statement in s.Statements)
+        {
+            statement.Accept(this);
+        }
+    }
+
+    public virtual void Visit(AssignmentStatement s)
+    {
+        s.Expression.Accept(this);
+    }
+
+    public virtual void Visit(VariableDeclarationStatement s)
+    {
+        s.Value?.Accept(this);
+    }
+
+    public virtual void Visit(ConstDeclarationStatement s)
+    {
+        s.Value.Accept(this);
+    }
+
+    public virtual void Visit(ReadStatement s)
+    {
+    }
+
+    public virtual void Visit(PrintStatement s)
+    {
+        s.Expression.Accept(this);
+    }
+
+    public virtual void Visit(BinaryOperationExpression e)
+    {
+        e.Left.Accept(this);
+        e.Right.Accept(this);
     }
 }

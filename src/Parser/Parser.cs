@@ -53,9 +53,9 @@ public class Parser
     ///     var_decl
     ///     | const_decl
     ///     | assignment
-    ///     | block
     ///     | print_stmt
-    ///     | read_stmt ;
+    ///     | read_stmt
+    ///     | block ;
     /// </summary>
     private Statement ParseStatement()
     {
@@ -65,6 +65,8 @@ public class Parser
             TokenType.Var => ParseVarDecl(),
             TokenType.Const => ParseConstDecl(),
             TokenType.Assign => ParseAssignment(),
+            TokenType.Print => ParsePrintStatement(),
+            TokenType.Read => ParseReadStatement(),
             _ => ParseBlock(),
         };
     }
@@ -138,11 +140,49 @@ public class Parser
     }
 
     /// <summary>
+    /// read_stmt =
+    ///     "read",
+    ///     "(",
+    ///     identifier,
+    ///     ")",
+    ///     ";" ;
+    /// </summary>
+    private ReadStatement ParseReadStatement()
+    {
+        Match(TokenType.Read);
+        Match(TokenType.OpenParenthesis);
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.CloseParenthesis);
+        Match(TokenType.Semicolon);
+
+        return new ReadStatement(name);
+    }
+
+    /// <summary>
+    /// print_stmt =
+    ///     "print",
+    ///     "(",
+    ///     expression,
+    ///     ")",
+    ///     ";" ;
+    /// </summary>
+    private PrintStatement ParsePrintStatement()
+    {
+        Match(TokenType.Print);
+        Match(TokenType.OpenParenthesis);
+        Expression expression = ParseExpression();
+        Match(TokenType.CloseParenthesis);
+        Match(TokenType.Semicolon);
+
+        return new PrintStatement(expression);
+    }
+
+    /// <summary>
     /// expression = equality ;
     /// </summary>
     private Expression ParseExpression()
     {
-        return ParseAdditive();
+        return ParseEquality();
     }
 
     /// <summary>
@@ -240,9 +280,9 @@ public class Parser
         Token t = _tokens.Peek();
         switch (t.Type)
         {
-            case TokenType.IntegerType:
+            case TokenType.IntLiteral:
                 _tokens.Advance();
-                return new LiteralExpression(new Value((int)t.Value!.ToDecimal()));
+                return new LiteralExpression(new Value(t.Value!.ToInt()));
             case TokenType.Identifier:
                 string name = Match(TokenType.Identifier).Value!.ToString();
                 return new LiteralExpression(new Value(0));
@@ -252,7 +292,13 @@ public class Parser
                 Match(TokenType.CloseParenthesis);
                 return expression;
             default:
-                throw new Exception();
+                throw new UnexpectedLexemeException(t,
+                    expected: [
+                        TokenType.IntegerType,
+                        TokenType.Identifier,
+                        TokenType.OpenParenthesis,
+                    ]
+                );
         }
     }
 

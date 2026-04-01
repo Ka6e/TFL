@@ -1,6 +1,6 @@
 ﻿namespace Ast.Statements;
 
-public class BlockStatement : Statement
+public sealed class BlockStatement : Statement
 {
     public BlockStatement(List<Statement> statements)
     {

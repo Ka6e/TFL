@@ -2,7 +2,7 @@
 
 namespace Ast.Expressions;
 
-public class LiteralExpression : Expression
+public sealed class LiteralExpression : Expression
 {
     public LiteralExpression(Value value)
     {

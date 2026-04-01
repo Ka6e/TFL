@@ -1,6 +1,6 @@
 ﻿namespace Ast.Expressions;
 
-public class BinaryOperationExpression : Expression
+public sealed class BinaryOperationExpression : Expression
 {
     public BinaryOperationExpression(Expression left, BinaryOperation operation, Expression right)
     {

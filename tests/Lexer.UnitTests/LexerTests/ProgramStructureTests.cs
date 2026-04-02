@@ -1,0 +1,179 @@
+﻿namespace Lexer.UnitTests.LexerTests;
+
+public class ProgramStructureTests
+{
+    [Fact]
+    public void Can_tokenize_var_declaration()
+    {
+        List<Token> actual = LexerHelper.Tokenize("var x : int = 42;");
+        List<Token> expected =
+        [
+            new Token(TokenType.Var),
+            new Token(TokenType.Identifier, new TokenValue("x")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.Assign),
+            new Token(TokenType.IntLiteral, new TokenValue(42)),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_const_declaration()
+    {
+        List<Token> actual = LexerHelper.Tokenize("const y : int = 0;");
+        List<Token> expected =
+        [
+            new Token(TokenType.Const),
+            new Token(TokenType.Identifier, new TokenValue("y")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.Assign),
+            new Token(TokenType.IntLiteral, new TokenValue(0)),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_read_statement()
+    {
+        List<Token> actual = LexerHelper.Tokenize("read(x);");
+        List<Token> expected =
+        [
+            new Token(TokenType.Read),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("x")),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_print_statement()
+    {
+        List<Token> actual = LexerHelper.Tokenize("print(a);");
+        List<Token> expected =
+        [
+            new Token(TokenType.Print),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_arithmetic_expression()
+    {
+        List<Token> actual = LexerHelper.Tokenize("a + b * c - d / e % f");
+        List<Token> expected =
+        [
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Plus),
+            new Token(TokenType.Identifier, new TokenValue("b")),
+            new Token(TokenType.Multiply),
+            new Token(TokenType.Identifier, new TokenValue("c")),
+            new Token(TokenType.Minus),
+            new Token(TokenType.Identifier, new TokenValue("d")),
+            new Token(TokenType.Divide),
+            new Token(TokenType.Identifier, new TokenValue("e")),
+            new Token(TokenType.Module),
+            new Token(TokenType.Identifier, new TokenValue("f")),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_comparison_expression()
+    {
+        List<Token> actual = LexerHelper.Tokenize("a == b != c");
+        List<Token> expected =
+        [
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Equal),
+            new Token(TokenType.Identifier, new TokenValue("b")),
+            new Token(TokenType.NotEqual),
+            new Token(TokenType.Identifier, new TokenValue("c")),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_assignment_statement()
+    {
+        List<Token> actual = LexerHelper.Tokenize("x = 10;");
+        List<Token> expected =
+        [
+            new Token(TokenType.Identifier, new TokenValue("x")),
+            new Token(TokenType.Assign),
+            new Token(TokenType.IntLiteral, new TokenValue(10)),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_main_block()
+    {
+        List<Token> actual = LexerHelper.Tokenize(
+            """
+            main {
+                var a : int = 10;
+                print(a);
+            }
+            """);
+        List<Token> expected =
+        [
+            new Token(TokenType.Main),
+            new Token(TokenType.OpenBrace),
+            new Token(TokenType.Var),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.Assign),
+            new Token(TokenType.IntLiteral, new TokenValue(10)),
+            new Token(TokenType.Semicolon),
+            new Token(TokenType.Print),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Semicolon),
+            new Token(TokenType.CloseBrace),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_program_with_comments()
+    {
+        List<Token> actual = LexerHelper.Tokenize(
+            """
+            main {
+                # читаем число
+                read(x);
+                print(x); # выводим
+            }
+            """);
+        List<Token> expected =
+        [
+            new Token(TokenType.Main),
+            new Token(TokenType.OpenBrace),
+            new Token(TokenType.Read),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("x")),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Semicolon),
+            new Token(TokenType.Print),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("x")),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Semicolon),
+            new Token(TokenType.CloseBrace),
+        ];
+        Assert.Equal(expected, actual);
+    }
+}

@@ -15,7 +15,7 @@ public class Token(
     {
         if (obj is Token other)
         {
-            return Type == other.Type && Value == other.Value;
+            return Type == other.Type && Equals(Value, other.Value);
         }
 
         return false;

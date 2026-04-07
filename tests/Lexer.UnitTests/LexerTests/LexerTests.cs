@@ -68,7 +68,7 @@ public class LexerTest
             },
             {
                 // Пропуск комментариев.
-                "# comments # a / # should be # b * c # ignored #", [
+                "# comments # \na / # should be # \nb * c # ignored #", [
                     new Token(TokenType.Identifier, new TokenValue("a")),
                     new Token(TokenType.Divide),
                     new Token(TokenType.Identifier, new TokenValue("b")),
@@ -76,16 +76,16 @@ public class LexerTest
                     new Token(TokenType.Identifier, new TokenValue("c")),
                 ]
             },
-            //{
-            //    // Пропуск вложенных комментариев.
-            //    "a / b # nested # comments # are allowed # * c", [
-            //        new Token(TokenType.Identifier, new TokenValue("a")),
-            //        new Token(TokenType.Divide),
-            //        new Token(TokenType.Identifier, new TokenValue("b")),
-            //        new Token(TokenType.Multiply),
-            //        new Token(TokenType.Identifier, new TokenValue("c")),
-            //    ]
-            //},
+            {
+                // Пропуск вложенных комментариев.
+                "a / b # nested # comments # are allowed # \n* c", [
+                    new Token(TokenType.Identifier, new TokenValue("a")),
+                    new Token(TokenType.Divide),
+                    new Token(TokenType.Identifier, new TokenValue("b")),
+                    new Token(TokenType.Multiply),
+                    new Token(TokenType.Identifier, new TokenValue("c")),
+                ]
+            },
         };
     }
 

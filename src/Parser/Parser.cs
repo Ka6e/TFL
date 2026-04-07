@@ -45,6 +45,8 @@ public class Parser
             statements.Add(ParseStatement());
         }
 
+        Match(TokenType.CloseBrace);
+
         return new BlockStatement(statements);
     }
 
@@ -64,7 +66,7 @@ public class Parser
         {
             TokenType.Var => ParseVarDecl(),
             TokenType.Const => ParseConstDecl(),
-            TokenType.Assign => ParseAssignment(),
+            TokenType.Identifier => ParseAssignment(),
             TokenType.Print => ParsePrintStatement(),
             TokenType.Read => ParseReadStatement(),
             _ => ParseBlock(),
@@ -239,32 +241,48 @@ public class Parser
 
     /// <summary>
     /// multiplicative =
-    ///     primary,
-    ///     { ( "*" | "/" | "%" ), primary };
+    ///     unary,
+    ///     { ( "*" | "/" | "%" ), unary };
     /// </summary>
     private Expression ParseMultiplicative()
     {
-        Expression expr = ParsePrimary();
+        Expression expr = ParseUnary();
         while (true)
         {
             switch (_tokens.Peek().Type)
             {
                 case TokenType.Multiply:
                     _tokens.Advance();
-                    expr = new BinaryOperationExpression(expr, BinaryOperation.Multiply, ParsePrimary());
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.Multiply, ParseUnary());
                     break;
                 case TokenType.Divide:
                     _tokens.Advance();
-                    expr = new BinaryOperationExpression(expr, BinaryOperation.Divide, ParsePrimary());
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.Divide, ParseUnary());
                     break;
                 case TokenType.Module:
                     _tokens.Advance();
-                    expr = new BinaryOperationExpression(expr, BinaryOperation.Module, ParsePrimary());
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.Module, ParseUnary());
                     break;
                 default:
                     return expr;
             }
         }
+    }
+
+    /// <summary>
+    /// unary =
+    ///     "-", unary
+    ///     | primary ;
+    /// </summary>
+    private Expression ParseUnary()
+    {
+        if (_tokens.Peek().Type == TokenType.Minus)
+        {
+            Match(TokenType.Minus);
+            return new UnaryOperationExpression(UnaryOperation.Minus, ParseUnary());
+        }
+
+        return ParsePrimary();
     }
 
     /// <summary>
@@ -285,15 +303,14 @@ public class Parser
                 return new LiteralExpression(new Value(t.Value!.ToInt()));
             case TokenType.Identifier:
                 string name = Match(TokenType.Identifier).Value!.ToString();
-                return new LiteralExpression(new Value(0));
+                return new VariableExpression(name);
             case TokenType.OpenParenthesis:
                 _tokens.Advance();
                 Expression expression = ParseExpression();
                 Match(TokenType.CloseParenthesis);
                 return expression;
             default:
-                throw new UnexpectedLexemeException(t,
-                    expected: [
+                throw new UnexpectedLexemeException(t, expected: [
                         TokenType.IntegerType,
                         TokenType.Identifier,
                         TokenType.OpenParenthesis,
@@ -308,7 +325,7 @@ public class Parser
 
         if (t.Type != expected)
         {
-            throw new InvalidOperationException();
+            throw new UnexpectedLexemeException(t, expected);
         }
 
         _tokens.Advance();

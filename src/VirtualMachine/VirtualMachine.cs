@@ -52,12 +52,16 @@ public class VirtualMachine
             switch (instruction.Code)
             {
                 case InstructionCode.Push:
-                    _evaluationStack.Push(instruction.Operand);
-                    break;
+                    {
+                        _evaluationStack.Push(instruction.Operand);
+                        break;
+                    }
 
                 case InstructionCode.Pop:
-                    _evaluationStack.Pop();
-                    break;
+                    {
+                        _evaluationStack.Pop();
+                        break;
+                    }
 
                 case InstructionCode.DefineVar:
                     {
@@ -122,7 +126,12 @@ public class VirtualMachine
                         _evaluationStack.Push(new Value(l.AsInt() % r.AsInt()));
                         break;
                     }
-
+                case InstructionCode.Negate:
+                    {
+                        Value v = _evaluationStack.Pop();
+                        _evaluationStack.Push(new Value(-v.AsInt()));
+                        break;
+                    }
                 case InstructionCode.CallBuiltin:
                     CallBuiltin((BuiltinFunctionCode)instruction.Operand.AsInt());
                     break;

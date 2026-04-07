@@ -43,7 +43,7 @@ public class VirtualMachine
 
     public int ExitCode => _exitCode;
 
-    public void RunProgram()
+    public int RunProgram()
     {
         while (true)
         {
@@ -118,7 +118,7 @@ public class VirtualMachine
 
                 case InstructionCode.Halt:
                     _exitCode = _evaluationStack.Pop().AsInt();
-                    return;
+                    return _exitCode;
 
                 default:
                     throw new NotImplementedException($"Unknown instruction {instruction.Code}");

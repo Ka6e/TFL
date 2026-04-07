@@ -1,6 +1,6 @@
 ﻿namespace VirtualMachine.UnitTests
 {
-    public class UnitTest1
+    public class CallBuiltinTest
     {
         [Fact]
         public void Test1()

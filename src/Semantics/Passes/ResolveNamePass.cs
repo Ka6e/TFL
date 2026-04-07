@@ -16,6 +16,4 @@ public sealed class ResolveNamePass : AbstractPass
     {
         _symbols = globalSymbols;
     }
-
-
 }

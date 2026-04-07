@@ -35,6 +35,13 @@ public class VirtualMachineCodegen : IAstVisitor
         }
     }
 
+    public void Visit(VariableExpression e)
+    {
+        _builder.Append(new Instruction(
+            InstructionCode.LoadVar,
+            e.Name));
+    }
+
     public void Visit(VariableDeclarationStatement s)
     {
         if (s.Value != null)
@@ -121,6 +128,21 @@ public class VirtualMachineCodegen : IAstVisitor
 
             default:
                 throw new NotImplementedException($"Unsupported operation {e.Operation}");
+        }
+    }
+
+    public void Visit(UnaryOperationExpression e)
+    {
+        e.Operand.Accept(this);
+
+        switch (e.Operation)
+        {
+            case UnaryOperation.Minus:
+                _builder.Append(new Instruction(InstructionCode.Negate));
+                break;
+
+            default:
+                throw new NotImplementedException("Unsupported unary operation");
         }
     }
 }

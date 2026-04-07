@@ -17,6 +17,6 @@ public sealed class BinaryOperationExpression : Expression
 
     public override void Accept(IAstVisitor visitor)
     {
-        throw new NotImplementedException();
+        visitor.Visit(this);
     }
 }

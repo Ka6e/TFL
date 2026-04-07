@@ -12,6 +12,18 @@ public class Instruction
         Operand = new Value(value);
     }
 
+    public Instruction(InstructionCode code, string value)
+    {
+        Code = code;
+        Operand = new Value(value);
+    }
+
+    public Instruction(InstructionCode code)
+    {
+        Code = code;
+        Operand = Value.Void;
+    }
+
     public Instruction(InstructionCode code, Value value)
     {
         Code = code;

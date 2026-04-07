@@ -52,86 +52,66 @@ public class VirtualMachine
             switch (instruction.Code)
             {
                 case InstructionCode.Push:
-                    {
-                        _evaluationStack.Push(instruction.Operand);
-                        break;
-                    }
+                    _evaluationStack.Push(instruction.Operand);
+                    break;
 
                 case InstructionCode.Pop:
-                    {
-                        _evaluationStack.Pop();
-                        break;
-                    }
+                    _evaluationStack.Pop();
+                    break;
 
                 case InstructionCode.DefineVar:
-                    {
-                        Value value = _evaluationStack.Pop();
-                        string name = instruction.Operand.ToString();
-                        _variables.DefineVariable(name, value);
-                        break;
-                    }
+                    Value value = _evaluationStack.Pop();
+                    string name = instruction.Operand.ToString();
+                    _variables.DefineVariable(name, value);
+                    break;
 
                 case InstructionCode.StoreVar:
-                    {
-                        Value value = _evaluationStack.Pop();
-                        string name = instruction.Operand.ToString();
-                        _variables.AssignVariable(name, value);
-                        break;
-                    }
+                    Value storeValue = _evaluationStack.Pop();
+                    string storeName = instruction.Operand.ToString();
+                    _variables.AssignVariable(storeName, storeValue);
+                    break;
 
                 case InstructionCode.LoadVar:
-                    {
-                        string name = instruction.Operand.ToString();
-                        Value value = _variables.GetVariable(name);
-                        _evaluationStack.Push(value);
-                        break;
-                    }
+                    string loadName = instruction.Operand.ToString();
+                    Value loadValue = _variables.GetVariable(loadName);
+                    _evaluationStack.Push(loadValue);
+                    break;
 
                 case InstructionCode.Add:
-                    {
-                        Value r = _evaluationStack.Pop();
-                        Value l = _evaluationStack.Pop();
-                        _evaluationStack.Push(new Value(l.AsInt() + r.AsInt()));
-                        break;
-                    }
+                    Value rightAdd = _evaluationStack.Pop();
+                    Value leftAdd = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftAdd.AsInt() + rightAdd.AsInt()));
+                    break;
 
                 case InstructionCode.Subtract:
-                    {
-                        Value r = _evaluationStack.Pop();
-                        Value l = _evaluationStack.Pop();
-                        _evaluationStack.Push(new Value(l.AsInt() - r.AsInt()));
-                        break;
-                    }
+                    Value rightSub = _evaluationStack.Pop();
+                    Value leftSub = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftSub.AsInt() - rightSub.AsInt()));
+                    break;
 
                 case InstructionCode.Multiply:
-                    {
-                        Value r = _evaluationStack.Pop();
-                        Value l = _evaluationStack.Pop();
-                        _evaluationStack.Push(new Value(l.AsInt() * r.AsInt()));
-                        break;
-                    }
+                    Value rightMul = _evaluationStack.Pop();
+                    Value leftMul = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftMul.AsInt() * rightMul.AsInt()));
+                    break;
 
                 case InstructionCode.Divide:
-                    {
-                        Value r = _evaluationStack.Pop();
-                        Value l = _evaluationStack.Pop();
-                        _evaluationStack.Push(new Value(l.AsInt() / r.AsInt()));
-                        break;
-                    }
+                    Value rightDiv = _evaluationStack.Pop();
+                    Value leftDiv = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftDiv.AsInt() / rightDiv.AsInt()));
+                    break;
 
                 case InstructionCode.Modulo:
-                    {
-                        Value r = _evaluationStack.Pop();
-                        Value l = _evaluationStack.Pop();
-                        _evaluationStack.Push(new Value(l.AsInt() % r.AsInt()));
-                        break;
-                    }
+                    Value rightMod = _evaluationStack.Pop();
+                    Value leftMod = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftMod.AsInt() % rightMod.AsInt()));
+                    break;
+
                 case InstructionCode.Negate:
-                    {
-                        Value v = _evaluationStack.Pop();
-                        _evaluationStack.Push(new Value(-v.AsInt()));
-                        break;
-                    }
+                    Value val = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(-val.AsInt()));
+                    break;
+
                 case InstructionCode.CallBuiltin:
                     CallBuiltin((BuiltinFunctionCode)instruction.Operand.AsInt());
                     break;

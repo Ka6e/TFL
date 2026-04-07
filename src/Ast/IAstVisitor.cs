@@ -8,6 +8,8 @@ public interface IAstVisitor
 {
     void Visit(ProgramNode p);
 
+    void Visit(BinaryOperationExpression e);
+
     void Visit(LiteralExpression e);
 
     void Visit(UnaryOperationExpression e);

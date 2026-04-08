@@ -53,4 +53,13 @@ public abstract class AbstractPass : IAstVisitor
         e.Left.Accept(this);
         e.Right.Accept(this);
     }
+
+    public virtual void Visit(UnaryOperationExpression e)
+    {
+        e.Operand.Accept(this);
+    }
+
+    public virtual void Visit(VariableExpression e)
+    {
+    }
 }

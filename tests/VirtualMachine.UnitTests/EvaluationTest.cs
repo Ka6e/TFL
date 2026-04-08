@@ -1,10 +1,179 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Runtime;
 
-namespace VirtualMachine.UnitTests
+using Tests.TestLibrary.TestDoubles;
+
+using VirtualMachine.Builtins;
+using VirtualMachine.Instructions;
+
+namespace VirtualMachine.UnitTests;
+
+public class EvaluationTest
 {
-    internal class EvaluationTest
+    [Theory]
+    [MemberData(nameof(GetEvaluateExpressionData))]
+    public void Can_evaluate_expression(List<Instruction> instructions, string expected)
     {
+        FakeEnvironment env = new FakeEnvironment();
+        VirtualMachine vm = new VirtualMachine(env, instructions);
+
+        vm.RunProgram();
+
+        Assert.Equal(0, vm.ExitCode);
+        Assert.Equal(expected, env.Output);
+    }
+
+    public static TheoryData<List<Instruction>, string> GetEvaluateExpressionData()
+    {
+        return new TheoryData<List<Instruction>, string>
+        {
+            // Push + Print
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 42),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "42"
+            },
+
+            // +
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 10),
+                    new Instruction(InstructionCode.Push, 20),
+                    new Instruction(InstructionCode.Add),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "30"
+            },
+
+            // -
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 50),
+                    new Instruction(InstructionCode.Push, 30),
+                    new Instruction(InstructionCode.Subtract),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "20"
+            },
+
+            // *
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 7),
+                    new Instruction(InstructionCode.Push, 6),
+                    new Instruction(InstructionCode.Multiply),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "42"
+            },
+
+            // /
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 100),
+                    new Instruction(InstructionCode.Push, 4),
+                    new Instruction(InstructionCode.Divide),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "25"
+            },
+
+            // %
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 17),
+                    new Instruction(InstructionCode.Push, 5),
+                    new Instruction(InstructionCode.Modulo),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "2"
+            },
+
+            // Negate
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 42),
+                    new Instruction(InstructionCode.Negate),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "-42"
+            },
+
+            // Pop
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 10),
+                    new Instruction(InstructionCode.Push, 20),
+                    new Instruction(InstructionCode.Pop),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "10"
+            },
+
+            // (10 + 5) * 3
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 10),
+                    new Instruction(InstructionCode.Push, 5),
+                    new Instruction(InstructionCode.Add),
+                    new Instruction(InstructionCode.Push, 3),
+                    new Instruction(InstructionCode.Multiply),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "45"
+            },
+
+            // (100 / 4) + (2 * 3) * 2 = 25 + 12 = 37
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, 100),
+                    new Instruction(InstructionCode.Push, 4),
+                    new Instruction(InstructionCode.Divide),
+
+                    new Instruction(InstructionCode.Push, 2),
+                    new Instruction(InstructionCode.Push, 3),
+                    new Instruction(InstructionCode.Multiply),
+
+                    new Instruction(InstructionCode.Push, 2),
+                    new Instruction(InstructionCode.Multiply),
+
+                    new Instruction(InstructionCode.Add),
+
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "37"
+            },
+        };
     }
 }

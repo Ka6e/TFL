@@ -15,7 +15,7 @@ public class SemanticsChecker
 
     public SemanticsChecker()
     {
-        SymbolsTable globalSymbols = new(parent: null);
+        SymbolsTable globalSymbols = new SymbolsTable();
 
         _passes =
         [

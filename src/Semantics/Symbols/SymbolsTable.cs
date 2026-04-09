@@ -1,21 +1,42 @@
-﻿using Ast.Statements;
+﻿using System.Diagnostics;
+
+using Ast.Statements;
+
+using Semantics.Exceptions;
 
 namespace Semantics.Symbols;
 
 public sealed class SymbolsTable
 {
-    private readonly SymbolsTable? _parent;
     private readonly Dictionary<string, Statement> _variables;
-    private readonly Dictionary<string, Statement> _types;
 
-    public SymbolsTable(SymbolsTable? parent)
+    public SymbolsTable()
     {
-        _parent = parent;
         _variables = [];
-        _types = [];
     }
 
-    public SymbolsTable? Parent => _parent;
+    public Statement GetVariableDeclaration(string name)
+    {
+        if (!_variables.TryGetValue(name, out Statement? declaration))
+        {
+            throw UnknownSymbolException.UndefinedVariableOrFunction(name);
+        }
 
-    //public void DeclareVariable()
+        return declaration;
+    }
+
+    public void DeclareVariable(Statement symbol)
+    {
+        string name = symbol switch
+        {
+            VariableDeclarationStatement v => v.Name,
+            ConstDeclarationStatement c => c.Name,
+            _ => throw new UnreachableException(),
+        };
+
+        if (!_variables.TryAdd(name, symbol))
+        {
+            throw DuplicateSymbolException.DuplicateVariableOrFunction(name);
+        }
+    }
 }

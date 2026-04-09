@@ -30,6 +30,24 @@ public sealed class ResolveTypesPass : AbstractPass
         e.ResultType = resultType;
     }
 
+    public override void Visit(UnaryOperationExpression e)
+    {
+        base.Visit(e);
+
+        if (e.Operand.ResultType != ValueType.Int)
+        {
+            throw new TypeErrorException("Unary minus allowed only for int");
+        }
+
+        e.ResultType = ValueType.Int;
+    }
+
+    public override void Visit(VariableExpression e)
+    {
+        base.Visit(e);
+        e.ResultType = ValueType.Int;
+    }
+
     public override void Visit(VariableDeclarationStatement s)
     {
         base.Visit(s);
@@ -69,6 +87,17 @@ public sealed class ResolveTypesPass : AbstractPass
         {
             throw new TypeMismatchException("The type of the variable to which the value is assigned does not match the declared one");
         }
+    }
+
+    public override void Visit(PrintStatement s)
+    {
+        base.Visit(s);
+        s.ResultType = ValueType.Void;
+    }
+
+    public override void Visit(ReadStatement s)
+    {
+        s.ResultType = ValueType.Void;
     }
 
     private static ValueType? GetBinaryOperationResultType(BinaryOperation operaion, ValueType left, ValueType right)

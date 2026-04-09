@@ -1,4 +1,4 @@
-﻿namespace Lexer.UnitTests.LexerTests;
+﻿namespace Lexemes.UnitTests;
 
 public static class LexerHelper
 {

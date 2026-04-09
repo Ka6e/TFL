@@ -1,9 +1,8 @@
-﻿namespace Interpreter;
+﻿using VirtualMachine;
 
-internal class Program
+namespace Interpreter;
+
 {
-    static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
     }
 }

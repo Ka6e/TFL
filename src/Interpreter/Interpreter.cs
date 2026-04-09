@@ -25,7 +25,7 @@ public class Interpreter
         ProgramNode program = parser.ParseProgram();
 
         SemanticsChecker checker = new SemanticsChecker();
-        // checker.Check(program); // включишь позже
+        checker.Check(program);
 
         VirtualMachineCodegen.VirtualMachineCodegen codegen = new VirtualMachineCodegen.VirtualMachineCodegen();
         List<Instruction> instructions = codegen.Generate(program);

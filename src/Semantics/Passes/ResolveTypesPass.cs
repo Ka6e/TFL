@@ -80,13 +80,8 @@ public sealed class ResolveTypesPass : AbstractPass
 
     public override void Visit(AssignmentStatement s)
     {
-        base.Visit(s);
-        ValueType valueType = s.Expression.ResultType;
-
-        if (s.ResultType != valueType)
-        {
-            throw new TypeMismatchException("The type of the variable to which the value is assigned does not match the declared one");
-        }
+        s.Expression.Accept(this);
+        s.ResultType = ValueType.Void;
     }
 
     public override void Visit(PrintStatement s)

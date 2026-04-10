@@ -45,14 +45,12 @@ public sealed class ResolveNamePass : AbstractPass
 
         if (decl is ConstDeclarationStatement)
         {
-            throw new InvalidOperationException("Cannot read into const variable");
+            throw new InvalidAssignmentException("Cannot read into const variable");
         }
-
     }
 
     public override void Visit(VariableExpression e)
     {
         Statement decl = _symbols.GetVariableDeclaration(e.Name);
-        e.Declaration = decl as AbstractVariableDeclarationStatemnt;
     }
 }

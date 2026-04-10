@@ -116,7 +116,6 @@ public class Parser
         string name = Match(TokenType.Identifier).Value!.ToString();
         Match(TokenType.Colon);
         ValueType type = ParseType();
-        _tokens.Advance();
         Match(TokenType.Assign);
         Expression expr = ParseExpression();
         Match(TokenType.Semicolon);
@@ -337,10 +336,14 @@ public class Parser
     {
         Token t = _tokens.Peek();
 
-        return t.Type switch
+        ValueType result = t.Type switch
         {
             TokenType.IntegerType => ValueType.Int,
-            _ => throw new Exception(),
+            _ => throw new Exception($"Expected type 'int', got {t.Type}"),
         };
+
+        _tokens.Advance();
+
+        return result;
     }
 }

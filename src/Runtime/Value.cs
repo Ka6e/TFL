@@ -17,6 +17,11 @@ public class Value
         _value = value;
     }
 
+    public Value(string value)
+    {
+        _value = value;
+    }
+
     /// <summary>
     /// Возвращает тип значения.
     /// </summary>
@@ -73,6 +78,7 @@ public class Value
         return _value switch
         {
             int i => i.ToString(CultureInfo.InvariantCulture),
+            string s => s,
             VoidValue v => v.ToString(),
             _ => throw new InvalidOperationException($"Unexpected value {_value} of type {_value.GetType()}"),
         };

@@ -7,7 +7,7 @@ namespace Ast.Attributes;
 ///  после чего он становится доступным для чтения.
 /// </summary>
 /// <typeparam name="T">Тип значения атрибута</typeparam>
-public class AstAttribute<T>
+public struct AstAttribute<T>
 {
     private T _value;
     private bool _initialized;

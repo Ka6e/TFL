@@ -4,7 +4,6 @@ namespace Ast.Statements;
 
 public sealed class AssignmentStatement : Statement
 {
-
     public AssignmentStatement(string name, Expression expression)
     {
         Name = name;

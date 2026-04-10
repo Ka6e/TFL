@@ -111,7 +111,6 @@ public class BuiltinFunctionsTest
         Interpreter interpreter = new(environment);
         interpreter.Execute(code);
 
-        // 10 * 5 + 10 - 5 = 50 + 10 - 5 = 55
         Assert.Equal("55", environment.Output);
     }
 

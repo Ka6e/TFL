@@ -1,4 +1,5 @@
 ﻿using Runtime;
+
 using VirtualMachine.Builtins;
 using VirtualMachine.Instructions;
 
@@ -110,6 +111,18 @@ public class VirtualMachine
                 case InstructionCode.Negate:
                     Value val = _evaluationStack.Pop();
                     _evaluationStack.Push(new Value(-val.AsInt()));
+                    break;
+
+                case InstructionCode.Equal:
+                    Value leftEqual = _evaluationStack.Pop();
+                    Value rightEqual = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftEqual.AsInt() == rightEqual.AsInt()));
+                    break;
+
+                case InstructionCode.NotEqual:
+                    Value leftNotEqual = _evaluationStack.Pop();
+                    Value rightNotEqual = _evaluationStack.Pop();
+                    _evaluationStack.Push(new Value(leftNotEqual.AsInt() != rightNotEqual.AsInt()));
                     break;
 
                 case InstructionCode.CallBuiltin:

@@ -45,6 +45,10 @@ public class ExpressionsTest
             { "main { print(20 % 4); }", 0 },
             { "main { print(2 + 3 * 4 - 10 / 2); }", 9 },
             { "main { print((2 + 3) * (4 - 10) / 2); }", -15 },
+            { "main { print(1 != 2); }", 1 },
+            { "main { print(1 != 1); }", 0 },
+            { "main { print(1 == 1); }", 1 },
+            { "main { print(1 == 2); }", 0 },
         };
     }
 }

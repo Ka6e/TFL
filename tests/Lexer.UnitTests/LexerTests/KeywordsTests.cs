@@ -28,6 +28,7 @@ public class KeywordsTests
                     new Token(TokenType.IntegerType),
                 ]
             },
+
             // слова, начинающиеся как ключевые — должны быть Identifier
             { "mainX",    [new Token(TokenType.Identifier, new TokenValue("mainX"))] },
             { "variable", [new Token(TokenType.Identifier, new TokenValue("variable"))] },

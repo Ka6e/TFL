@@ -2,7 +2,9 @@
 using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
+
 using Runtime;
+
 using VirtualMachine.Builtins;
 using VirtualMachine.Instructions;
 
@@ -125,7 +127,12 @@ public class VirtualMachineCodegen : IAstVisitor
             case BinaryOperation.Module:
                 _builder.Append(new Instruction(InstructionCode.Modulo));
                 break;
-
+            case BinaryOperation.Equal:
+                _builder.Append(new Instruction(InstructionCode.Equal));
+                break;
+            case BinaryOperation.NotEqual:
+                _builder.Append(new Instruction(InstructionCode.NotEqual));
+                break;
             default:
                 throw new NotImplementedException($"Unsupported operation {e.Operation}");
         }

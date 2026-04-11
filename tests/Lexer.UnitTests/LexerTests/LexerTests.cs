@@ -1,6 +1,6 @@
 namespace Lexemes.UnitTests;
 
-public class LexerTest
+public class LexerTests
 {
     [Theory]
     [MemberData(nameof(GetTokenizeIdentifiersAndKeywordsData))]
@@ -110,6 +110,7 @@ public class LexerTest
             },
         };
     }
+
     private static List<Token> Tokenize(string code)
     {
         List<Token> results = [];

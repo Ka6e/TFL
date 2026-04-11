@@ -4,16 +4,14 @@ using Ast.Expressions;
 
 using ValueType = Runtime.ValueType;
 
-public sealed class VariableDeclarationStatement : Statement
+public sealed class VariableDeclarationStatement : AbstractVariableDeclarationStatemnt
 {
     public VariableDeclarationStatement(string name, ValueType type, Expression? value)
+        : base(name)
     {
-        Name = name;
         Type = type;
         Value = value;
     }
-
-    public string Name { get; }
 
     public ValueType Type { get; }
 

@@ -66,6 +66,7 @@ public class Value
         return _value switch
         {
             int i => i,
+            bool b => Convert.ToInt32(b),
             _ => throw new InvalidOperationException($"Value {_value} is not an integer"),
         };
     }

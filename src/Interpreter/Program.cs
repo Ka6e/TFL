@@ -6,35 +6,38 @@ public static class Program
 {
     public static int Main(string[] args)
     {
-        if (args.Length != 1)
-        {
-            Console.Error.WriteLine("Usage: Interpreter <file-path>");
-            return 1;
-        }
+        Console.WriteLine(sizeof(double));
 
-        string sourcePath = args[0];
+        return 0;
+        //if (args.Length != 1)
+        //{
+        //    Console.Error.WriteLine("Usage: Interpreter <file-path>");
+        //    return 1;
+        //}
 
-        if (!File.Exists(sourcePath))
-        {
-            Console.Error.WriteLine($"Error: file '{sourcePath}' not found.");
-            return 1;
-        }
+        //string sourcePath = args[0];
 
-        try
-        {
-            string code = File.ReadAllText(sourcePath);
+        //if (!File.Exists(sourcePath))
+        //{
+        //    Console.Error.WriteLine($"Error: file '{sourcePath}' not found.");
+        //    return 1;
+        //}
 
-            ConsoleEnvironment environment = new ConsoleEnvironment();
-            Interpreter interpreter = new Interpreter(environment);
+        //try
+        //{
+        //    string code = File.ReadAllText(sourcePath);
 
-            interpreter.Execute(code);
+        //    ConsoleEnvironment environment = new ConsoleEnvironment();
+        //    Interpreter interpreter = new Interpreter(environment);
 
-            return interpreter.ExitCode;
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error: {ex.Message}");
-            return 1;
-        }
+        //    interpreter.Execute(code);
+
+        //    return interpreter.ExitCode;
+        //}
+        //catch (Exception ex)
+        //{
+        //    Console.Error.WriteLine($"Error: {ex.Message}");
+        //    return 1;
+        //}
     }
 }

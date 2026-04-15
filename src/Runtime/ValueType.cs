@@ -10,6 +10,16 @@ public class ValueType
     public static readonly ValueType Void = new("void");
 
     /// <summary>
+    /// Строковое значение.
+    /// </summary>
+    public static readonly ValueType String = new("string");
+
+    /// <summary>
+    /// Вещественное значение.
+    /// </summary>
+    public static readonly ValueType Float = new("float");
+
+    /// <summary>
     /// Целочисленное значение.
     /// </summary>
     public static readonly ValueType Int = new("int");

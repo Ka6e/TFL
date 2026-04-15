@@ -22,6 +22,11 @@ public class Value
         _value = value;
     }
 
+    public Value(double value)
+    {
+        _value = value;
+    }
+
     /// <summary>
     /// Возвращает тип значения.
     /// </summary>
@@ -30,6 +35,8 @@ public class Value
         return _value switch
         {
             int => ValueType.Int,
+            string => ValueType.String,
+            double => ValueType.Float,
             _ => throw new InvalidOperationException($"Unexpected value {_value} of  type {_value.GetType()}"),
         };
     }
@@ -43,6 +50,54 @@ public class Value
         {
             int => true,
             _ => false,
+        };
+    }
+
+    /// <summary>
+    /// Определяет, является ли значение строкой.
+    /// </summary>
+    public bool IsString()
+    {
+        return _value switch
+        {
+            string => true,
+            _ => false,
+        };
+    }
+
+    /// <summary>
+    /// Возвращает значение как строку либо бросает исключение.
+    /// </summary>
+    public string AsString()
+    {
+        return _value switch
+        {
+            string s => s,
+            _ => throw new InvalidOperationException($"Value {_value} is not a string"),
+        };
+    }
+
+    /// <summary>
+    /// Определяет, является ли значение вещественным числом.
+    /// </summary>
+    public bool IsFloat()
+    {
+        return _value switch
+        {
+            double => true,
+            _ => false,
+        };
+    }
+
+    /// <summary>
+    /// Возвращает значение как вещественное число либо бросает исключение.
+    /// </summary>
+    public float AsFloat()
+    {
+        return _value switch
+        {
+            double d => (float)d,
+            _ => throw new InvalidOperationException($"Value {_value} is not an float"),
         };
     }
 
@@ -80,6 +135,7 @@ public class Value
         {
             int i => i.ToString(CultureInfo.InvariantCulture),
             string s => s,
+            double d => d.ToString(CultureInfo.InvariantCulture),
             VoidValue v => v.ToString(),
             _ => throw new InvalidOperationException($"Unexpected value {_value} of type {_value.GetType()}"),
         };

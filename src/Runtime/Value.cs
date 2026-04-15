@@ -92,12 +92,12 @@ public class Value
     /// <summary>
     /// Возвращает значение как вещественное число либо бросает исключение.
     /// </summary>
-    public float AsFloat()
+    public double AsFloat()
     {
         return _value switch
         {
-            double d => (float)d,
-            _ => throw new InvalidOperationException($"Value {_value} is not an float"),
+            double d => d,
+            _ => throw new InvalidOperationException($"Value {_value} is not a float"),
         };
     }
 

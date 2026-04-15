@@ -21,4 +21,14 @@ public class BuiltinFunctions
         int v = _environment.ReadInt();
         return new Value(v);
     }
+
+    public Value Length(Value value)
+    {
+        if (!value.IsString())
+        {
+            throw new InvalidOperationException("length expects string");
+        }
+
+        return new Value(value.AsString().Length);
+    }
 }

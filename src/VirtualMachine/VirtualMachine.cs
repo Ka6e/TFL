@@ -1,4 +1,6 @@
-﻿using Runtime;
+﻿using System.Collections;
+
+using Runtime;
 
 using VirtualMachine.Builtins;
 using VirtualMachine.Instructions;
@@ -10,24 +12,10 @@ public class VirtualMachine
     private readonly BuiltinFunctions _builtinFunctions;
     private readonly IReadOnlyList<Instruction> _instructions;
 
-    /// <summary>
-    /// Указатель на текущую инструкцию.
-    /// </summary>
     private int _instructionPointer;
-
-    /// <summary>
-    /// Код завершения программы.
-    /// </summary>
     private int _exitCode;
 
-    /// <summary>
-    /// Стек для вычисления выражений и передачи аргументов функций.
-    /// </summary>
     private readonly Stack<Value> _evaluationStack;
-
-    /// <summary>
-    /// Таблица переменных.
-    /// </summary>
     private readonly VariablesTable _variables;
 
     public VirtualMachine(IEnvironment environment, IReadOnlyList<Instruction> instructions)
@@ -36,14 +24,17 @@ public class VirtualMachine
 
         _builtinFunctions = new BuiltinFunctions(environment);
         _instructions = instructions;
+
         _instructionPointer = 0;
         _exitCode = 0;
+
         _evaluationStack = new Stack<Value>();
         _variables = new VariablesTable();
     }
 
     public int ExitCode => _exitCode;
 
+    // правый операнд можно не проверять на тип в if  так как у нас типы операндов всегда совпадают по спеке
     public int RunProgram()
     {
         while (true)
@@ -61,80 +52,223 @@ public class VirtualMachine
                     break;
 
                 case InstructionCode.DefineVar:
-                    Value value = _evaluationStack.Pop();
-                    string name = instruction.Operand.ToString();
-                    _variables.DefineVariable(name, value);
-                    break;
+                    {
+                        Value value = _evaluationStack.Pop();
+                        string name = instruction.Operand.ToString();
+                        _variables.DefineVariable(name, value);
+                        break;
+                    }
 
                 case InstructionCode.StoreVar:
-                    Value storeValue = _evaluationStack.Pop();
-                    string storeName = instruction.Operand.ToString();
-                    _variables.AssignVariable(storeName, storeValue);
-                    break;
+                    {
+                        Value value = _evaluationStack.Pop();
+                        string name = instruction.Operand.ToString();
+                        _variables.AssignVariable(name, value);
+                        break;
+                    }
 
                 case InstructionCode.LoadVar:
-                    string loadName = instruction.Operand.ToString();
-                    Value loadValue = _variables.GetVariable(loadName);
-                    _evaluationStack.Push(loadValue);
-                    break;
+                    {
+                        string name = instruction.Operand.ToString();
+                        _evaluationStack.Push(_variables.GetVariable(name));
+                        break;
+                    }
 
                 case InstructionCode.Add:
-                    Value rightAdd = _evaluationStack.Pop();
-                    Value leftAdd = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftAdd.AsInt() + rightAdd.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsString())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsString() + right.AsString())
+                            );
+                        }
+                        else if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() + right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() + right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.Subtract:
-                    Value rightSub = _evaluationStack.Pop();
-                    Value leftSub = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftSub.AsInt() - rightSub.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() - right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() - right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.Multiply:
-                    Value rightMul = _evaluationStack.Pop();
-                    Value leftMul = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftMul.AsInt() * rightMul.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() * right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() * right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.Divide:
-                    Value rightDiv = _evaluationStack.Pop();
-                    Value leftDiv = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftDiv.AsInt() / rightDiv.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() / right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() / right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.Modulo:
-                    Value rightMod = _evaluationStack.Pop();
-                    Value leftMod = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftMod.AsInt() % rightMod.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() % right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() % right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.Negate:
-                    Value val = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(-val.AsInt()));
-                    break;
+                    {
+                        Value value = _evaluationStack.Pop();
+
+                        if (value.IsFloat())
+                        {
+                            _evaluationStack.Push(new Value(-value.AsFloat()));
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(new Value(-value.AsInt()));
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.Equal:
-                    Value leftEqual = _evaluationStack.Pop();
-                    Value rightEqual = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftEqual.AsInt() == rightEqual.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsString())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsString() == right.AsString())
+                            );
+                        }
+                        else if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() == right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() == right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.NotEqual:
-                    Value leftNotEqual = _evaluationStack.Pop();
-                    Value rightNotEqual = _evaluationStack.Pop();
-                    _evaluationStack.Push(new Value(leftNotEqual.AsInt() != rightNotEqual.AsInt()));
-                    break;
+                    {
+                        Value right = _evaluationStack.Pop();
+                        Value left = _evaluationStack.Pop();
+
+                        if (left.IsString())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsString() != right.AsString())
+                            );
+                        }
+                        else if (left.IsFloat())
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsFloat() != right.AsFloat())
+                            );
+                        }
+                        else
+                        {
+                            _evaluationStack.Push(
+                                new Value(left.AsInt() != right.AsInt())
+                            );
+                        }
+
+                        break;
+                    }
 
                 case InstructionCode.CallBuiltin:
-                    CallBuiltin((BuiltinFunctionCode)instruction.Operand.AsInt());
-                    break;
+                    {
+                        CallBuiltin((BuiltinFunctionCode)instruction.Operand.AsInt());
+                        break;
+                    }
 
                 case InstructionCode.Halt:
-                    _exitCode = _evaluationStack.Pop().AsInt();
-                    return _exitCode;
+                    {
+                        _exitCode = _evaluationStack.Pop().AsInt();
+                        return _exitCode;
+                    }
 
                 default:
-                    throw new NotImplementedException($"Unknown instruction {instruction.Code}");
+                    throw new NotImplementedException(instruction.Code.ToString());
             }
         }
     }

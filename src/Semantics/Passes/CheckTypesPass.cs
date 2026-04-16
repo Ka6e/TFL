@@ -15,7 +15,6 @@ namespace Semantics.Passes;
 /// <exception cref="TypeErrorException">Бросается при несоответствии типов данных в процессе проверки.</exception>
 public class CheckTypesPass : AbstractPass
 {
-
     public override void Visit(BinaryOperationExpression e)
     {
         base.Visit(e);
@@ -26,6 +25,16 @@ public class CheckTypesPass : AbstractPass
             throw new TypeErrorException(
                 $"Binary operation {e.Operation} is not allowed for types {e.Left.ResultType} and {e.Right.ResultType}"
             );
+        }
+    }
+
+    public override void Visit(UnaryOperationExpression e)
+    {
+        base.Visit(e);
+
+        if (e.Operand.ResultType != ValueType.Int || e.Operand.ResultType != ValueType.Float)
+        {
+            throw new TypeErrorException("Unary minus allowed only for int or float");
         }
     }
 

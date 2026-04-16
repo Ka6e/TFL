@@ -16,6 +16,11 @@ public class TokenValue
         _value = value;
     }
 
+    public TokenValue(double value)
+    {
+        _value = value;
+    }
+
     public int ToInt()
     {
         return _value switch
@@ -26,12 +31,23 @@ public class TokenValue
         };
     }
 
+    public double ToFloat()
+    {
+        return _value switch
+        {
+            double d => d,
+            string s => double.Parse(s, CultureInfo.InvariantCulture),
+            _ => throw new NotImplementedException(),
+        };
+    }
+
     public override string ToString()
     {
         return _value switch
         {
             string s => s,
             int i => i.ToString(),
+            double d => d.ToString(CultureInfo.InvariantCulture),
             _ => throw new NotImplementedException(),
         };
     }

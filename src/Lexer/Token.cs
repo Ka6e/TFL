@@ -2,14 +2,34 @@
 
 namespace Lexemes;
 
-public class Token(
-        TokenType type,
-        TokenValue? value = null
-    )
+public class Token
 {
-    public TokenType Type { get; } = type;
+    public Token(TokenType type)
+    {
+        Type = type;
+    }
 
-    public TokenValue? Value { get; } = value;
+    public Token(TokenType type, string value)
+    {
+        Type = type;
+        Value = new TokenValue(value);
+    }
+
+    public Token(TokenType type, int value)
+    {
+        Type = type;
+        Value = new TokenValue(value);
+    }
+
+    public Token(TokenType type, double value)
+    {
+        Type = type;
+        Value = new TokenValue(value);
+    }
+
+    public TokenType Type { get; }
+
+    public TokenValue? Value { get; }
 
     public override bool Equals(object? obj)
     {
@@ -29,10 +49,10 @@ public class Token(
     public override string ToString()
     {
         StringBuilder sb = new();
-        sb.Append(Type.ToString());
+        sb.Append(Type);
         if (Value != null)
         {
-            sb.Append($"{Value}");
+            sb.Append($" ({Value})");
         }
 
         return sb.ToString();

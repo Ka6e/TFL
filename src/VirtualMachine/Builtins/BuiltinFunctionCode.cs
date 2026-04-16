@@ -14,4 +14,9 @@ public enum BuiltinFunctionCode
     /// readi() -> int — читает целое число из стандартного потока ввода и возвращает его
     /// </summary>
     ReadI = 2,
+
+    /// <summary>
+    /// Length(s: string) -> int — возвращает длину строки
+    /// </summary>
+    Length = 3,
 }

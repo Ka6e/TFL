@@ -15,14 +15,18 @@ public sealed class SymbolsTable
         _variables = [];
     }
 
-    public Statement GetVariableDeclaration(string name)
+    public AbstractVariableDeclarationStatemnt GetVariableDeclaration(string name)
     {
         if (!_variables.TryGetValue(name, out Statement? declaration))
         {
             throw UnknownSymbolException.UndefinedVariableOrFunction(name);
         }
 
-        return declaration;
+        return declaration switch
+        {
+            AbstractVariableDeclarationStatemnt varible => varible,
+            _ => throw new UnreachableException(),
+        };
     }
 
     public void DeclareVariable(Statement symbol)

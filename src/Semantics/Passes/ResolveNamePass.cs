@@ -51,6 +51,8 @@ public sealed class ResolveNamePass : AbstractPass
 
     public override void Visit(VariableExpression e)
     {
-        Statement decl = _symbols.GetVariableDeclaration(e.Name);
+        base.Visit(e);
+
+        e.Variable = _symbols.GetVariableDeclaration(e.Name);
     }
 }

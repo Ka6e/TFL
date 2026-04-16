@@ -36,6 +36,9 @@ public sealed class ResolveNamePass : AbstractPass
             throw new InvalidAssignmentException($"Cannot assign to constant '{s.Name}'");
         }
 
+        s.Variable = (AbstractVariableDeclarationStatemnt)decl;
+        //s.Variable = _symbols.GetVariableDeclaration(s.Name);
+
         base.Visit(s);
     }
 

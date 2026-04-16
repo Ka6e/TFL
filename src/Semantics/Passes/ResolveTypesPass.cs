@@ -54,6 +54,10 @@ public sealed class ResolveTypesPass : AbstractPass
         {
             s.ResultType = s.Value.ResultType;
         }
+        else
+        {
+            s.ResultType = s.Type;
+        }
     }
 
     public override void Visit(ConstDeclarationStatement s)

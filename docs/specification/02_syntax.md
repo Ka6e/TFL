@@ -107,9 +107,16 @@ unary =
 primary =
       literal
     | identifier
+    | builtin_call
     | "(",
       expression,
       ")" ;
+
+builtin_call =
+    "length",
+    "(",
+    expression,
+    ")" ;
 
 literal =
       int_literal

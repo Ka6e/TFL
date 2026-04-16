@@ -19,8 +19,7 @@ public class CheckTypesPass : AbstractPass
     {
         base.Visit(e);
 
-        ValueType? resultType = GetBinaryOperationResultType(e.Operation, e.Left.ResultType, e.Right.ResultType);
-        if (resultType is null)
+        if (e.ResultType is null)
         {
             throw new TypeErrorException(
                 $"Binary operation {e.Operation} is not allowed for types {e.Left.ResultType} and {e.Right.ResultType}"
@@ -65,35 +64,6 @@ public class CheckTypesPass : AbstractPass
         if (!ValueTypeUtil.AreCompatibleTypes(expression.ResultType, expectedType))
         {
             throw new TypeErrorException(category, expectedType, expression.ResultType);
-        }
-    }
-
-    private static ValueType? GetBinaryOperationResultType(BinaryOperation operaion, ValueType left, ValueType right)
-    {
-        switch (operaion)
-        {
-            case BinaryOperation.Add:
-            case BinaryOperation.Subtract:
-            case BinaryOperation.Multiply:
-            case BinaryOperation.Divide:
-            case BinaryOperation.Module:
-                if (left == ValueType.Int && right == ValueType.Int)
-                {
-                    return ValueType.Int;
-                }
-
-                return null;
-
-            case BinaryOperation.Equal:
-            case BinaryOperation.NotEqual:
-                if (left == right && left != ValueType.Void)
-                {
-                    return ValueType.Int;
-                }
-
-                return null;
-            default:
-                throw new InvalidOperationException($"Unknown binary operation {operaion}");
         }
     }
 }

@@ -46,23 +46,20 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(VariableDeclarationStatement s)
     {
-        if (s.Value != null)
-        {
-            s.Value.Accept(this);
-        }
-        else
-        {
-            _builder.Append(new Instruction(InstructionCode.Push, 0));
-        }
+        s.Value!.Accept(this);
 
-        _builder.Append(new Instruction(InstructionCode.DefineVar, s.Name));
+        _builder.Append(new Instruction(
+            InstructionCode.DefineVar,
+            s.Name));
     }
 
     public void Visit(ConstDeclarationStatement s)
     {
         s.Value.Accept(this);
 
-        _builder.Append(new Instruction(InstructionCode.DefineVar, s.Name));
+        _builder.Append(new Instruction(
+            InstructionCode.DefineVar,
+            s.Name));
     }
 
     public void Visit(AssignmentStatement s)

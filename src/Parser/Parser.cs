@@ -300,6 +300,12 @@ public class Parser
             case TokenType.IntLiteral:
                 _tokens.Advance();
                 return new LiteralExpression(new Value(t.Value!.ToInt()));
+            case TokenType.FloatLiteral:
+                _tokens.Advance();
+                return new LiteralExpression(new Value(t.Value!.ToFloat()));
+            case TokenType.StringLiteral:
+                _tokens.Advance();
+                return new LiteralExpression(new Value(t.Value!.ToString()));
             case TokenType.Identifier:
                 string name = Match(TokenType.Identifier).Value!.ToString();
                 return new VariableExpression(name);
@@ -310,7 +316,9 @@ public class Parser
                 return expression;
             default:
                 throw new UnexpectedLexemeException(t, expected: [
-                        TokenType.IntegerType,
+                        TokenType.IntLiteral,
+                        TokenType.FloatLiteral,
+                        TokenType.StringLiteral,
                         TokenType.Identifier,
                         TokenType.OpenParenthesis,
                     ]
@@ -339,7 +347,9 @@ public class Parser
         ValueType result = t.Type switch
         {
             TokenType.IntegerType => ValueType.Int,
-            _ => throw new Exception($"Expected type 'int', got {t.Type}"),
+            TokenType.FloatType => ValueType.Float,
+            TokenType.StringType => ValueType.String,
+            _ => throw new Exception($"Expected types 'int', 'float', 'string', got {t.Type}"),
         };
 
         _tokens.Advance();

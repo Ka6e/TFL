@@ -20,14 +20,14 @@ public sealed class ResolveTypesPass : AbstractPass
         base.Visit(e);
 
         ValueType? resultType = GetBinaryOperationResultType(e.Operation, e.Left.ResultType, e.Right.ResultType);
-        if (resultType is null)
-        {
-            throw new TypeErrorException(
-                $"Binary operation {e.Operation} is not allowed for types {e.Left.ResultType} and {e.Right.ResultType}"
-            );
-        }
+        //if (resultType is null)
+        //{
+        //    throw new TypeErrorException(
+        //        $"Binary operation {e.Operation} is not allowed for types {e.Left.ResultType} and {e.Right.ResultType}"
+        //    );
+        //}
 
-        e.ResultType = resultType;
+        e.ResultType = resultType!;
     }
 
     public override void Visit(UnaryOperationExpression e)

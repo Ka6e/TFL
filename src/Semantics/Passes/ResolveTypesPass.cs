@@ -7,6 +7,10 @@ using ValueType = Runtime.ValueType;
 
 namespace Semantics.Passes;
 
+/// <summary>
+/// Проход по AST для вычисления типов данных.
+/// </summary>
+/// <exception cref="TypeErrorException">Бросается при несоответствии типов данных в процессе вычисления типов.</exception>
 public sealed class ResolveTypesPass : AbstractPass
 {
     public override void Visit(LiteralExpression e)
@@ -20,64 +24,42 @@ public sealed class ResolveTypesPass : AbstractPass
         base.Visit(e);
 
         ValueType? resultType = GetBinaryOperationResultType(e.Operation, e.Left.ResultType, e.Right.ResultType);
-        //if (resultType is null)
-        //{
-        //    throw new TypeErrorException(
-        //        $"Binary operation {e.Operation} is not allowed for types {e.Left.ResultType} and {e.Right.ResultType}"
-        //    );
-        //}
+        if (resultType is null)
+        {
+            throw new TypeErrorException(
+                $"Binary operation {e.Operation} is not allowed for types {e.Left.ResultType} and {e.Right.ResultType}"
+            );
+        }
 
-        e.ResultType = resultType!;
+        e.ResultType = resultType ?? ValueType.Void;
     }
 
     public override void Visit(UnaryOperationExpression e)
     {
         base.Visit(e);
-
-        if (e.Operand.ResultType != ValueType.Int)
-        {
-            throw new TypeErrorException("Unary minus allowed only for int");
-        }
-
-        e.ResultType = ValueType.Int;
+        e.ResultType = e.Operand.ResultType;
     }
 
     public override void Visit(VariableExpression e)
     {
         base.Visit(e);
-        e.ResultType = ValueType.Int;
+        e.ResultType = e.Variable.ResultType;
     }
 
     public override void Visit(VariableDeclarationStatement s)
     {
         base.Visit(s);
-        s.ResultType = s.Value.ResultType;
-        //if (s.Value != null)
-        //{
-        //    ValueType valueType = s.Value.ResultType;
 
-        //    if (s.Type != valueType)
-        //    {
-        //        throw new TypeMismatchException($"You cannot initialize a variable of type {s.Type} with a value of type {valueType}");
-        //    }
-        //}
-
-        //s.ResultType = s.Type;
+        if (s.Value != null)
+        {
+            s.ResultType = s.Value.ResultType;
+        }
     }
 
     public override void Visit(ConstDeclarationStatement s)
     {
         base.Visit(s);
         s.ResultType = s.Value.ResultType;
-
-        //ValueType valueType = s.Value.ResultType;
-
-        //if (s.Type != valueType)
-        //{
-        //    throw new TypeMismatchException($"You cannot initialize a variable of type {s.Type} with a value of type {valueType}");
-        //}
-
-        //s.ResultType = s.Type;
     }
 
     public override void Visit(AssignmentStatement s)
@@ -102,6 +84,22 @@ public sealed class ResolveTypesPass : AbstractPass
         switch (operaion)
         {
             case BinaryOperation.Add:
+                if (left == ValueType.Int && right == ValueType.Int)
+                {
+                    return ValueType.Int;
+                }
+
+                if (left == ValueType.Float && right == ValueType.Float)
+                {
+                    return ValueType.Float;
+                }
+
+                if (left == ValueType.String && right == ValueType.String)
+                {
+                    return ValueType.String;
+                }
+
+                return null;
             case BinaryOperation.Subtract:
             case BinaryOperation.Multiply:
             case BinaryOperation.Divide:
@@ -109,6 +107,11 @@ public sealed class ResolveTypesPass : AbstractPass
                 if (left == ValueType.Int && right == ValueType.Int)
                 {
                     return ValueType.Int;
+                }
+
+                if (left == ValueType.Float && right == ValueType.Float)
+                {
+                    return ValueType.Float;
                 }
 
                 return null;

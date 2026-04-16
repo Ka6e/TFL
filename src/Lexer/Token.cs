@@ -9,22 +9,10 @@ public class Token
         Type = type;
     }
 
-    public Token(TokenType type, string value)
+    public Token(TokenType type, TokenValue value)
     {
         Type = type;
-        Value = new TokenValue(value);
-    }
-
-    public Token(TokenType type, int value)
-    {
-        Type = type;
-        Value = new TokenValue(value);
-    }
-
-    public Token(TokenType type, double value)
-    {
-        Type = type;
-        Value = new TokenValue(value);
+        Value = value;
     }
 
     public TokenType Type { get; }

@@ -94,7 +94,7 @@ public class Lexer
                 }
 
                 _scanner.Advance();
-                return new Token(TokenType.Error, "!");
+                return new Token(TokenType.Error, new TokenValue("!"));
 
             case ',':
                 _scanner.Advance();
@@ -121,7 +121,7 @@ public class Lexer
         }
 
         _scanner.Advance();
-        return new Token(TokenType.Error, c.ToString());
+        return new Token(TokenType.Error, new TokenValue(c.ToString()));
     }
 
     private Token ParseIdentifierOrKeyword()
@@ -130,7 +130,7 @@ public class Lexer
 
         if (!(char.IsLetter(first) || first == '_'))
         {
-            return new Token(TokenType.Error, first.ToString());
+            return new Token(TokenType.Error, new TokenValue(first.ToString()));
         }
 
         string value = "";
@@ -148,7 +148,7 @@ public class Lexer
             return new Token(type);
         }
 
-        return new Token(TokenType.Identifier, value);
+        return new Token(TokenType.Identifier, new TokenValue(value));
     }
 
     private Token ParseNumericLiteral()
@@ -168,7 +168,7 @@ public class Lexer
 
             if (!char.IsDigit(_scanner.Peek()))
             {
-                return new Token(TokenType.Error, value);
+                return new Token(TokenType.Error, new TokenValue(value));
             }
 
             while (char.IsDigit(_scanner.Peek()))
@@ -179,18 +179,18 @@ public class Lexer
 
             if (double.TryParse(value, CultureInfo.InvariantCulture, out double f))
             {
-                return new Token(TokenType.FloatLiteral, f);
+                return new Token(TokenType.FloatLiteral, new TokenValue(f));
             }
 
-            return new Token(TokenType.Error, value);
+            return new Token(TokenType.Error, new TokenValue(value));
         }
 
         if (int.TryParse(value, out int i))
         {
-            return new Token(TokenType.IntLiteral, i);
+            return new Token(TokenType.IntLiteral, new TokenValue(i));
         }
 
-        return new Token(TokenType.Error, value);
+        return new Token(TokenType.Error, new TokenValue(value));
     }
 
     private Token ParseStringLiteral()
@@ -204,7 +204,7 @@ public class Lexer
         {
             if (_scanner.IsEnd())
             {
-                return new Token(TokenType.Error, value.ToString());
+                return new Token(TokenType.Error, new TokenValue(value.ToString()));
             }
 
             if (_scanner.Peek() == '\\')
@@ -226,10 +226,10 @@ public class Lexer
 
         if (hasError)
         {
-            return new Token(TokenType.Error, value.ToString());
+            return new Token(TokenType.Error, new TokenValue(value.ToString()));
         }
 
-        return new Token(TokenType.StringLiteral, value.ToString());
+        return new Token(TokenType.StringLiteral, new TokenValue(value.ToString()));
     }
 
     private bool DecodeEscapeSequence(StringBuilder value)

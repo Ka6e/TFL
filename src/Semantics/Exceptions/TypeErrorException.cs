@@ -1,5 +1,7 @@
 ﻿namespace Semantics.Exceptions;
 
+using ValueType = Runtime.ValueType;
+
 #pragma warning disable RCS1194 // Конструкторы исключения не нужны, т.к. это не класс общего назначения.
 /// <summary>
 /// Исключение из-за несовместимых типов данных в программе.

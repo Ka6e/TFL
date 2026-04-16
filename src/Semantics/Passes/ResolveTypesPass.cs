@@ -51,31 +51,33 @@ public sealed class ResolveTypesPass : AbstractPass
     public override void Visit(VariableDeclarationStatement s)
     {
         base.Visit(s);
-        if (s.Value != null)
-        {
-            ValueType valueType = s.Value.ResultType;
+        s.ResultType = s.Value.ResultType;
+        //if (s.Value != null)
+        //{
+        //    ValueType valueType = s.Value.ResultType;
 
-            if (s.Type != valueType)
-            {
-                throw new TypeMismatchException($"You cannot initialize a variable of type {s.Type} with a value of type {valueType}");
-            }
-        }
+        //    if (s.Type != valueType)
+        //    {
+        //        throw new TypeMismatchException($"You cannot initialize a variable of type {s.Type} with a value of type {valueType}");
+        //    }
+        //}
 
-        s.ResultType = s.Type;
+        //s.ResultType = s.Type;
     }
 
     public override void Visit(ConstDeclarationStatement s)
     {
         base.Visit(s);
+        s.ResultType = s.Value.ResultType;
 
-        ValueType valueType = s.Value.ResultType;
+        //ValueType valueType = s.Value.ResultType;
 
-        if (s.Type != valueType)
-        {
-            throw new TypeMismatchException($"You cannot initialize a variable of type {s.Type} with a value of type {valueType}");
-        }
+        //if (s.Type != valueType)
+        //{
+        //    throw new TypeMismatchException($"You cannot initialize a variable of type {s.Type} with a value of type {valueType}");
+        //}
 
-        s.ResultType = s.Type;
+        //s.ResultType = s.Type;
     }
 
     public override void Visit(AssignmentStatement s)

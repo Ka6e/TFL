@@ -37,7 +37,6 @@ public sealed class ResolveNamePass : AbstractPass
         }
 
         s.Variable = (AbstractVariableDeclarationStatemnt)decl;
-        //s.Variable = _symbols.GetVariableDeclaration(s.Name);
 
         base.Visit(s);
     }
@@ -50,6 +49,8 @@ public sealed class ResolveNamePass : AbstractPass
         {
             throw new InvalidAssignmentException("Cannot read into const variable");
         }
+
+        s.Variable = (AbstractVariableDeclarationStatemnt)decl;
     }
 
     public override void Visit(VariableExpression e)

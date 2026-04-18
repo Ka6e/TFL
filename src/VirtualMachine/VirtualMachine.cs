@@ -208,21 +208,36 @@ public class VirtualMachine
 
                         if (left.IsString())
                         {
-                            _evaluationStack.Push(
-                                new Value(left.AsString() == right.AsString())
-                            );
+                            if (left.AsString() == right.AsString())
+                            {
+                                _evaluationStack.Push(new Value(1));
+                            }
+                            else
+                            {
+                                _evaluationStack.Push(new Value(0));
+                            }
                         }
                         else if (left.IsFloat())
                         {
-                            _evaluationStack.Push(
-                                new Value(left.AsFloat() == right.AsFloat())
-                            );
+                            if (Math.Abs(left.AsFloat() - right.AsFloat()) < double.Epsilon)
+                            {
+                                _evaluationStack.Push(new Value(1));
+                            }
+                            else
+                            {
+                                _evaluationStack.Push(new Value(0));
+                            }
                         }
                         else
                         {
-                            _evaluationStack.Push(
-                                new Value(left.AsInt() == right.AsInt())
-                            );
+                            if (left.AsInt() == right.AsInt())
+                            {
+                                _evaluationStack.Push(new Value(1));
+                            }
+                            else
+                            {
+                                _evaluationStack.Push(new Value(0));
+                            }
                         }
 
                         break;
@@ -235,21 +250,36 @@ public class VirtualMachine
 
                         if (left.IsString())
                         {
-                            _evaluationStack.Push(
-                                new Value(left.AsString() != right.AsString())
-                            );
+                            if (left.AsString() != right.AsString())
+                            {
+                                _evaluationStack.Push(new Value(1));
+                            }
+                            else
+                            {
+                                _evaluationStack.Push(new Value(0));
+                            }
                         }
                         else if (left.IsFloat())
                         {
-                            _evaluationStack.Push(
-                                new Value(left.AsFloat() != right.AsFloat())
-                            );
+                            if (Math.Abs(left.AsFloat() - right.AsFloat()) >= double.Epsilon)
+                            {
+                                _evaluationStack.Push(new Value(1));
+                            }
+                            else
+                            {
+                                _evaluationStack.Push(new Value(0));
+                            }
                         }
                         else
                         {
-                            _evaluationStack.Push(
-                                new Value(left.AsInt() != right.AsInt())
-                            );
+                            if (left.AsInt() != right.AsInt())
+                            {
+                                _evaluationStack.Push(new Value(1));
+                            }
+                            else
+                            {
+                                _evaluationStack.Push(new Value(0));
+                            }
                         }
 
                         break;
@@ -283,6 +313,19 @@ public class VirtualMachine
 
             case BuiltinFunctionCode.ReadI:
                 _evaluationStack.Push(_builtinFunctions.ReadI());
+                break;
+
+            case BuiltinFunctionCode.ReadF:
+                _evaluationStack.Push(_builtinFunctions.ReadF());
+                break;
+
+            case BuiltinFunctionCode.ReadS:
+                _evaluationStack.Push(_builtinFunctions.ReadS());
+                break;
+
+            case BuiltinFunctionCode.Length:
+                Value arg = _evaluationStack.Pop();
+                _evaluationStack.Push(_builtinFunctions.Length(arg));
                 break;
 
             default:

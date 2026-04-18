@@ -1,8 +1,14 @@
-﻿namespace VirtualMachine;
+﻿using Runtime;
+
+namespace VirtualMachine;
 
 public interface IEnvironment
 {
     int ReadInt();
 
-    void PrintInt(int value);
+    double ReadFloat();
+
+    string ReadString();
+
+    void Print(Value value);
 }

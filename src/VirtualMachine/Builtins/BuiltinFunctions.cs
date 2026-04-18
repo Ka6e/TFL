@@ -13,12 +13,24 @@ public class BuiltinFunctions
 
     public void Print(Value value)
     {
-        _environment.PrintInt(value.AsInt());
+        _environment.Print(value);
     }
 
     public Value ReadI()
     {
         int v = _environment.ReadInt();
+        return new Value(v);
+    }
+
+    public Value ReadF()
+    {
+        double v = _environment.ReadFloat();
+        return new Value(v);
+    }
+
+    public Value ReadS()
+    {
+        string v = _environment.ReadString();
         return new Value(v);
     }
 

@@ -80,7 +80,18 @@ public sealed class ResolveTypesPass : AbstractPass
 
     public override void Visit(ReadStatement s)
     {
-        s.ResultType = ValueType.Void;
+        Runtime.ValueType? variableType = null;
+
+        if (s.Variable is VariableDeclarationStatement varDecl)
+        {
+            variableType = varDecl.Type;
+        }
+        else if (s.Variable is ConstDeclarationStatement constDecl)
+        {
+            variableType = constDecl.Type;
+        }
+
+        s.ResultType = variableType ?? Runtime.ValueType.Int;
     }
 
     private static ValueType? GetBinaryOperationResultType(BinaryOperation operaion, ValueType left, ValueType right)

@@ -6,17 +6,27 @@
 public enum BuiltinFunctionCode
 {
     /// <summary>
-    /// `print(i: int)` — выводит целое число в стандартный поток вывода
+    /// `print(value)` — выводит значение в стандартный поток вывода
     /// </summary>
     Print = 1,
 
     /// <summary>
-    /// readi() -> int — читает целое число из стандартного потока ввода и возвращает его
+    /// readi() -> int — читает целое число из стандартного потока ввода
     /// </summary>
     ReadI = 2,
 
     /// <summary>
+    /// readf() -> float — читает вещественное число из стандартного потока ввода
+    /// </summary>
+    ReadF = 3,
+
+    /// <summary>
+    /// reads() -> string — читает строку из стандартного потока ввода
+    /// </summary>
+    ReadS = 4,
+
+    /// <summary>
     /// Length(s: string) -> int — возвращает длину строки
     /// </summary>
-    Length = 3,
+    Length = 5,
 }

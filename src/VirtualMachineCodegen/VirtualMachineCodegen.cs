@@ -112,13 +112,32 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(ReadStatement s)
     {
-        _builder.Append(new Instruction(
-            InstructionCode.CallBuiltin,
-            (int)BuiltinFunctionCode.ReadI));
+        BuiltinFunctionCode readFunction;
 
-        _builder.Append(new Instruction(
-            InstructionCode.StoreVar,
-            s.Name));
+        if (s.ResultType is null)
+        {
+            throw new InvalidOperationException($"Read statement for variable '{s.Name}' has no type information");
+        }
+
+        if (s.ResultType == Runtime.ValueType.Int)
+        {
+            readFunction = BuiltinFunctionCode.ReadI;
+        }
+        else if (s.ResultType == Runtime.ValueType.Float)
+        {
+            readFunction = BuiltinFunctionCode.ReadF;
+        }
+        else if (s.ResultType == Runtime.ValueType.String)
+        {
+            readFunction = BuiltinFunctionCode.ReadS;
+        }
+        else
+        {
+            throw new InvalidOperationException($"Unsupported type for read: {s.ResultType}");
+        }
+
+        _builder.Append(new Instruction(InstructionCode.CallBuiltin, (int)readFunction));
+        _builder.Append(new Instruction(InstructionCode.StoreVar, s.Name));
     }
 
     public void Visit(LiteralExpression e)

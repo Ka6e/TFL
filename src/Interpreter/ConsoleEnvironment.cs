@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 
+using Runtime;
+
 namespace VirtualMachine;
 
 public class ConsoleEnvironment : IEnvironment
@@ -13,11 +15,43 @@ public class ConsoleEnvironment : IEnvironment
             return value;
         }
 
-        throw new InvalidOperationException("Invalid integer input");
+        throw new InvalidOperationException($"Invalid integer input: {input}");
     }
 
-    public void PrintInt(int value)
+    public double ReadFloat()
     {
-        Console.Write(value.ToString(CultureInfo.InvariantCulture));
+        string? input = Console.ReadLine();
+
+        if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
+        {
+            return value;
+        }
+
+        throw new InvalidOperationException($"Invalid float input: {input}");
+    }
+
+    public string ReadString()
+    {
+        return Console.ReadLine() ?? "";
+    }
+
+    public void Print(Value value)
+    {
+        if (value.IsInt())
+        {
+            Console.Write(value.AsInt().ToString(CultureInfo.InvariantCulture));
+        }
+        else if (value.IsFloat())
+        {
+            Console.Write(value.AsFloat().ToString(CultureInfo.InvariantCulture));
+        }
+        else if (value.IsString())
+        {
+            Console.Write(value.AsString());
+        }
+        else
+        {
+            Console.Write(value.ToString());
+        }
     }
 }

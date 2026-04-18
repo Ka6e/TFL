@@ -52,7 +52,6 @@ public class VirtualMachineCodegen : IAstVisitor
         }
         else
         {
-            // Генерируем значение по умолчанию в зависимости от типа
             Value defaultValue;
 
             if (s.Type == Runtime.ValueType.Int)

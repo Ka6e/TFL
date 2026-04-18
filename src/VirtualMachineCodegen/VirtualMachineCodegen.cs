@@ -46,7 +46,38 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(VariableDeclarationStatement s)
     {
-        s.Value!.Accept(this);
+        if (s.Value != null)
+        {
+            s.Value.Accept(this);
+        }
+        else
+        {
+            // Генерируем значение по умолчанию в зависимости от типа
+            Value defaultValue;
+
+            if (s.Type == Runtime.ValueType.Int)
+            {
+                defaultValue = new Value(0);
+            }
+            else if (s.Type == Runtime.ValueType.Float)
+            {
+                defaultValue = new Value(0.0);
+            }
+            else if (s.Type == Runtime.ValueType.String)
+            {
+                defaultValue = new Value("");
+            }
+            else if (s.Type == Runtime.ValueType.Void)
+            {
+                defaultValue = Value.Void;
+            }
+            else
+            {
+                defaultValue = new Value(0);
+            }
+
+            _builder.Append(new Instruction(InstructionCode.Push, defaultValue));
+        }
 
         _builder.Append(new Instruction(
             InstructionCode.DefineVar,

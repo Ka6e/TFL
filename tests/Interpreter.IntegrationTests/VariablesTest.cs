@@ -183,4 +183,113 @@ public class VariablesTest
 
         Assert.Equal("18", environment.Output);
     }
+
+    [Fact]
+    public void Can_declare_and_use_float_variables()
+    {
+        const string code = """
+            main {
+                var x: float = 1.5;
+                var y: float = 2.0;
+                var z: float = x + y;
+                print(z);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("3.5", environment.Output);
+    }
+
+    [Fact]
+    public void Can_reassign_float_variable()
+    {
+        const string code = """
+            main {
+                var x: float = 1.5;
+                x = 3.5;
+                print(x);
+                x = x * 2.0;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("3.57", environment.Output);
+    }
+
+    [Fact]
+    public void Uninitialized_float_variable_has_default_value_zero()
+    {
+        const string code = """
+            main {
+                var x: float;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("0", environment.Output);
+    }
+
+    [Fact]
+    public void Can_declare_and_use_string_variables()
+    {
+        const string code = """
+            main {
+                var s: string = "hello";
+                print(s);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("hello", environment.Output);
+    }
+
+    [Fact]
+    public void Can_concatenate_string_variables()
+    {
+        const string code = """
+            main {
+                var a: string = "hello";
+                var b: string = " world";
+                var c: string = a + b;
+                print(c);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("hello world", environment.Output);
+    }
+
+    [Fact]
+    public void Uninitialized_string_variable_has_empty_default_value()
+    {
+        const string code = """
+            main {
+                var s: string;
+                print(s);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("", environment.Output);
+    }
 }

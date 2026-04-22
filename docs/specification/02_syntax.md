@@ -113,8 +113,22 @@ primary =
       ")" ;
 
 builtin_call =
+      length_call
+    | substr_call ;
+
+length_call =
     "length",
     "(",
+    expression,
+    ")" ;
+
+substr_call =
+    "substr",
+    "(",
+    expression,
+    ",",
+    expression,
+    ",",
     expression,
     ")" ;
 

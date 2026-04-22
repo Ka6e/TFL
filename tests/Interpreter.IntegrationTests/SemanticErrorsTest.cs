@@ -112,6 +112,258 @@ public class SemanticErrorsTest
     }
 
     [Fact]
+    public void Throws_on_float_assigned_to_int_variable()
+    {
+        const string code = """
+            main {
+                var x: int = 1.5;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_string_assigned_to_int_variable()
+    {
+        const string code = """
+            main {
+                var x: int = "hello";
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_assigned_to_float_variable()
+    {
+        const string code = """
+            main {
+                var x: float = 1;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_string_assigned_to_float_variable()
+    {
+        const string code = """
+            main {
+                var x: float = "hello";
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_assigned_to_string_variable()
+    {
+        const string code = """
+            main {
+                var x: string = 1;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_float_assigned_to_string_variable()
+    {
+        const string code = """
+            main {
+                var x: string = 1.5;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_float_reassigned_to_int_variable()
+    {
+        const string code = """
+            main {
+                var x: int = 0;
+                x = 1.5;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_reassigned_to_float_variable()
+    {
+        const string code = """
+            main {
+                var x: float = 0.0;
+                x = 1;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_reassigned_to_string_variable()
+    {
+        const string code = """
+            main {
+                var x: string = "";
+                x = 1;
+                print(x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_plus_float()
+    {
+        const string code = """
+            main {
+                print(1 + 1.5);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_string_minus_string()
+    {
+        const string code = """
+            main {
+                print("a" - "b");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_string_multiply_int()
+    {
+        const string code = """
+            main {
+                print("hello" * 2);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_float_plus_string()
+    {
+        const string code = """
+            main {
+                print(1.5 + "x");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unary_minus_on_string()
+    {
+        const string code = """
+            main {
+                print(-"hello");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_length_of_int()
+    {
+        const string code = """
+            main {
+                print(length(42));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_length_of_float()
+    {
+        const string code = """
+            main {
+                print(length(1.5));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
     public void Substr_throws_on_non_string_source()
     {
         const string code = """

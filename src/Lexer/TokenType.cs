@@ -33,6 +33,11 @@ public enum TokenType
     Length,
 
     /// <summary>
+    /// Ключевое слово substr
+    /// </summary>
+    Substr,
+
+    /// <summary>
     /// Идентификатор
     /// </summary>
     Identifier,

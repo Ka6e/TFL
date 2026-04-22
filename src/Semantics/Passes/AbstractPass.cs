@@ -67,4 +67,11 @@ public abstract class AbstractPass : IAstVisitor
     {
         e.Operand.Accept(this);
     }
+
+    public virtual void Visit(SubstrExpression e)
+    {
+        e.Source.Accept(this);
+        e.Start.Accept(this);
+        e.Length.Accept(this);
+    }
 }

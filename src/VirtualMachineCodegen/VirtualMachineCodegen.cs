@@ -193,6 +193,17 @@ public class VirtualMachineCodegen : IAstVisitor
             (int)BuiltinFunctionCode.Length));
     }
 
+    public void Visit(SubstrExpression e)
+    {
+        e.Source.Accept(this);
+        e.Start.Accept(this);
+        e.Length.Accept(this);
+
+        _builder.Append(new Instruction(
+            InstructionCode.CallBuiltin,
+            (int)BuiltinFunctionCode.Substr));
+    }
+
     public void Visit(UnaryOperationExpression e)
     {
         e.Operand.Accept(this);

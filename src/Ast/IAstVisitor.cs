@@ -18,6 +18,8 @@ public interface IAstVisitor
 
     void Visit(LengthExpression e);
 
+    void Visit(SubstrExpression e);
+
     void Visit(BlockStatement s);
 
     void Visit(AssignmentStatement s);

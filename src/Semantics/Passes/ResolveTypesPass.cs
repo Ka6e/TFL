@@ -54,6 +54,34 @@ public sealed class ResolveTypesPass : AbstractPass
         e.ResultType = ValueType.Int;
     }
 
+    public override void Visit(SubstrExpression e)
+    {
+        base.Visit(e);
+
+        if (e.Source.ResultType != ValueType.String)
+        {
+            throw new TypeErrorException(
+                $"substr: first argument must be string, got {e.Source.ResultType}"
+            );
+        }
+
+        if (e.Start.ResultType != ValueType.Int)
+        {
+            throw new TypeErrorException(
+                $"substr: second argument must be int, got {e.Start.ResultType}"
+            );
+        }
+
+        if (e.Length.ResultType != ValueType.Int)
+        {
+            throw new TypeErrorException(
+                $"substr: third argument must be int, got {e.Length.ResultType}"
+            );
+        }
+
+        e.ResultType = ValueType.String;
+    }
+
     public override void Visit(VariableExpression e)
     {
         base.Visit(e);

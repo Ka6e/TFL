@@ -43,4 +43,14 @@ public class BuiltinFunctions
 
         return new Value(value.AsString().Length);
     }
+
+    public Value Substr(Value source, Value start, Value length)
+    {
+        if (!source.IsString())
+        {
+            throw new InvalidOperationException("substr: first argument must be string");
+        }
+
+        return new Value(source.AsString().Substring(start.AsInt(), length.AsInt()));
+    }
 }

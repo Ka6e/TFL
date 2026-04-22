@@ -29,4 +29,9 @@ public enum BuiltinFunctionCode
     /// Length(s: string) -> int — возвращает длину строки
     /// </summary>
     Length = 5,
+
+    /// <summary>
+    /// Substr(s: string, start: int, length: int) -> string — возвращает подстроку
+    /// </summary>
+    Substr = 6,
 }

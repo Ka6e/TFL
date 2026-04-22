@@ -328,6 +328,13 @@ public class VirtualMachine
                 _evaluationStack.Push(_builtinFunctions.Length(arg));
                 break;
 
+            case BuiltinFunctionCode.Substr:
+                Value substrLength = _evaluationStack.Pop();
+                Value substrStart = _evaluationStack.Pop();
+                Value substrSource = _evaluationStack.Pop();
+                _evaluationStack.Push(_builtinFunctions.Substr(substrSource, substrStart, substrLength));
+                break;
+
             default:
                 throw new InvalidOperationException($"Unknown builtin {code}");
         }

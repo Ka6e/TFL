@@ -320,6 +320,16 @@ public class Parser
                 Expression lengthArg = ParseExpression();
                 Match(TokenType.CloseParenthesis);
                 return new LengthExpression(lengthArg);
+            case TokenType.Substr:
+                _tokens.Advance();
+                Match(TokenType.OpenParenthesis);
+                Expression substrSource = ParseExpression();
+                Match(TokenType.Comma);
+                Expression substrStart = ParseExpression();
+                Match(TokenType.Comma);
+                Expression substrLength = ParseExpression();
+                Match(TokenType.CloseParenthesis);
+                return new SubstrExpression(substrSource, substrStart, substrLength);
             default:
                 throw new UnexpectedLexemeException(t, expected: [
                         TokenType.IntLiteral,

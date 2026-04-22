@@ -16,6 +16,7 @@ public class Lexer
         { "read", TokenType.Read },
         { "print", TokenType.Print },
         { "length", TokenType.Length },
+        { "substr", TokenType.Substr },
     };
 
     private static readonly Dictionary<char, char> SimpleEscapes = new()

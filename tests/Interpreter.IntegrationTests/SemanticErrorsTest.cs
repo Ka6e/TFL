@@ -110,4 +110,49 @@ public class SemanticErrorsTest
 
         Assert.Throws<DuplicateSymbolException>(() => interpreter.Execute(code));
     }
+
+    [Fact]
+    public void Substr_throws_on_non_string_source()
+    {
+        const string code = """
+            main {
+                print(substr(42, 0, 1));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Substr_throws_on_non_int_start()
+    {
+        const string code = """
+            main {
+                print(substr("hello", "a", 1));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Substr_throws_on_non_int_length()
+    {
+        const string code = """
+            main {
+                print(substr("hello", 0, "bad"));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
 }

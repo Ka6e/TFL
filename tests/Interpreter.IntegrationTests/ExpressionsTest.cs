@@ -51,4 +51,59 @@ public class ExpressionsTest
             { "main { print(1 == 2); }", 0 },
         };
     }
+
+    [Theory]
+    [MemberData(nameof(GetEvaluateFloatExpressionsData))]
+    public void Can_evaluate_float_expressions(string code, string expected)
+    {
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal(expected, environment.Output);
+    }
+
+    public static TheoryData<string, string> GetEvaluateFloatExpressionsData()
+    {
+        return new TheoryData<string, string>
+        {
+            { "main { print(1.5 + 2.0); }", "3.5" },
+            { "main { print(10.0 - 3.5); }", "6.5" },
+            { "main { print(3.0 * 2.5); }", "7.5" },
+            { "main { print(10.0 / 4.0); }", "2.5" },
+            { "main { print(-1.5); }", "-1.5" },
+            { "main { print(3.5 % 2.0); }", "1.5" },
+            { "main { print(1.5 + 2.0 * 3.0); }", "7.5" },
+            { "main { print((1.5 + 2.5) * 0.5); }", "2" },
+            { "main { print(1.5 == 1.5); }", "1" },
+            { "main { print(1.5 != 2.5); }", "1" },
+            { "main { print(1.5 == 2.5); }", "0" },
+            { "main { print(1.5 != 1.5); }", "0" },
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetEvaluateStringExpressionsData))]
+    public void Can_evaluate_string_expressions(string code, string expected)
+    {
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal(expected, environment.Output);
+    }
+
+    public static TheoryData<string, string> GetEvaluateStringExpressionsData()
+    {
+        return new TheoryData<string, string>
+        {
+            { """main { print("hello" + " world"); }""", "hello world" },
+            { """main { print("foo" + "bar"); }""", "foobar" },
+            { """main { print("a" + "b" + "c"); }""", "abc" },
+            { """main { print("hello" == "hello"); }""", "1" },
+            { """main { print("hello" == "world"); }""", "0" },
+            { """main { print("hello" != "world"); }""", "1" },
+            { """main { print("hello" != "hello"); }""", "0" },
+        };
+    }
 }

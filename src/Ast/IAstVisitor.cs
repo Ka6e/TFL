@@ -16,6 +16,8 @@ public interface IAstVisitor
 
     void Visit(VariableExpression e);
 
+    void Visit(LengthExpression e);
+
     void Visit(BlockStatement s);
 
     void Visit(AssignmentStatement s);

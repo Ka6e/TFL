@@ -62,4 +62,9 @@ public abstract class AbstractPass : IAstVisitor
     public virtual void Visit(VariableExpression e)
     {
     }
+
+    public virtual void Visit(LengthExpression e)
+    {
+        e.Operand.Accept(this);
+    }
 }

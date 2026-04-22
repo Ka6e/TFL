@@ -314,6 +314,12 @@ public class Parser
                 Expression expression = ParseExpression();
                 Match(TokenType.CloseParenthesis);
                 return expression;
+            case TokenType.Length:
+                _tokens.Advance();
+                Match(TokenType.OpenParenthesis);
+                Expression lengthArg = ParseExpression();
+                Match(TokenType.CloseParenthesis);
+                return new LengthExpression(lengthArg);
             default:
                 throw new UnexpectedLexemeException(t, expected: [
                         TokenType.IntLiteral,

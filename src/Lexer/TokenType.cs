@@ -28,6 +28,11 @@ public enum TokenType
     Print,
 
     /// <summary>
+    /// Ключевое слово length
+    /// </summary>
+    Length,
+
+    /// <summary>
     /// Идентификатор
     /// </summary>
     Identifier,

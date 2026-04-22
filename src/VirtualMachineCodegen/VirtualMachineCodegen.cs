@@ -184,6 +184,15 @@ public class VirtualMachineCodegen : IAstVisitor
         }
     }
 
+    public void Visit(LengthExpression e)
+    {
+        e.Operand.Accept(this);
+
+        _builder.Append(new Instruction(
+            InstructionCode.CallBuiltin,
+            (int)BuiltinFunctionCode.Length));
+    }
+
     public void Visit(UnaryOperationExpression e)
     {
         e.Operand.Accept(this);

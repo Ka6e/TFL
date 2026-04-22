@@ -40,6 +40,20 @@ public sealed class ResolveTypesPass : AbstractPass
         e.ResultType = e.Operand.ResultType;
     }
 
+    public override void Visit(LengthExpression e)
+    {
+        base.Visit(e);
+
+        if (e.Operand.ResultType != ValueType.String)
+        {
+            throw new TypeErrorException(
+                $"length expects string, got {e.Operand.ResultType}"
+            );
+        }
+
+        e.ResultType = ValueType.Int;
+    }
+
     public override void Visit(VariableExpression e)
     {
         base.Visit(e);

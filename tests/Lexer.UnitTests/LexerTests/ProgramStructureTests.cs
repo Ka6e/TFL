@@ -148,6 +148,72 @@ public class ProgramStructureTests
     }
 
     [Fact]
+    public void Can_tokenize_float_var_declaration()
+    {
+        List<Token> actual = LexerHelper.Tokenize("var x : float = 1.5;");
+        List<Token> expected =
+        [
+            new Token(TokenType.Var),
+            new Token(TokenType.Identifier, new TokenValue("x")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.FloatType),
+            new Token(TokenType.Assign),
+            new Token(TokenType.FloatLiteral, new TokenValue(1.5)),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_string_var_declaration()
+    {
+        List<Token> actual = LexerHelper.Tokenize("var s : string = \"hello\";");
+        List<Token> expected =
+        [
+            new Token(TokenType.Var),
+            new Token(TokenType.Identifier, new TokenValue("s")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.StringType),
+            new Token(TokenType.Assign),
+            new Token(TokenType.StringLiteral, new TokenValue("hello")),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_length_call()
+    {
+        List<Token> actual = LexerHelper.Tokenize("length(s)");
+        List<Token> expected =
+        [
+            new Token(TokenType.Length),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("s")),
+            new Token(TokenType.CloseParenthesis),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_substr_call()
+    {
+        List<Token> actual = LexerHelper.Tokenize("substr(s, 0, 3)");
+        List<Token> expected =
+        [
+            new Token(TokenType.Substr),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("s")),
+            new Token(TokenType.Comma),
+            new Token(TokenType.IntLiteral, new TokenValue(0)),
+            new Token(TokenType.Comma),
+            new Token(TokenType.IntLiteral, new TokenValue(3)),
+            new Token(TokenType.CloseParenthesis),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
     public void Can_tokenize_program_with_comments()
     {
         List<Token> actual = LexerHelper.Tokenize(

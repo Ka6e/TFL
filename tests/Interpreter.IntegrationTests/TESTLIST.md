@@ -19,9 +19,9 @@
     - `print(42); print(-10); print(0);` → "42-100"
 - [x] Вывод выражений
     - `print(10 + 20); print(100 - 30); print(15 * 4); print(100 / 20);` → "3070605"
-- [x] Чтение числа
+- [x] Чтение целого числа
     - `read(x); print(x);` → "42"
-- [x] Чтение нескольких чисел
+- [x] Чтение нескольких целых чисел
     - `read(a); read(b); print(a + b); print(a - b);` → "13070"
 - [x] Чтение и использование в выражении
     - `read(x); read(y); print(x * y + x - y);` → "55"
@@ -33,8 +33,43 @@
     - `print(1); read(x); print(x); print(2);` → "1992"
 - [x] Ошибка при отсутствии входных данных
     - `read(x);` → ошибка
+- [x] Чтение вещественного числа
+    - `var x: float = 0.0; read(x); print(x);` → "3.5"
+- [x] Чтение нескольких вещественных чисел
+    - `read(a); read(b); print(a + b);` → "3.5"
+- [x] Чтение строки
+    - `var s: string = ""; read(s); print(s);` → "hello"
+- [x] Чтение нескольких строк
+    - `read(a); read(b); print(a + b);` → "hello world"
 
-## Выражения
+## Функции substr и length
+
+- [x] substr возвращает середину строки
+    - `print(substr("hello", 1, 3));` → "ell"
+- [x] substr возвращает префикс
+    - `print(substr("hello", 0, 3));` → "hel"
+- [x] substr возвращает суффикс
+    - `print(substr("hello", 2, 3));` → "llo"
+- [x] substr возвращает пустую строку при длине 0
+    - `print(substr("hello", 2, 0));` → ""
+- [x] substr работает с переменной-строкой
+    - `var s: string = "world"; print(substr(s, 1, 3));` → "orl"
+- [x] substr работает с переменными-int для start и length
+    - `var start: int = 2; var len: int = 3; print(substr(s, start, len));` → "cde"
+- [x] substr совместно с length
+    - `print(substr(s, 0, length(s) - 2));` → "hel"
+- [x] результат substr можно присвоить переменной
+    - `var sub: string = substr(s, 0, 7); print(sub);` → "program"
+- [x] результат substr можно конкатенировать
+    - `print(substr(s, 0, 5) + "!");` → "hello!"
+- [x] length возвращает длину строки
+    - `print(length("hello"));` → "5"
+- [x] length пустой строки равен 0
+    - `print(length(""));` → "0"
+- [x] length работает с переменной-строкой
+    - `var s: string = "abc"; print(length(s));` → "3"
+
+## Выражения (int)
 
 - [x] Арифметика с приоритетом
     - `print(1 + 2 * 8 / 4 - 1);` → "4"
@@ -66,13 +101,60 @@
     - `print(1 == 1);` → "1"
     - `print(1 == 2);` → "0"
 
-## Переменные и константы
+## Выражения (float)
+
+- [x] Арифметика с приоритетом
+    - `print(1.5 + 2.0);` → "3.5"
+    - `print(10.0 - 3.5);` → "6.5"
+    - `print(3.0 * 2.5);` → "7.5"
+    - `print(10.0 / 4.0);` → "2.5"
+- [x] Левоассоциативность
+    - `print(10.0 - 3.0 - 2.5);` → "4.5"
+    - `print(10.0 / 2.0 / 2.5);` → "2"
+    - `print(10.0 - 3.0 + 2.5);` → "9.5"
+    - `print(10.0 / 2.0 * 2.5);` → "12.5"
+- [x] Унарный минус
+    - `print(-1.5);` → "-1.5"
+    - `print(2.0 * 2.0 * (-2.5));` → "-10"
+    - `print(-10.0 + 5.0);` → "-5"
+    - `print(10.0 + -5.0);` → "5"
+- [x] Оператор остатка
+    - `print(3.5 % 2.0);` → "1.5"
+- [x] Сложные выражения
+    - `print(1.5 + 2.0 * 3.0);` → "7.5"
+    - `print(2.5 + 3.0 * 4.0 - 10.0 / 2.0);` → "9.5"
+    - `print((2.0 + 3.0) * (4.0 - 10.0) / 2.0);` → "-15"
+- [x] Операторы сравнения
+    - `print(1.5 == 1.5);` → "1"
+    - `print(1.5 == 2.5);` → "0"
+    - `print(1.5 != 2.5);` → "1"
+    - `print(1.5 != 1.5);` → "0"
+
+## Выражения (string)
+
+- [x] Конкатенация
+    - `print("hello" + " world");` → "hello world"
+    - `print("foo" + "bar");` → "foobar"
+    - `print("a" + "b" + "c");` → "abc"
+    - `print("x" + "y" + "z" + "w");` → "xyzw"
+- [x] Конкатенация с пустой строкой
+    - `print("hello" + "");` → "hello"
+    - `print("" + "world");` → "world"
+- [x] Операторы сравнения
+    - `print("hello" == "hello");` → "1"
+    - `print("hello" == "world");` → "0"
+    - `print("hello" != "world");` → "1"
+    - `print("hello" != "hello");` → "0"
+    - `print("" == "");` → "1"
+    - `print("" != "x");` → "1"
+
+## Переменные и константы (int)
 
 - [x] Объявление и использование переменных
     - `var x: int = 10; var y: int = 20; var z: int = x + y; print(z);` → "30"
 - [x] Объявление без инициализации
     - `var x: int; x = 42; print(x);` → "42"
-- [x] Значение по умолчанию
+- [x] Значение по умолчанию равно 0
     - `var x: int; print(x);` → "0"
 - [x] Переопределение переменной
     - `x = 25; print(x); x = x * 2; print(x);` → "2550"
@@ -87,7 +169,25 @@
 - [x] Вычисление площади прямоугольника
     - `width = x2 - x1; height = y2 - y1; square = width * height; print(square);` → "18"
 
-## Семантические ошибки
+## Переменные (float)
+
+- [x] Объявление и использование
+    - `var x: float = 1.5; var y: float = 2.0; var z: float = x + y; print(z);` → "3.5"
+- [x] Переприсвоение
+    - `var x: float = 1.5; x = 3.5; print(x); x = x * 2.0; print(x);` → "3.57"
+- [x] Значение по умолчанию равно 0
+    - `var x: float; print(x);` → "0"
+
+## Переменные (string)
+
+- [x] Объявление и использование
+    - `var s: string = "hello"; print(s);` → "hello"
+- [x] Конкатенация через переменные
+    - `var a: string = "hello"; var b: string = " world"; var c: string = a + b; print(c);` → "hello world"
+- [x] Значение по умолчанию — пустая строка
+    - `var s: string; print(s);` → ""
+
+## Семантические ошибки (общие)
 
 - [x] Использование необъявленной переменной
     - `print(x);` → ошибка
@@ -101,3 +201,53 @@
     - `var x: int = 10; var x: int = 20;` → ошибка
 - [x] Повторное объявление константы
     - `const x: int = 10; const x: int = 20;` → ошибка
+
+## Семантические ошибки (несовместимость типов при инициализации)
+
+- [x] float в int-переменную
+    - `var x: int = 1.5;` → ошибка
+- [x] string в int-переменную
+    - `var x: int = "hello";` → ошибка
+- [x] int в float-переменную
+    - `var x: float = 1;` → ошибка
+- [x] string в float-переменную
+    - `var x: float = "hello";` → ошибка
+- [x] int в string-переменную
+    - `var x: string = 1;` → ошибка
+- [x] float в string-переменную
+    - `var x: string = 1.5;` → ошибка
+
+## Семантические ошибки (несовместимость типов при присваивании)
+
+- [x] float в int-переменную
+    - `var x: int = 0; x = 1.5;` → ошибка
+- [x] int в float-переменную
+    - `var x: float = 0.0; x = 1;` → ошибка
+- [x] int в string-переменную
+    - `var x: string = ""; x = 1;` → ошибка
+
+## Семантические ошибки (несовместимые типы в операциях)
+
+- [x] int + float
+    - `print(1 + 1.5);` → ошибка
+- [x] string - string
+    - `print("a" - "b");` → ошибка
+- [x] string * int
+    - `print("hello" * 2);` → ошибка
+- [x] float + string
+    - `print(1.5 + "x");` → ошибка
+- [x] Унарный минус к строке
+    - `print(-"hello");` → ошибка
+- [x] length от int
+    - `print(length(42));` → ошибка
+- [x] length от float
+    - `print(length(1.5));` → ошибка
+
+## Семантические ошибки (substr)
+
+- [x] Первый аргумент не строка
+    - `print(substr(42, 0, 1));` → ошибка
+- [x] Второй аргумент не int
+    - `print(substr("hello", "a", 1));` → ошибка
+- [x] Третий аргумент не int
+    - `print(substr("hello", 0, "bad"));` → ошибка

@@ -413,6 +413,21 @@ public class CallBuiltinTest
                 },
                 ""
             },
+
+             // substr("Hello, 🚀", 7, 1) = "🚀"
+            {
+                new List<Instruction>
+                {
+                    new Instruction(InstructionCode.Push, "Hello, 🚀"),
+                    new Instruction(InstructionCode.Push, 7),
+                    new Instruction(InstructionCode.Push, 1),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Substr),
+                    new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+                    new Instruction(InstructionCode.Push, 0),
+                    new Instruction(InstructionCode.Halt),
+                },
+                "🚀"
+            },
         };
     }
 }

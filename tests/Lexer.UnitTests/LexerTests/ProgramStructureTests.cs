@@ -242,4 +242,23 @@ public class ProgramStructureTests
         ];
         Assert.Equal(expected, actual);
     }
+
+    [Fact]
+    public void Can_tokenize_unicode_string_literal()
+    {
+        List<Token> actual = LexerHelper.Tokenize("var s : string = \"Hello, 🚀\";");
+
+        List<Token> expected =
+        [
+            new Token(TokenType.Var),
+        new Token(TokenType.Identifier, new TokenValue("s")),
+        new Token(TokenType.Colon),
+        new Token(TokenType.StringType),
+        new Token(TokenType.Assign),
+        new Token(TokenType.StringLiteral, new TokenValue("Hello, 🚀")),
+        new Token(TokenType.Semicolon),
+    ];
+
+        Assert.Equal(expected, actual);
+    }
 }

@@ -474,4 +474,20 @@ public class BuiltinFunctionsTest
 
         Assert.Equal("3", environment.Output);
     }
+
+    [Fact]
+    public void Substr_handles_unicode_characters_correctly()
+    {
+        const string code = """
+        main {
+            print(substr("Hello, 🚀", 7, 1));
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("🚀", environment.Output);
+    }
 }

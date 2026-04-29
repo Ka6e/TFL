@@ -99,3 +99,5 @@
 - [x] substr("hello", 1, 3) → "ell"
 - [x] substr("hello", 0, 5) → "hello"
 - [x] substr("hello", 2, 0) → ""
+- [x] substr("hello, 🚀", 7, 1) → "🚀"
+

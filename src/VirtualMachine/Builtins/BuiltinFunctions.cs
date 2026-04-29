@@ -1,4 +1,6 @@
-﻿using Runtime;
+﻿using System.Text;
+
+using Runtime;
 
 namespace VirtualMachine.Builtins;
 
@@ -51,6 +53,25 @@ public class BuiltinFunctions
             throw new InvalidOperationException("substr: first argument must be string");
         }
 
-        return new Value(source.AsString().Substring(start.AsInt(), length.AsInt()));
+        string str = source.AsString();
+        int startIndex = start.AsInt();
+        int len = length.AsInt();
+
+        Rune[] runes = str.EnumerateRunes().ToArray();
+
+        if (startIndex < 0 || startIndex >= runes.Length || len <= 0)
+        {
+            return new Value("");
+        }
+
+        int actualLen = Math.Min(len, runes.Length - startIndex);
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < actualLen; i++)
+        {
+            sb.Append(runes[startIndex + i].ToString());
+        }
+
+        return new Value(sb.ToString());
     }
 }

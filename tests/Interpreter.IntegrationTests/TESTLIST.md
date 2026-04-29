@@ -44,6 +44,8 @@
 
 ## Функции substr и length
 
+- [x] substr корректно обрабатывает Unicode-символы 
+    - `print(substr("Hello, 🚀", 7, 1));` → "🚀"
 - [x] substr возвращает середину строки
     - `print(substr("hello", 1, 3));` → "ell"
 - [x] substr возвращает префикс

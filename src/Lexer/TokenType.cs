@@ -98,6 +98,11 @@ public enum TokenType
     StringLiteral,
 
     /// <summary>
+    /// Литерал bool
+    /// </summary>
+    BoolLiteral,
+
+    /// <summary>
     /// Целочисленный тип
     /// </summary>
     IntegerType,

@@ -21,6 +21,11 @@ public class TokenValue
         _value = value;
     }
 
+    public TokenValue(bool value)
+    {
+        _value = value;
+    }
+
     public int ToInt()
     {
         return _value switch
@@ -48,6 +53,15 @@ public class TokenValue
             string s => s,
             int i => i.ToString(),
             double d => d.ToString(CultureInfo.InvariantCulture),
+            _ => throw new NotImplementedException(),
+        };
+    }
+
+    public bool ToBool()
+    {
+        return _value switch
+        {
+            bool b => b,
             _ => throw new NotImplementedException(),
         };
     }

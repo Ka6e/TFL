@@ -17,6 +17,14 @@ public class Lexer
         { "print", TokenType.Print },
         { "length", TokenType.Length },
         { "substr", TokenType.Substr },
+        { "if", TokenType.If },
+        { "else", TokenType.Else },
+        { "continue", TokenType.Continue },
+        { "break", TokenType.Break },
+        { "return", TokenType.Return },
+        { "while", TokenType.While },
+        { "func",  TokenType.Func },
+        { "void", TokenType.Void },
     };
 
     private static readonly Dictionary<char, char> SimpleEscapes = new()

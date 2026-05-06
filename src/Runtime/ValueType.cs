@@ -7,7 +7,7 @@ public class ValueType
     /// <summary>
     /// Значение отсутствует.
     /// </summary>
-    public static readonly ValueType Void = new("void");
+    public static readonly ValueType Void = new( "void" );
 
     /// <summary>
     /// Строковое значение.
@@ -23,6 +23,11 @@ public class ValueType
     /// Целочисленное значение.
     /// </summary>
     public static readonly ValueType Int = new("int");
+
+    /// <summary>
+    /// Булевое значение
+    /// </summary>
+    public static readonly ValueType Bool = new("bool");
 
     private readonly string _name;
 

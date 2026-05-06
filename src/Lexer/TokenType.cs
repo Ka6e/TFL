@@ -38,6 +38,46 @@ public enum TokenType
     Substr,
 
     /// <summary>
+    /// Ключевое слово if
+    /// </summary>
+    If,
+
+    /// <summary>
+    /// Ключевое слово else
+    /// </summary>
+    Else,
+
+    /// <summary>
+    /// Ключевое слово break
+    /// </summary>
+    Break,
+
+    /// <summary>
+    /// Ключевое слово continue
+    /// </summary>
+    Continue,
+
+    /// <summary>
+    /// Ключевое слово return
+    /// </summary>
+    Return,
+
+    /// <summary>
+    /// Ключевое слово while
+    /// </summary>
+    While,
+
+    /// <summary>
+    /// Ключевое слово func
+    /// </summary>
+    Func,
+
+    /// <summary>
+    /// Ключевое слово void
+    /// </summary>
+    Void,
+
+    /// <summary>
     /// Идентификатор
     /// </summary>
     Identifier,
@@ -71,6 +111,11 @@ public enum TokenType
     /// Строковый тип
     /// </summary>
     StringType,
+
+    /// <summary>
+    /// Булевый тип
+    /// </summary>
+    BooleanType,
 
     /// <summary>
     /// Запятая
@@ -138,6 +183,26 @@ public enum TokenType
     Module,
 
     /// <summary>
+    /// Оператор меньше
+    /// </summary>
+    LessThan,
+
+    /// <summary>
+    /// Оператор меньше или равно
+    /// </summary>
+    LessThanOrEqual,
+
+    /// <summary>
+    /// Оператор больше
+    /// </summary>
+    GreaterThan,
+
+    /// <summary>
+    /// Оператор больше или равно
+    /// </summary>
+    GreaterThanOrEqual,
+
+    /// <summary>
     /// Оператор равенства ==
     /// </summary>
     Equal,
@@ -146,6 +211,21 @@ public enum TokenType
     /// Оператор неравенства !=
     /// </summary>
     NotEqual,
+
+    /// <summary>
+    /// Логический оператор и &&
+    /// </summary>
+    LogicalAnd,
+
+    /// <summary>
+    /// Логический оператор или ||
+    /// </summary>
+    LogicalOr,
+
+    /// <summary>
+    /// Логическое не !
+    /// </summary>
+    LogicalNot,
 
     /// <summary>
     /// Конец потока токенов

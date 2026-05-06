@@ -1,4 +1,6 @@
-﻿using Ast.Expressions;
+﻿using System.Diagnostics;
+
+using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
 
@@ -51,13 +53,19 @@ public class Parser
     }
 
     /// <summary>
-    /// statement =
+    ///   statement =
     ///     var_decl
-    ///     | const_decl
-    ///     | assignment
-    ///     | print_stmt
-    ///     | read_stmt
-    ///     | block ;
+    ///   | const_decl
+    ///   | assignment
+    ///   | print_stmt
+    ///   | read_stmt
+    ///   | if_stmt
+    ///   | while_stmt
+    ///   | break_stmt
+    ///   | continue_stmt
+    ///   | return_stmt
+    ///   | call_stmt
+    ///   | block ;
     /// </summary>
     private Statement ParseStatement()
     {
@@ -69,6 +77,11 @@ public class Parser
             TokenType.Identifier => ParseAssignment(),
             TokenType.Print => ParsePrintStatement(),
             TokenType.Read => ParseReadStatement(),
+            TokenType.If => ParseIfElseStatement(),
+            TokenType.While => ParseWhileStatement(),
+            TokenType.Break => ParseBreakStatement(),
+            TokenType.Continue => ParseContinueStatement(),
+            TokenType.Return => ParseReturnStatement(),
             _ => ParseBlock(),
         };
     }
@@ -179,21 +192,165 @@ public class Parser
     }
 
     /// <summary>
-    /// expression = equality ;
+    /// if_stmt =
+    ///          "if",
+    ///          "(",
+    ///          expression,
+    ///          ")",
+    ///          block,
+    ///          [ "else", ( block | if_stmt ) ] ;
     /// </summary>
-    private Expression ParseExpression()
+    private IfElseStatement ParseIfElseStatement()
     {
-        return ParseEquality();
+        Match(TokenType.If);
+        Match(TokenType.OpenParenthesis);
+        Expression condition = ParseExpression();
+        Match(TokenType.CloseParenthesis);
+        BlockStatement statement = ParseBlock();
+        Statement? elseBranch = null;
+        if (_tokens.Peek().Type == TokenType.Else)
+        {
+            Match(TokenType.Else);
+            if (_tokens.Peek().Type == TokenType.If)
+            {
+                elseBranch = ParseIfElseStatement();
+            }
+            else
+            {
+                elseBranch = ParseBlock();
+            }
+        }
+
+        return new IfElseStatement(condition, statement, elseBranch);
     }
 
     /// <summary>
-    /// equality =
-    ///     additive,
-    ///     { ( "==" | "!=" ), additive };
+    /// while_stmt =
+    ///    "while",
+    ///    "(",
+    ///    expression,
+    ///    ")",
+    ///    block ;
+    /// </summary>
+    private WhileStatement ParseWhileStatement()
+    {
+        Match(TokenType.While);
+        Match(TokenType.OpenParenthesis);
+        Expression condition = ParseExpression();
+        Match(TokenType.CloseParenthesis);
+        BlockStatement block = ParseBlock();
+
+        return new WhileStatement(condition, block);
+    }
+
+    /// <summary>
+    /// break_stmt =
+    ///        "break",
+    ///        ";" ;
+    /// </summary>
+    private BreakStatement ParseBreakStatement()
+    {
+        Match(TokenType.Break);
+        Match(TokenType.Semicolon);
+
+        return new BreakStatement();
+    }
+
+    private ReturnStatement ParseReturnStatement()
+    {
+        Match(TokenType.Return);
+
+        Expression? expr = null;
+        if (_tokens.Peek().Type != TokenType.Semicolon)
+        {
+            expr = ParseExpression();
+        }
+
+        Match(TokenType.Semicolon);
+        return new ReturnStatement(expr);
+    }
+
+    private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
+    {
+        Match(TokenType.Func);
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.OpenParenthesis);
+        
+    }
+    
+    /// <summary>
+    /// continue_stmt =
+    ///    "continue",
+    ///    ";" ;
+    /// </summary>
+    private ContinueStatement ParseContinueStatement()
+    {
+        Match(TokenType.Continue);
+        Match(TokenType.Semicolon);
+
+        return new ContinueStatement();
+    }
+
+    /// <summary>
+    /// expression = logical_or ;
+    /// </summary>
+    private Expression ParseExpression()
+    {
+        return ParseLogicalOr();
+    }
+
+    /// <summary>
+    /// logical_or =
+    ///        logical_and,
+    ///        { "||", logical_and } ;
+    /// </summary>
+    private Expression ParseLogicalOr()
+    {
+        Expression expr = ParseLogicalAnd();
+        while (true)
+        {
+            switch (_tokens.Peek().Type)
+            {
+                case TokenType.LogicalOr:
+                    _tokens.Advance();
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.LogicalOr, ParseLogicalAnd());
+                    break;
+                default:
+                    return expr;
+            }
+        }
+    }
+
+    /// <summary>
+    ///    logical_and =
+    ///        equality,
+    ///        { "&&", equality } ;
+    /// </summary>
+    private Expression ParseLogicalAnd()
+    {
+        Expression expr = ParseEquality();
+        while (true)
+        {
+            switch (_tokens.Peek().Type)
+            {
+                case TokenType.LogicalAnd:
+                    _tokens.Advance();
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.LogicalAnd, ParseEquality());
+                    break;
+                default:
+                    return expr;
+            }
+        }
+    }
+
+    /// <summary>
+    ///    equality =
+    ///        relational,
+    ///        { ( "==" | "!=" ), relational } ;
     /// </summary>
     private Expression ParseEquality()
     {
-        Expression expr = ParseAdditive();
+        Expression expr = ParseRational();
         while (true)
         {
             switch (_tokens.Peek().Type)
@@ -205,6 +362,35 @@ public class Parser
                 case TokenType.NotEqual:
                     _tokens.Advance();
                     expr = new BinaryOperationExpression(expr, BinaryOperation.NotEqual, ParseAdditive());
+                    break;
+                default:
+                    return expr;
+            }
+        }
+    }
+
+    private Expression ParseRational()
+    {
+        Expression expr = ParseAdditive();
+        while (true)
+        {
+            switch (_tokens.Peek().Type)
+            {
+                case TokenType.LessThan:
+                    _tokens.Advance();
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.LessThan, ParseAdditive());
+                    break;
+                case TokenType.LessThanOrEqual:
+                    _tokens.Advance();
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.LessThanOrEqual, ParseAdditive());
+                    break;
+                case TokenType.GreaterThan:
+                    _tokens.Advance();
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.GreaterThan, ParseAdditive());
+                    break;
+                case TokenType.GreaterThanOrEqual:
+                    _tokens.Advance();
+                    expr = new BinaryOperationExpression(expr, BinaryOperation.GreaterThanOrEqual, ParseAdditive());
                     break;
                 default:
                     return expr;
@@ -270,8 +456,9 @@ public class Parser
 
     /// <summary>
     /// unary =
-    ///     "-", unary
-    ///     | primary ;
+    ///        "-", unary
+    ///        | "!", unary
+    ///        | primary ;
     /// </summary>
     private Expression ParseUnary()
     {
@@ -279,6 +466,12 @@ public class Parser
         {
             Match(TokenType.Minus);
             return new UnaryOperationExpression(UnaryOperation.Minus, ParseUnary());
+        }
+
+        if (_tokens.Peek().Type == TokenType.LogicalNot)
+        {
+            Match(TokenType.LogicalNot);
+            return new UnaryOperationExpression(UnaryOperation.LogicalNot, ParseUnary());
         }
 
         return ParsePrimary();
@@ -331,7 +524,9 @@ public class Parser
                 Match(TokenType.CloseParenthesis);
                 return new SubstrExpression(substrSource, substrStart, substrLength);
             default:
-                throw new UnexpectedLexemeException(t, expected: [
+                throw new UnexpectedLexemeException(
+                    t, expected:
+                    [
                         TokenType.IntLiteral,
                         TokenType.FloatLiteral,
                         TokenType.StringLiteral,
@@ -365,6 +560,7 @@ public class Parser
             TokenType.IntegerType => ValueType.Int,
             TokenType.FloatType => ValueType.Float,
             TokenType.StringType => ValueType.String,
+            TokenType.BooleanType => ValueType.Bool,
             _ => throw new Exception($"Expected types 'int', 'float', 'string', got {t.Type}"),
         };
 

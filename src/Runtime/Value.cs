@@ -27,6 +27,11 @@ public class Value
         _value = value;
     }
 
+    public Value(bool value)
+    {
+        _value = value;
+    }
+
     /// <summary>
     /// Возвращает тип значения.
     /// </summary>
@@ -37,6 +42,7 @@ public class Value
             int => ValueType.Int,
             string => ValueType.String,
             double => ValueType.Float,
+            bool => ValueType.Bool,
             _ => throw new InvalidOperationException($"Unexpected value {_value} of  type {_value.GetType()}"),
         };
     }
@@ -122,6 +128,30 @@ public class Value
         {
             int i => i,
             bool b => Convert.ToInt32(b),
+            _ => throw new InvalidOperationException($"Value {_value} is not an integer"),
+        };
+    }
+
+    /// <summary>
+    /// Определяет, является ли значение булевым значением.
+    /// </summary>
+    public bool IsBool()
+    {
+        return _value switch
+        {
+            bool => true,
+            _ => false,
+        };
+    }
+
+    /// <summary>
+    /// Возвращает значение как булевое значение либо бросает исключение.
+    /// </summary>
+    public bool AsBool()
+    {
+        return _value switch
+        {
+            bool b => b,
             _ => throw new InvalidOperationException($"Value {_value} is not an integer"),
         };
     }

@@ -29,11 +29,17 @@ public class VirtualMachineCodegen : IAstVisitor
     /// </summary>
     private readonly Stack<BasicBlock> _currentLoopStartBlockStack = new();
 
-    public List<Instruction> Generate(ProgramNode program, IReadOnlyList<FunctionDeclarationStatement> functions)
+    public List<Instruction> Generate(ProgramNode program)
     {
-        foreach (FunctionDeclarationStatement func in functions)
+        _symbolsTable = new CodegenSymbolsTable(null);
+
+        foreach (Statement stmt in program.Block.Statements)
         {
-            func.Accept(this);
+            if (stmt is FunctionDeclarationStatement func)
+            {
+                BasicBlock functionBlock = _builder.CreateBasicBlock();
+                _symbolsTable.AddFunctionEntry(func.Name, functionBlock);
+            }
         }
 
         program.Block.Accept(this);
@@ -236,8 +242,7 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(FunctionDeclarationStatement s)
     {
-        BasicBlock functionBlock = _builder.CreateBasicBlock();
-        _symbolsTable!.AddFunctionEntry(s.Name, functionBlock);
+        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(s.Name);
 
         BasicBlock previousBlock = _builder.InsertPoint;
         _builder.InsertPoint = functionBlock;

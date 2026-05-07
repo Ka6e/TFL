@@ -102,7 +102,7 @@ public class Lexer
                 }
 
                 _scanner.Advance();
-                return new Token(TokenType.LogicalNot, new TokenValue("!"));
+                return new Token(TokenType.LogicalNot);
 
             case ',':
                 _scanner.Advance();

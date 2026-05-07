@@ -13,6 +13,7 @@ public class Lexer
         { "int", TokenType.IntegerType },
         { "float", TokenType.FloatType },
         { "string", TokenType.StringType },
+        { "bool", TokenType.BooleanType },
         { "read", TokenType.Read },
         { "print", TokenType.Print },
         { "length", TokenType.Length },
@@ -23,16 +24,13 @@ public class Lexer
         { "break", TokenType.Break },
         { "return", TokenType.Return },
         { "while", TokenType.While },
-        { "func",  TokenType.Func },
+        { "func", TokenType.Func },
         { "void", TokenType.Void },
     };
 
     private static readonly Dictionary<char, char> SimpleEscapes = new()
     {
-        { 'n', '\n' },
-        { 't', '\t' },
-        { '"', '\"' },
-        { '\\', '\\' },
+        { 'n', '\n' }, { 't', '\t' }, { '"', '\"' }, { '\\', '\\' },
     };
 
     private readonly TextScanner _scanner;
@@ -128,6 +126,50 @@ public class Lexer
             case ')':
                 _scanner.Advance();
                 return new Token(TokenType.CloseParenthesis);
+            case '&':
+                if (_scanner.Peek(1) == '&')
+                {
+                    _scanner.Advance();
+                    _scanner.Advance();
+
+                    return new Token(TokenType.LogicalAnd);
+                }
+
+                _scanner.Advance();
+                return new Token(TokenType.Error, new TokenValue("&"));
+            case '|':
+                if (_scanner.Peek(1) == '|')
+                {
+                    _scanner.Advance();
+                    _scanner.Advance();
+
+                    return new Token(TokenType.LogicalOr);
+                }
+
+                _scanner.Advance();
+                return new Token(TokenType.Error, new TokenValue("|"));
+            case '<':
+                if (_scanner.Peek(1) == '=')
+                {
+                    _scanner.Advance();
+                    _scanner.Advance();
+
+                    return new Token(TokenType.LessThanOrEqual);
+                }
+
+                _scanner.Advance();
+                return new Token(TokenType.LessThan);
+            case '>':
+                if (_scanner.Peek(1) == '=')
+                {
+                    _scanner.Advance();
+                    _scanner.Advance();
+
+                    return new Token(TokenType.GreaterThanOrEqual);
+                }
+
+                _scanner.Advance();
+                return new Token(TokenType.GreaterThan);
         }
 
         _scanner.Advance();

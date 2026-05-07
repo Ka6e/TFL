@@ -152,7 +152,7 @@ public class Value
         return _value switch
         {
             bool b => b,
-            _ => throw new InvalidOperationException($"Value {_value} is not an integer"),
+            _ => throw new InvalidOperationException($"Value {_value} is not an bool"),
         };
     }
 

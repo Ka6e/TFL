@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using Ast.Expressions;
+﻿using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
 
@@ -270,14 +268,13 @@ public class Parser
         return new ReturnStatement(expr);
     }
 
-    private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
-    {
-        Match(TokenType.Func);
-        string name = Match(TokenType.Identifier).Value!.ToString();
-        Match(TokenType.OpenParenthesis);
-        
-    }
-    
+    // private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
+    // {
+    //     Match(TokenType.Func);
+    //     string name = Match(TokenType.Identifier).Value!.ToString();
+    //     Match(TokenType.OpenParenthesis);
+    // }
+
     /// <summary>
     /// continue_stmt =
     ///    "continue",
@@ -369,6 +366,11 @@ public class Parser
         }
     }
 
+    /// <summary>
+    /// relational =
+    ///        additive,
+    ///        { ( "<" | ">" | "<=" | ">=" ), additive } ;
+    /// </summary>
     private Expression ParseRational()
     {
         Expression expr = ParseAdditive();
@@ -499,6 +501,9 @@ public class Parser
             case TokenType.StringLiteral:
                 _tokens.Advance();
                 return new LiteralExpression(new Value(t.Value!.ToString()));
+            case TokenType.BoolLiteral:
+                _tokens.Advance();
+                return new LiteralExpression(new Value(t.Value!.ToBool()));
             case TokenType.Identifier:
                 string name = Match(TokenType.Identifier).Value!.ToString();
                 return new VariableExpression(name);
@@ -530,6 +535,7 @@ public class Parser
                         TokenType.IntLiteral,
                         TokenType.FloatLiteral,
                         TokenType.StringLiteral,
+                        TokenType.BoolLiteral,
                         TokenType.Identifier,
                         TokenType.OpenParenthesis,
                     ]

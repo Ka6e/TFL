@@ -26,6 +26,8 @@ public class Lexer
         { "while", TokenType.While },
         { "func", TokenType.Func },
         { "void", TokenType.Void },
+        { "true", TokenType.BoolLiteral },
+        { "false", TokenType.BoolLiteral },
     };
 
     private static readonly Dictionary<char, char> SimpleEscapes = new()

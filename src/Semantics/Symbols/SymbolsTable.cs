@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.SymbolStore;
 
 using Ast.Statements;
 
@@ -8,12 +9,16 @@ namespace Semantics.Symbols;
 
 public sealed class SymbolsTable
 {
+    private readonly SymbolsTable? _parent;
     private readonly Dictionary<string, Statement> _variables;
 
-    public SymbolsTable()
+    public SymbolsTable(SymbolsTable? parent)
     {
+        _parent = parent;
         _variables = [];
     }
+
+    public SymbolsTable? Parent => _parent;
 
     public AbstractVariableDeclarationStatemnt GetVariableDeclaration(string name)
     {

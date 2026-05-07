@@ -8,7 +8,7 @@ namespace Semantics.Passes;
 
 public sealed class ResolveNamePass : AbstractPass
 {
-    private readonly SymbolsTable _symbols;
+    private SymbolsTable _symbols;
 
     public ResolveNamePass(SymbolsTable globalSymbols)
     {

@@ -60,6 +60,20 @@ public class CheckTypesPass : AbstractPass
         CheckAreSameTypes("assignment", s.Expression, s.Variable.ResultType);
     }
 
+    public override void Visit(IfElseStatement s)
+    {
+        base.Visit(s);
+
+        CheckAreSameTypes("if-else condition", s.Condition, ValueType.Bool);
+    }
+
+    public override void Visit(WhileStatement s)
+    {
+        base.Visit(s);
+
+        CheckAreSameTypes("while loop condition", s.Expression, ValueType.Bool);
+    }
+
     private static void CheckAreSameTypes(string category, Expression expression, ValueType expectedType)
     {
         if (!ValueTypeUtil.AreCompatibleTypes(expression.ResultType, expectedType))

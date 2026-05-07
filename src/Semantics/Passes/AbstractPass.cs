@@ -16,6 +16,14 @@ public abstract class AbstractPass : IAstVisitor
     {
     }
 
+    public void Visit(FunctionCallExpression e)
+    {
+        foreach (Expression arg in e.Arguments)
+        {
+            arg.Accept(this);
+        }
+    }
+
     public virtual void Visit(BlockStatement s)
     {
         foreach (Statement statement in s.Statements)
@@ -46,6 +54,42 @@ public abstract class AbstractPass : IAstVisitor
     public virtual void Visit(PrintStatement s)
     {
         s.Expression.Accept(this);
+    }
+
+    public virtual void Visit(ReturnStatement s)
+    {
+        s.Expression?.Accept(this);
+    }
+
+    public virtual void Visit(IfElseStatement s)
+    {
+        s.Condition.Accept(this);
+        s.Block.Accept(this);
+        s.ElseStatement?.Accept(this);
+    }
+
+    public virtual void Visit(ContinueStatement s)
+    {
+    }
+
+    public virtual void Visit(BreakStatement s)
+    {
+    }
+
+    public virtual void Visit(WhileStatement s)
+    {
+        s.Expression.Accept(this);
+        s.Block.Accept(this);
+    }
+
+    public void Visit(FunctionDeclarationStatement s)
+    {
+        foreach (AbstractParametrStatement param in s.Parameters)
+        {
+            param.Accept(this);
+        }
+
+        s.Body.Accept(this);
     }
 
     public virtual void Visit(BinaryOperationExpression e)

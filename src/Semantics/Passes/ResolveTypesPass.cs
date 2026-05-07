@@ -136,6 +136,31 @@ public sealed class ResolveTypesPass : AbstractPass
         s.ResultType = variableType ?? Runtime.ValueType.Int;
     }
 
+    public override void Visit(IfElseStatement s)
+    {
+        base.Visit(s);
+        s.ResultType = s.ElseStatement!.ResultType;
+    }
+
+    public override void Visit(WhileStatement s)
+    {
+        base.Visit(s);
+
+        s.ResultType = ValueType.Void;
+    }
+
+    public override void Visit(BreakStatement s)
+    {
+        base.Visit(s);
+        s.ResultType = ValueType.Void;
+    }
+
+    public override void Visit(ContinueStatement s)
+    {
+        base.Visit(s);
+        s.ResultType = ValueType.Void;
+    }
+
     private static ValueType? GetBinaryOperationResultType(BinaryOperation operaion, ValueType left, ValueType right)
     {
         switch (operaion)

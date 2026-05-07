@@ -247,11 +247,14 @@ public class VirtualMachineCodegen : IAstVisitor
         BasicBlock previousBlock = _builder.InsertPoint;
         _builder.InsertPoint = functionBlock;
 
-        PushLexicalScope();
+        // Push scope for parameters; Return restores _variables automatically so PopVars is not needed
+        int parentScopeDepth = _symbolsTable?.Depth ?? 0;
+        _symbolsTable = new CodegenSymbolsTable(_symbolsTable);
+        _builder.Append(new Instruction(InstructionCode.PushVars, parentScopeDepth));
 
         for (int i = s.Parameters.Count - 1; i >= 0; i--)
         {
-            AbstractParametrStatement param = s.Parameters[i];
+            VariableDeclarationStatement param = s.Parameters[i];
             _builder.Append(new Instruction(InstructionCode.DefineVar, param.Name));
         }
 
@@ -263,7 +266,8 @@ public class VirtualMachineCodegen : IAstVisitor
             _builder.Append(new Instruction(InstructionCode.Return));
         }
 
-        PopLexicalScope();
+        // Restore codegen scope tracking without emitting PopVars (Return handles variable restoration)
+        _symbolsTable = _symbolsTable!.Parent;
 
         _builder.InsertPoint = previousBlock;
     }
@@ -358,6 +362,12 @@ public class VirtualMachineCodegen : IAstVisitor
         }
     }
 
+    public void Visit(CallStatement s)
+    {
+        s.Call.Accept(this);
+        _builder.Append(new Instruction(InstructionCode.Pop));
+    }
+
     public void Visit(FunctionCallExpression e)
     {
         foreach (Expression arg in e.Arguments)
@@ -401,9 +411,9 @@ public class VirtualMachineCodegen : IAstVisitor
 
         e.Left.Accept(this);
 
+        // JumpIfFalse pops the left operand; on false jumps to short-circuit
         _builder.AppendJump(InstructionCode.JumpIfFalse, shortCircuitBlock);
 
-        _builder.Append(new Instruction(InstructionCode.Pop));
         e.Right.Accept(this);
         _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
@@ -421,9 +431,9 @@ public class VirtualMachineCodegen : IAstVisitor
 
         e.Left.Accept(this);
 
+        // JumpIfTrue pops the left operand; on true jumps to short-circuit
         _builder.AppendJump(InstructionCode.JumpIfTrue, shortCircuitBlock);
 
-        _builder.Append(new Instruction(InstructionCode.Pop));
         e.Right.Accept(this);
         _builder.AppendJump(InstructionCode.Jump, finalBlock);
 

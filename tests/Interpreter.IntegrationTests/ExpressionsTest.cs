@@ -118,6 +118,130 @@ public class ExpressionsTest
             { """main { print("hello" != "hello"); }""", "0" },
             { """main { print("" == ""); }""", "1" },
             { """main { print("" != "x"); }""", "1" },
+            { """main { print("abc" < "abd"); }""", "1" },
+            { """main { print("abc" > "abd"); }""", "0" },
+            { """main { print("abc" <= "abc"); }""", "1" },
+            { """main { print("xyz" >= "abc"); }""", "1" },
         };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetRelationalIntExpressionsData))]
+    public void Can_evaluate_relational_int_expressions(string code, string expected)
+    {
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal(expected, environment.Output);
+    }
+
+    public static TheoryData<string, string> GetRelationalIntExpressionsData()
+    {
+        return new TheoryData<string, string>
+        {
+            { "main { print(1 < 2); }", "1" },
+            { "main { print(2 < 1); }", "0" },
+            { "main { print(1 < 1); }", "0" },
+            { "main { print(1 > 2); }", "0" },
+            { "main { print(2 > 1); }", "1" },
+            { "main { print(1 > 1); }", "0" },
+            { "main { print(1 <= 2); }", "1" },
+            { "main { print(1 <= 1); }", "1" },
+            { "main { print(2 <= 1); }", "0" },
+            { "main { print(1 >= 2); }", "0" },
+            { "main { print(1 >= 1); }", "1" },
+            { "main { print(2 >= 1); }", "1" },
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetRelationalFloatExpressionsData))]
+    public void Can_evaluate_relational_float_expressions(string code, string expected)
+    {
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal(expected, environment.Output);
+    }
+
+    public static TheoryData<string, string> GetRelationalFloatExpressionsData()
+    {
+        return new TheoryData<string, string>
+        {
+            { "main { print(1.0 < 2.0); }", "1" },
+            { "main { print(2.0 < 1.0); }", "0" },
+            { "main { print(1.5 <= 1.5); }", "1" },
+            { "main { print(2.5 > 1.5); }", "1" },
+            { "main { print(1.5 >= 2.5); }", "0" },
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetLogicalExpressionsData))]
+    public void Can_evaluate_logical_expressions(string code, string expected)
+    {
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal(expected, environment.Output);
+    }
+
+    public static TheoryData<string, string> GetLogicalExpressionsData()
+    {
+        return new TheoryData<string, string>
+        {
+            { "main { print(!true); }", "0" },
+            { "main { print(!false); }", "1" },
+            { "main { print(true && true); }", "1" },
+            { "main { print(true && false); }", "0" },
+            { "main { print(false && true); }", "0" },
+            { "main { print(false && false); }", "0" },
+            { "main { print(true || true); }", "1" },
+            { "main { print(true || false); }", "1" },
+            { "main { print(false || true); }", "1" },
+            { "main { print(false || false); }", "0" },
+            { "main { print(true == true); }", "1" },
+            { "main { print(true == false); }", "0" },
+            { "main { print(true != false); }", "1" },
+        };
+    }
+
+    [Fact]
+    public void Logical_and_short_circuits_on_false_left()
+    {
+        const string code = """
+            main {
+                var x: int = 0;
+                var b: bool = false && (x == 1);
+                print(b);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("0", environment.Output);
+    }
+
+    [Fact]
+    public void Logical_or_short_circuits_on_true_left()
+    {
+        const string code = """
+            main {
+                var x: int = 0;
+                var b: bool = true || (x == 1);
+                print(b);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("1", environment.Output);
     }
 }

@@ -18,9 +18,6 @@ public class ErrorTests
             { "$", [new Token(TokenType.Error, new TokenValue("$"))] },
             { "?", [new Token(TokenType.Error, new TokenValue("?"))] },
 
-            // одиночный ! без = — ошибка
-            { "!", [new Token(TokenType.Error, new TokenValue("!"))] },
-
             // ошибка среди валидных токенов
             {
                 "@ x",

@@ -37,7 +37,11 @@ public sealed class ResolveTypesPass : AbstractPass
     public override void Visit(UnaryOperationExpression e)
     {
         base.Visit(e);
-        e.ResultType = e.Operand.ResultType;
+        e.ResultType = e.Operation switch
+        {
+            UnaryOperation.LogicalNot => ValueType.Bool,
+            _ => e.Operand.ResultType,
+        };
     }
 
     public override void Visit(LengthExpression e)
@@ -88,6 +92,18 @@ public sealed class ResolveTypesPass : AbstractPass
         e.ResultType = e.Variable.ResultType;
     }
 
+    public override void Visit(FunctionCallExpression e)
+    {
+        base.Visit(e);
+        e.ResultType = ((FunctionDeclarationStatement)e.Function).ReturnType;
+    }
+
+    public override void Visit(CallStatement s)
+    {
+        base.Visit(s);
+        s.ResultType = ValueType.Void;
+    }
+
     public override void Visit(VariableDeclarationStatement s)
     {
         base.Visit(s);
@@ -122,24 +138,18 @@ public sealed class ResolveTypesPass : AbstractPass
 
     public override void Visit(ReadStatement s)
     {
-        Runtime.ValueType? variableType = null;
-
-        if (s.Variable is VariableDeclarationStatement varDecl)
+        if (s.Variable is ConstDeclarationStatement)
         {
-            variableType = varDecl.Type;
-        }
-        else if (s.Variable is ConstDeclarationStatement constDecl)
-        {
-            variableType = constDecl.Type;
+            throw new InvalidAssignmentException($"Cannot read into constant '{s.Name}'");
         }
 
-        s.ResultType = variableType ?? Runtime.ValueType.Int;
+        s.ResultType = ((VariableDeclarationStatement)s.Variable!).Type;
     }
 
     public override void Visit(IfElseStatement s)
     {
         base.Visit(s);
-        s.ResultType = s.ElseStatement!.ResultType;
+        s.ResultType = ValueType.Void;
     }
 
     public override void Visit(WhileStatement s)
@@ -198,14 +208,37 @@ public sealed class ResolveTypesPass : AbstractPass
 
                 return null;
 
+            case BinaryOperation.LessThan:
+            case BinaryOperation.LessThanOrEqual:
+            case BinaryOperation.GreaterThan:
+            case BinaryOperation.GreaterThanOrEqual:
+                if ((left == ValueType.Int && right == ValueType.Int) ||
+                    (left == ValueType.Float && right == ValueType.Float) ||
+                    (left == ValueType.String && right == ValueType.String))
+                {
+                    return ValueType.Bool;
+                }
+
+                return null;
+
             case BinaryOperation.Equal:
             case BinaryOperation.NotEqual:
                 if (left == right && left != ValueType.Void)
                 {
-                    return ValueType.Int;
+                    return ValueType.Bool;
                 }
 
                 return null;
+
+            case BinaryOperation.LogicalAnd:
+            case BinaryOperation.LogicalOr:
+                if (left == ValueType.Bool && right == ValueType.Bool)
+                {
+                    return ValueType.Bool;
+                }
+
+                return null;
+
             default:
                 throw new InvalidOperationException($"Unknown binary operation {operaion}");
         }

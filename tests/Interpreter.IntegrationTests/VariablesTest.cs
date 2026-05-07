@@ -292,4 +292,107 @@ public class VariablesTest
 
         Assert.Equal("", environment.Output);
     }
+
+    [Fact]
+    public void Can_declare_and_use_bool_variables()
+    {
+        const string code = """
+            main {
+                var b: bool = true;
+                print(b);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("1", environment.Output);
+    }
+
+    [Fact]
+    public void Uninitialized_bool_variable_has_default_value_false()
+    {
+        const string code = """
+            main {
+                var b: bool;
+                print(b);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("0", environment.Output);
+    }
+
+    [Fact]
+    public void Can_assign_bool_variable()
+    {
+        const string code = """
+            main {
+                var b: bool = false;
+                b = true;
+                print(b);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("1", environment.Output);
+    }
+
+    [Fact]
+    public void Can_use_bool_constant()
+    {
+        const string code = """
+            main {
+                const yes: bool = true;
+                const no: bool = false;
+                print(yes);
+                print(no);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("10", environment.Output);
+    }
+
+    [Fact]
+    public void Bool_false_prints_as_zero()
+    {
+        const string code = """
+            main {
+                print(false);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("0", environment.Output);
+    }
+
+    [Fact]
+    public void Bool_true_prints_as_one()
+    {
+        const string code = """
+            main {
+                print(true);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("1", environment.Output);
+    }
 }

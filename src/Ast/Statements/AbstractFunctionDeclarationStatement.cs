@@ -4,7 +4,7 @@ public abstract class AbstractFunctionDeclarationStatement : Statement
 {
     protected AbstractFunctionDeclarationStatement(
         string name,
-        IReadOnlyList<AbstractParametrStatement> parameters)
+        IReadOnlyList<VariableDeclarationStatement> parameters)
     {
         Name = name;
         Parameters = parameters;
@@ -12,5 +12,5 @@ public abstract class AbstractFunctionDeclarationStatement : Statement
 
     public string Name { get; }
 
-    public IReadOnlyList<AbstractParametrStatement> Parameters { get; }
+    public IReadOnlyList<VariableDeclarationStatement> Parameters { get; }
 }

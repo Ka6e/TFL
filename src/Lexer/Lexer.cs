@@ -199,6 +199,11 @@ public class Lexer
 
         if (Keywords.TryGetValue(value, out TokenType type))
         {
+            if (type == TokenType.BoolLiteral)
+            {
+                return new Token(type, new TokenValue(value == "true"));
+            }
+
             return new Token(type);
         }
 

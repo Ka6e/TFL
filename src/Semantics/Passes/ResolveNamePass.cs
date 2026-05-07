@@ -1,4 +1,5 @@
 ﻿using Ast.Expressions;
+using Ast.Program;
 using Ast.Statements;
 
 using Semantics.Exceptions;
@@ -9,10 +10,51 @@ namespace Semantics.Passes;
 public sealed class ResolveNamePass : AbstractPass
 {
     private SymbolsTable _symbols;
+    private readonly Dictionary<string, FunctionDeclarationStatement> _functions = new();
 
     public ResolveNamePass(SymbolsTable globalSymbols)
     {
         _symbols = globalSymbols;
+    }
+
+    public override void Visit(ProgramNode p)
+    {
+        foreach (Statement stmt in p.Block.Statements)
+        {
+            if (stmt is FunctionDeclarationStatement func)
+            {
+                _functions[func.Name] = func;
+            }
+        }
+
+        base.Visit(p);
+    }
+
+    public override void Visit(FunctionDeclarationStatement s)
+    {
+        SymbolsTable outerScope = _symbols;
+        _symbols = new SymbolsTable(_symbols);
+
+        foreach (VariableDeclarationStatement param in s.Parameters)
+        {
+            param.Accept(this);
+        }
+
+        s.Body.Accept(this);
+
+        _symbols = outerScope;
+    }
+
+    public override void Visit(FunctionCallExpression e)
+    {
+        base.Visit(e);
+
+        if (!_functions.TryGetValue(e.Name, out FunctionDeclarationStatement? func))
+        {
+            throw UnknownSymbolException.UndefinedVariableOrFunction(e.Name);
+        }
+
+        e.Function = func;
     }
 
     public override void Visit(VariableDeclarationStatement s)

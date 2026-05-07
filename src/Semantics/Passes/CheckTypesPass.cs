@@ -31,10 +31,20 @@ public class CheckTypesPass : AbstractPass
     {
         base.Visit(e);
 
-        if (e.Operand.ResultType != ValueType.Int &&
-            e.Operand.ResultType != ValueType.Float)
+        if (e.Operation == UnaryOperation.LogicalNot)
         {
-            throw new TypeErrorException("Unary minus allowed only for int or float");
+            if (e.Operand.ResultType != ValueType.Bool)
+            {
+                throw new TypeErrorException("Logical not allowed only for bool");
+            }
+        }
+        else
+        {
+            if (e.Operand.ResultType != ValueType.Int &&
+                e.Operand.ResultType != ValueType.Float)
+            {
+                throw new TypeErrorException("Unary minus allowed only for int or float");
+            }
         }
     }
 

@@ -6,7 +6,7 @@ public sealed class FunctionDeclarationStatement : AbstractFunctionDeclarationSt
 {
     public FunctionDeclarationStatement(
         string name,
-        IReadOnlyList<AbstractParametrStatement> parameters,
+        IReadOnlyList<VariableDeclarationStatement> parameters,
         ValueType returnType,
         BlockStatement body
     )

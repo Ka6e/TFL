@@ -20,13 +20,23 @@ public class Parser
 
     /// <summary>
     /// program =
+    ///     { func_decl },
     ///     "main",
     ///     block ;
     /// </summary>
     public ProgramNode ParseProgram()
     {
+        List<Statement> statements = new();
+
+        while (_tokens.Peek().Type == TokenType.Func)
+        {
+            statements.Add(ParseFunctionDeclaration());
+        }
+
         Match(TokenType.Main);
-        return new ProgramNode(ParseBlock());
+        statements.AddRange(ParseBlock().Statements);
+
+        return new ProgramNode(new BlockStatement(statements));
     }
 
     /// <summary>
@@ -68,6 +78,11 @@ public class Parser
     private Statement ParseStatement()
     {
         Token t = _tokens.Peek();
+        if (t.Type == TokenType.Identifier && _tokens.Peek(1).Type == TokenType.OpenParenthesis)
+        {
+            return ParseCallStatement();
+        }
+
         return t.Type switch
         {
             TokenType.Var => ParseVarDecl(),
@@ -268,12 +283,85 @@ public class Parser
         return new ReturnStatement(expr);
     }
 
-    // private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
-    // {
-    //     Match(TokenType.Func);
-    //     string name = Match(TokenType.Identifier).Value!.ToString();
-    //     Match(TokenType.OpenParenthesis);
-    // }
+    /// <summary>
+    /// func_decl =
+    ///     "func",
+    ///     identifier,
+    ///     "(",
+    ///     [ param { "," param } ],
+    ///     ")",
+    ///     ":",
+    ///     return_type,
+    ///     block ;
+    /// </summary>
+    private FunctionDeclarationStatement ParseFunctionDeclaration()
+    {
+        Match(TokenType.Func);
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.OpenParenthesis);
+        List<VariableDeclarationStatement> parameters = new();
+        if (_tokens.Peek().Type != TokenType.CloseParenthesis)
+        {
+            parameters.Add(ParseFunctionParameter());
+            while (_tokens.Peek().Type == TokenType.Comma)
+            {
+                Match(TokenType.Comma);
+                parameters.Add(ParseFunctionParameter());
+            }
+        }
+
+        Match(TokenType.CloseParenthesis);
+        Match(TokenType.Colon);
+        ValueType returnType = ParseReturnType();
+        BlockStatement body = ParseBlock();
+
+        return new FunctionDeclarationStatement(name, parameters, returnType, body);
+    }
+
+    private VariableDeclarationStatement ParseFunctionParameter()
+    {
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.Colon);
+        ValueType type = ParseType();
+        return new VariableDeclarationStatement(name, type, null);
+    }
+
+    private ValueType ParseReturnType()
+    {
+        if (_tokens.Peek().Type == TokenType.Void)
+        {
+            _tokens.Advance();
+            return ValueType.Void;
+        }
+
+        return ParseType();
+    }
+
+    private CallStatement ParseCallStatement()
+    {
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        FunctionCallExpression call = ParseFunctionCallArguments(name);
+        Match(TokenType.Semicolon);
+        return new CallStatement(call);
+    }
+
+    private FunctionCallExpression ParseFunctionCallArguments(string name)
+    {
+        Match(TokenType.OpenParenthesis);
+        List<Expression> arguments = new();
+        if (_tokens.Peek().Type != TokenType.CloseParenthesis)
+        {
+            arguments.Add(ParseExpression());
+            while (_tokens.Peek().Type == TokenType.Comma)
+            {
+                Match(TokenType.Comma);
+                arguments.Add(ParseExpression());
+            }
+        }
+
+        Match(TokenType.CloseParenthesis);
+        return new FunctionCallExpression(name, arguments);
+    }
 
     /// <summary>
     /// continue_stmt =
@@ -506,6 +594,11 @@ public class Parser
                 return new LiteralExpression(new Value(t.Value!.ToBool()));
             case TokenType.Identifier:
                 string name = Match(TokenType.Identifier).Value!.ToString();
+                if (_tokens.Peek().Type == TokenType.OpenParenthesis)
+                {
+                    return ParseFunctionCallArguments(name);
+                }
+
                 return new VariableExpression(name);
             case TokenType.OpenParenthesis:
                 _tokens.Advance();
@@ -567,7 +660,7 @@ public class Parser
             TokenType.FloatType => ValueType.Float,
             TokenType.StringType => ValueType.String,
             TokenType.BooleanType => ValueType.Bool,
-            _ => throw new Exception($"Expected types 'int', 'float', 'string', got {t.Type}"),
+            _ => throw new Exception($"Expected type 'int', 'float', 'string', or 'bool', got {t.Type}"),
         };
 
         _tokens.Advance();

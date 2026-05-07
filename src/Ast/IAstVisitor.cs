@@ -36,6 +36,8 @@ public interface IAstVisitor
 
     void Visit(ReturnStatement s);
 
+    void Visit(CallStatement s);
+
     void Visit(IfElseStatement s);
 
     void Visit(ContinueStatement s);

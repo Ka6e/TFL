@@ -8,15 +8,35 @@ using Runtime;
 using VirtualMachine.Builtins;
 using VirtualMachine.Instructions;
 
+using ValueType = Runtime.ValueType;
+
 namespace VirtualMachineCodegen;
 
 public class VirtualMachineCodegen : IAstVisitor
 {
     private readonly InstructionsBuilder _builder = new();
+    private CodegenSymbolsTable? _symbolsTable;
 
-    public List<Instruction> Generate(ProgramNode program)
+    /// <summary>
+    /// Стек со ссылками на блоки после текущих циклов while.
+    /// Используется для генерации break.
+    /// </summary>
+    private readonly Stack<BasicBlock> _currentLoopFinalBlockStack = new();
+
+    /// <summary>
+    /// Стек со ссылками на блоки начала текущих циклов while.
+    /// Используется для генерации continue.
+    /// </summary>
+    private readonly Stack<BasicBlock> _currentLoopStartBlockStack = new();
+
+    public List<Instruction> Generate(ProgramNode program, IReadOnlyList<FunctionDeclarationStatement> functions)
     {
-        program.Accept(this);
+        foreach (FunctionDeclarationStatement func in functions)
+        {
+            func.Accept(this);
+        }
+
+        program.Block.Accept(this);
 
         _builder.Append(new Instruction(InstructionCode.Push, 0));
         _builder.Append(new Instruction(InstructionCode.Halt));
@@ -37,13 +57,6 @@ public class VirtualMachineCodegen : IAstVisitor
         }
     }
 
-    public void Visit(VariableExpression e)
-    {
-        _builder.Append(new Instruction(
-            InstructionCode.LoadVar,
-            e.Name));
-    }
-
     public void Visit(VariableDeclarationStatement s)
     {
         if (s.Value != null)
@@ -52,59 +65,28 @@ public class VirtualMachineCodegen : IAstVisitor
         }
         else
         {
-            Value defaultValue;
-
-            if (s.Type == Runtime.ValueType.Int)
-            {
-                defaultValue = new Value(0);
-            }
-            else if (s.Type == Runtime.ValueType.Float)
-            {
-                defaultValue = new Value(0.0);
-            }
-            else if (s.Type == Runtime.ValueType.String)
-            {
-                defaultValue = new Value("");
-            }
-            else if (s.Type == Runtime.ValueType.Void)
-            {
-                defaultValue = Value.Void;
-            }
-            else
-            {
-                defaultValue = new Value(0);
-            }
-
+            Value defaultValue = GetDefaultValue(s.Type);
             _builder.Append(new Instruction(InstructionCode.Push, defaultValue));
         }
 
-        _builder.Append(new Instruction(
-            InstructionCode.DefineVar,
-            s.Name));
+        _builder.Append(new Instruction(InstructionCode.DefineVar, s.Name));
     }
 
     public void Visit(ConstDeclarationStatement s)
     {
         s.Value.Accept(this);
-
-        _builder.Append(new Instruction(
-            InstructionCode.DefineVar,
-            s.Name));
+        _builder.Append(new Instruction(InstructionCode.DefineVar, s.Name));
     }
 
     public void Visit(AssignmentStatement s)
     {
         s.Expression.Accept(this);
-
-        _builder.Append(new Instruction(
-            InstructionCode.StoreVar,
-            s.Name));
+        _builder.Append(new Instruction(InstructionCode.StoreVar, s.Name));
     }
 
     public void Visit(PrintStatement s)
     {
         s.Expression.Accept(this);
-
         _builder.Append(new Instruction(
             InstructionCode.CallBuiltin,
             (int)BuiltinFunctionCode.Print));
@@ -116,18 +98,19 @@ public class VirtualMachineCodegen : IAstVisitor
 
         if (s.ResultType is null)
         {
-            throw new InvalidOperationException($"Read statement for variable '{s.Name}' has no type information");
+            throw new InvalidOperationException(
+                $"Read statement for variable '{s.Name}' has no type information");
         }
 
-        if (s.ResultType == Runtime.ValueType.Int)
+        if (s.ResultType == ValueType.Int)
         {
             readFunction = BuiltinFunctionCode.ReadI;
         }
-        else if (s.ResultType == Runtime.ValueType.Float)
+        else if (s.ResultType == ValueType.Float)
         {
             readFunction = BuiltinFunctionCode.ReadF;
         }
-        else if (s.ResultType == Runtime.ValueType.String)
+        else if (s.ResultType == ValueType.String)
         {
             readFunction = BuiltinFunctionCode.ReadS;
         }
@@ -140,68 +123,215 @@ public class VirtualMachineCodegen : IAstVisitor
         _builder.Append(new Instruction(InstructionCode.StoreVar, s.Name));
     }
 
+    public void Visit(IfElseStatement s)
+    {
+        if (s.ElseStatement != null)
+        {
+            BasicBlock elseBlock = _builder.CreateBasicBlock();
+            BasicBlock finalBlock = _builder.CreateBasicBlock();
+
+            s.Condition.Accept(this);
+            _builder.AppendJump(InstructionCode.JumpIfFalse, elseBlock);
+
+            PushLexicalScope();
+            s.Block.Accept(this);
+            PopLexicalScope();
+            _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+            _builder.InsertPoint = elseBlock;
+            if (s.ElseStatement is IfElseStatement elseIf)
+            {
+                Visit(elseIf);
+            }
+            else if (s.ElseStatement is BlockStatement elseBlockStmt)
+            {
+                PushLexicalScope();
+                elseBlockStmt.Accept(this);
+                PopLexicalScope();
+            }
+            else
+            {
+                s.ElseStatement.Accept(this);
+            }
+
+            _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+            _builder.InsertPoint = finalBlock;
+        }
+        else
+        {
+            BasicBlock finalBlock = _builder.CreateBasicBlock();
+
+            s.Condition.Accept(this);
+            _builder.AppendJump(InstructionCode.JumpIfFalse, finalBlock);
+
+            PushLexicalScope();
+            s.Block.Accept(this);
+            PopLexicalScope();
+            _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+            _builder.InsertPoint = finalBlock;
+        }
+    }
+
+    public void Visit(WhileStatement s)
+    {
+        BasicBlock loopBlock = _builder.CreateBasicBlock();
+        BasicBlock finalBlock = _builder.CreateBasicBlock();
+
+        _currentLoopStartBlockStack.Push(loopBlock);
+        _currentLoopFinalBlockStack.Push(finalBlock);
+
+        _builder.AppendJump(InstructionCode.Jump, loopBlock);
+        _builder.InsertPoint = loopBlock;
+
+        s.Expression.Accept(this);
+        _builder.AppendJump(InstructionCode.JumpIfFalse, finalBlock);
+
+        PushLexicalScope();
+        s.Block.Accept(this);
+        PopLexicalScope();
+        _builder.AppendJump(InstructionCode.Jump, loopBlock);
+
+        _currentLoopFinalBlockStack.Pop();
+        _currentLoopStartBlockStack.Pop();
+        _builder.InsertPoint = finalBlock;
+    }
+
+    public void Visit(BreakStatement s)
+    {
+        if (_currentLoopFinalBlockStack.Count == 0)
+        {
+            throw new InvalidOperationException("break outside of loop");
+        }
+
+        BasicBlock loopFinalBlock = _currentLoopFinalBlockStack.Peek();
+        _builder.AppendJump(InstructionCode.Jump, loopFinalBlock);
+    }
+
+    public void Visit(ContinueStatement s)
+    {
+        if (_currentLoopStartBlockStack.Count == 0)
+        {
+            throw new InvalidOperationException("continue outside of loop");
+        }
+
+        BasicBlock loopStartBlock = _currentLoopStartBlockStack.Peek();
+        _builder.AppendJump(InstructionCode.Jump, loopStartBlock);
+    }
+
+    public void Visit(ReturnStatement s)
+    {
+        if (s.Expression != null)
+        {
+            s.Expression.Accept(this);
+        }
+        else
+        {
+            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
+        }
+
+        _builder.Append(new Instruction(InstructionCode.Return));
+    }
+
+    public void Visit(FunctionDeclarationStatement s)
+    {
+        BasicBlock functionBlock = _builder.CreateBasicBlock();
+        _symbolsTable!.AddFunctionEntry(s.Name, functionBlock);
+
+        BasicBlock previousBlock = _builder.InsertPoint;
+        _builder.InsertPoint = functionBlock;
+
+        PushLexicalScope();
+
+        for (int i = s.Parameters.Count - 1; i >= 0; i--)
+        {
+            AbstractParametrStatement param = s.Parameters[i];
+            _builder.Append(new Instruction(InstructionCode.DefineVar, param.Name));
+        }
+
+        s.Body.Accept(this);
+
+        if (s.ReturnType == ValueType.Void)
+        {
+            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
+            _builder.Append(new Instruction(InstructionCode.Return));
+        }
+
+        PopLexicalScope();
+
+        _builder.InsertPoint = previousBlock;
+    }
+
     public void Visit(LiteralExpression e)
     {
-        _builder.Append(new Instruction(
-            InstructionCode.Push,
-            e.Value));
+        _builder.Append(new Instruction(InstructionCode.Push, e.Value));
+    }
+
+    public void Visit(VariableExpression e)
+    {
+        _builder.Append(new Instruction(InstructionCode.LoadVar, e.Name));
     }
 
     public void Visit(BinaryOperationExpression e)
     {
-        e.Left.Accept(this);
-        e.Right.Accept(this);
-
         switch (e.Operation)
         {
             case BinaryOperation.Add:
-                _builder.Append(new Instruction(InstructionCode.Add));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Add);
                 break;
 
             case BinaryOperation.Subtract:
-                _builder.Append(new Instruction(InstructionCode.Subtract));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Subtract);
                 break;
 
             case BinaryOperation.Multiply:
-                _builder.Append(new Instruction(InstructionCode.Multiply));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Multiply);
                 break;
 
             case BinaryOperation.Divide:
-                _builder.Append(new Instruction(InstructionCode.Divide));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Divide);
                 break;
 
             case BinaryOperation.Module:
-                _builder.Append(new Instruction(InstructionCode.Modulo));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Modulo);
                 break;
+
             case BinaryOperation.Equal:
-                _builder.Append(new Instruction(InstructionCode.Equal));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Equal);
                 break;
+
             case BinaryOperation.NotEqual:
-                _builder.Append(new Instruction(InstructionCode.NotEqual));
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.NotEqual);
                 break;
+
+            case BinaryOperation.LessThan:
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Less);
+                break;
+
+            case BinaryOperation.LessThanOrEqual:
+                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.LessOrEqual);
+                break;
+
+            case BinaryOperation.GreaterThan:
+                GenerateBinaryOperation(e.Right, e.Left, InstructionCode.Less);
+                break;
+
+            case BinaryOperation.GreaterThanOrEqual:
+                GenerateBinaryOperation(e.Right, e.Left, InstructionCode.LessOrEqual);
+                break;
+
+            case BinaryOperation.LogicalAnd:
+                GenerateLogicalAnd(e);
+                break;
+
+            case BinaryOperation.LogicalOr:
+                GenerateLogicalOr(e);
+                break;
+
             default:
-                throw new NotImplementedException($"Unsupported operation {e.Operation}");
+                throw new NotImplementedException($"Unsupported binary operation: {e.Operation}");
         }
-    }
-
-    public void Visit(LengthExpression e)
-    {
-        e.Operand.Accept(this);
-
-        _builder.Append(new Instruction(
-            InstructionCode.CallBuiltin,
-            (int)BuiltinFunctionCode.Length));
-    }
-
-    public void Visit(SubstrExpression e)
-    {
-        e.Source.Accept(this);
-        e.Start.Accept(this);
-        e.Length.Accept(this);
-
-        _builder.Append(new Instruction(
-            InstructionCode.CallBuiltin,
-            (int)BuiltinFunctionCode.Substr));
     }
 
     public void Visit(UnaryOperationExpression e)
@@ -214,8 +344,125 @@ public class VirtualMachineCodegen : IAstVisitor
                 _builder.Append(new Instruction(InstructionCode.Negate));
                 break;
 
+            case UnaryOperation.LogicalNot:
+                _builder.Append(new Instruction(InstructionCode.Not));
+                break;
+
             default:
-                throw new NotImplementedException("Unsupported unary operation");
+                throw new NotImplementedException($"Unsupported unary operation: {e.Operation}");
         }
+    }
+
+    public void Visit(FunctionCallExpression e)
+    {
+        foreach (Expression arg in e.Arguments)
+        {
+            arg.Accept(this);
+        }
+
+        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(e.Name);
+        _builder.AppendJump(InstructionCode.Call, functionBlock);
+    }
+
+    public void Visit(LengthExpression e)
+    {
+        e.Operand.Accept(this);
+        _builder.Append(new Instruction(
+            InstructionCode.CallBuiltin,
+            (int)BuiltinFunctionCode.Length));
+    }
+
+    public void Visit(SubstrExpression e)
+    {
+        e.Source.Accept(this);
+        e.Start.Accept(this);
+        e.Length.Accept(this);
+        _builder.Append(new Instruction(
+            InstructionCode.CallBuiltin,
+            (int)BuiltinFunctionCode.Substr));
+    }
+
+    private void GenerateBinaryOperation(Expression left, Expression right, InstructionCode code)
+    {
+        left.Accept(this);
+        right.Accept(this);
+        _builder.Append(new Instruction(code));
+    }
+
+    private void GenerateLogicalAnd(BinaryOperationExpression e)
+    {
+        BasicBlock shortCircuitBlock = _builder.CreateBasicBlock();
+        BasicBlock finalBlock = _builder.CreateBasicBlock();
+
+        e.Left.Accept(this);
+
+        _builder.AppendJump(InstructionCode.JumpIfFalse, shortCircuitBlock);
+
+        _builder.Append(new Instruction(InstructionCode.Pop));
+        e.Right.Accept(this);
+        _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+        _builder.InsertPoint = shortCircuitBlock;
+        _builder.Append(new Instruction(InstructionCode.Push, new Value(false)));
+        _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+        _builder.InsertPoint = finalBlock;
+    }
+
+    private void GenerateLogicalOr(BinaryOperationExpression e)
+    {
+        BasicBlock shortCircuitBlock = _builder.CreateBasicBlock();
+        BasicBlock finalBlock = _builder.CreateBasicBlock();
+
+        e.Left.Accept(this);
+
+        _builder.AppendJump(InstructionCode.JumpIfTrue, shortCircuitBlock);
+
+        _builder.Append(new Instruction(InstructionCode.Pop));
+        e.Right.Accept(this);
+        _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+        _builder.InsertPoint = shortCircuitBlock;
+        _builder.Append(new Instruction(InstructionCode.Push, new Value(true)));
+        _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+        _builder.InsertPoint = finalBlock;
+    }
+
+    private static Value GetDefaultValue(ValueType type)
+    {
+        if (type == ValueType.Int)
+        {
+            return new Value(0);
+        }
+        else if (type == ValueType.Float)
+        {
+            return new Value(0.0);
+        }
+        else if (type == ValueType.String)
+        {
+            return new Value("");
+        }
+        else if (type == ValueType.Bool)
+        {
+            return new Value(false);
+        }
+        else
+        {
+            return new Value(0);
+        }
+    }
+
+    private void PushLexicalScope()
+    {
+        int parentScopeDepth = _symbolsTable?.Depth ?? 0;
+        _symbolsTable = new CodegenSymbolsTable(_symbolsTable);
+        _builder.Append(new Instruction(InstructionCode.PushVars, parentScopeDepth));
+    }
+
+    private void PopLexicalScope()
+    {
+        _builder.Append(new Instruction(InstructionCode.PopVars));
+        _symbolsTable = _symbolsTable!.Parent;
     }
 }

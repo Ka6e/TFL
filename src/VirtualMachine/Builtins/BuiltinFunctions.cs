@@ -15,7 +15,21 @@ public class BuiltinFunctions
 
     public void Print(Value value)
     {
-        _environment.Print(value);
+        if (value.IsBool())
+        {
+            if (value.AsBool())
+            {
+                _environment.Print(new Value(1));
+            }
+            else
+            {
+                _environment.Print(new Value(0));
+            }
+        }
+        else
+        {
+            _environment.Print(value);
+        }
     }
 
     public Value ReadI()

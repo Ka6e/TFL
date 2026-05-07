@@ -166,6 +166,7 @@ public class Value
             int i => i.ToString(CultureInfo.InvariantCulture),
             string s => s,
             double d => d.ToString(CultureInfo.InvariantCulture),
+            bool b => b ? "1" : "0",
             VoidValue v => v.ToString(),
             _ => throw new InvalidOperationException($"Unexpected value {_value} of type {_value.GetType()}"),
         };

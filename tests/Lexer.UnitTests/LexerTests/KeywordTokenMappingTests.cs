@@ -4,6 +4,7 @@ public class KeywordTokenMappingTests
 {
     [Theory]
     [MemberData(nameof(GetControlFlowKeywords))]
+    [MemberData(nameof(GetExtendedControlFlowKeywords))]
     [MemberData(nameof(GetTypeKeywords))]
     [MemberData(nameof(GetBuiltinFunctionKeywords))]
     public void Keyword_maps_to_expected_token(string keyword, TokenType expectedType)
@@ -37,6 +38,21 @@ public class KeywordTokenMappingTests
         };
     }
 
+    public static TheoryData<string, TokenType> GetExtendedControlFlowKeywords()
+    {
+        return new TheoryData<string, TokenType>
+        {
+            { "if",       TokenType.If },
+            { "else",     TokenType.Else },
+            { "while",    TokenType.While },
+            { "break",    TokenType.Break },
+            { "continue", TokenType.Continue },
+            { "return",   TokenType.Return },
+            { "func",     TokenType.Func },
+            { "void",     TokenType.Void },
+        };
+    }
+
     public static TheoryData<string, TokenType> GetTypeKeywords()
     {
         return new TheoryData<string, TokenType>
@@ -44,6 +60,7 @@ public class KeywordTokenMappingTests
             { "int",    TokenType.IntegerType },
             { "float",  TokenType.FloatType },
             { "string", TokenType.StringType },
+            { "bool",   TokenType.BooleanType },
         };
     }
 
@@ -72,6 +89,15 @@ public class KeywordTokenMappingTests
             { "substrings", "substrings" },
             { "substr2",    "substr2" },
             { "substr_x",   "substr_x" },
+            { "iff",        "iff" },
+            { "elsewhere",  "elsewhere" },
+            { "whileTrue",  "whileTrue" },
+            { "breaker",    "breaker" },
+            { "continues",  "continues" },
+            { "returned",   "returned" },
+            { "functional", "functional" },
+            { "voidable",   "voidable" },
+            { "boolean",    "boolean" },
         };
     }
 }

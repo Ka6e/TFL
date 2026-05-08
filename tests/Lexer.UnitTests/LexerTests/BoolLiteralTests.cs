@@ -69,7 +69,7 @@ public class BoolLiteralTests
         {
             { "trueVal",  "trueVal" },
             { "trueness", "trueness" },
-            { "falsehood","falsehood" },
+            { "falsehood", "falsehood" },
             { "truer",    "truer" },
         };
     }

@@ -93,4 +93,72 @@ public class OperatorTests
         ];
         Assert.Equal(expected, actual);
     }
+
+    [Theory]
+    [MemberData(nameof(GetRelationalOperators))]
+    public void Can_tokenize_relational_operators(string code, List<Token> expected)
+    {
+        List<Token> actual = LexerHelper.Tokenize(code);
+        Assert.Equal(expected, actual);
+    }
+
+    public static TheoryData<string, List<Token>> GetRelationalOperators()
+    {
+        return new TheoryData<string, List<Token>>()
+        {
+            { "<",  [new Token(TokenType.LessThan)] },
+            { "<=", [new Token(TokenType.LessThanOrEqual)] },
+            { ">",  [new Token(TokenType.GreaterThan)] },
+            { ">=", [new Token(TokenType.GreaterThanOrEqual)] },
+            {
+                "< <= > >=",
+                [
+                    new Token(TokenType.LessThan),
+                    new Token(TokenType.LessThanOrEqual),
+                    new Token(TokenType.GreaterThan),
+                    new Token(TokenType.GreaterThanOrEqual),
+                ]
+            },
+            {
+                "< =",
+                [
+                    new Token(TokenType.LessThan),
+                    new Token(TokenType.Assign),
+                ]
+            },
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetLogicalOperators))]
+    public void Can_tokenize_logical_operators(string code, List<Token> expected)
+    {
+        List<Token> actual = LexerHelper.Tokenize(code);
+        Assert.Equal(expected, actual);
+    }
+
+    public static TheoryData<string, List<Token>> GetLogicalOperators()
+    {
+        return new TheoryData<string, List<Token>>()
+        {
+            { "&&", [new Token(TokenType.LogicalAnd)] },
+            { "||", [new Token(TokenType.LogicalOr)] },
+            { "!",  [new Token(TokenType.LogicalNot)] },
+            {
+                "&& || !",
+                [
+                    new Token(TokenType.LogicalAnd),
+                    new Token(TokenType.LogicalOr),
+                    new Token(TokenType.LogicalNot),
+                ]
+            },
+            {
+                "! !=",
+                [
+                    new Token(TokenType.LogicalNot),
+                    new Token(TokenType.NotEqual),
+                ]
+            },
+        };
+    }
 }

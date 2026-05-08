@@ -9,12 +9,14 @@
 ## Ключевые слова
 
 - [x] Управляющие конструкции: `main`, `var`, `const`, `read`, `print`
-- [x] Типы: `int`, `float`, `string`
+- [x] Управляющий поток: `if`, `else`, `while`, `break`, `continue`, `return`, `func`, `void`
+- [x] Типы: `int`, `float`, `string`, `bool`
 - [x] Встроенные функции: `length`, `substr`
 - [x] Несколько ключевых слов: `var const int`
 - [x] Слово с суффиксом → идентификатор: `mainX`, `variable`, `consts`, `integer`, `reading`
 - [x] Суффиксы length/substr → идентификатор: `lengths`, `length2`, `length_x`, `substrings`, `substr2`, `substr_x`
 - [x] Суффиксы float/string → идентификатор: `floater`, `strings`
+- [x] Суффиксы новых ключевых слов → идентификатор: `iff`, `elsewhere`, `whileTrue`, `breaker`, `continues`, `returned`, `functional`, `voidable`, `boolean`
 
 ## Литералы
 
@@ -24,6 +26,10 @@
 - [x] Несколько вещественных чисел: `0.0 1.5 3.14`
 - [x] Строковые литералы: `""`, `"hello"`, `"hello world"`
 - [x] Строковые литералы с Unicode: `🚀`, `hello 👋`
+- [x] Булев литерал: `true` → BoolLiteral(true)
+- [x] Булев литерал: `false` → BoolLiteral(false)
+- [x] Escape-последовательности: `\n`, `\t`, `\"`, `\\`
+- [x] Неизвестный escape `\q` → Error
 
 ## Операторы
 
@@ -34,6 +40,12 @@
 - [x] Присваивание: `=`
 - [x] Отличие `=` от `==`: `= ==`
 - [x] Унарный минус: `-42` → Minus + IntLiteral(42)
+- [x] Операторы отношения: `<`, `<=`, `>`, `>=`
+- [x] Все операторы отношения вместе: `< <= > >=`
+- [x] Отличие `<` от `<=`: `< =`
+- [x] Логические операторы: `&&`, `||`, `!`
+- [x] Все логические вместе: `&& || !`
+- [x] Отличие `!` от `!=`: `! !=`
 
 ## Разделители
 
@@ -67,3 +79,11 @@
 - [x] Объявление переменной с типом string: `var s : string = "hello";`
 - [x] Вызов substr: `substr(s, 0, 3)`
 - [x] Вызов length: `length(s)`
+
+## Ошибки
+
+- [x] Неизвестный символ: `@`, `$`, `?` → Error
+- [x] Ошибка среди валидных токенов
+- [x] Одиночный `&` → Error
+- [x] Одиночный `|` → Error
+- [x] Незакрытая строка → Error

@@ -37,6 +37,13 @@ public sealed class ResolveTypesPass : AbstractPass
     public override void Visit(UnaryOperationExpression e)
     {
         base.Visit(e);
+        if (e.Operand.ResultType != ValueType.Bool)
+        {
+            throw new TypeErrorException(
+                $"Unary operation {e.Operation} is allowed only for {ValueType.Bool}"
+            );
+        }
+
         e.ResultType = e.Operand.ResultType;
     }
 

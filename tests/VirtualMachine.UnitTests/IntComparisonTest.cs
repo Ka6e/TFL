@@ -9,19 +9,9 @@ namespace VirtualMachine.UnitTests;
 
 public class IntComparisonTest
 {
-    private static List<Instruction> PrintResult(List<Instruction> setup)
-    {
-        return [
-            ..setup,
-            new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
-            new Instruction(InstructionCode.Push, 0),
-            new Instruction(InstructionCode.Halt),
-        ];
-    }
-
     [Theory]
     [MemberData(nameof(GetIntEqualData))]
-    public void Can_compare_int_equal(List<Instruction> program, string expected)
+    public void CanCompareIntEqual(List<Instruction> program, string expected)
     {
         FakeEnvironment env = new FakeEnvironment();
         VirtualMachine vm = new VirtualMachine(env, program);
@@ -44,6 +34,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 5 == 6 → "0"
             {
                 PrintResult([
@@ -81,6 +72,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 5 != 5 → "0"
             {
                 PrintResult([
@@ -118,6 +110,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 5 < 3 → "0"
             {
                 PrintResult([
@@ -127,6 +120,7 @@ public class IntComparisonTest
                 ]),
                 "0"
             },
+
             // 5 < 5 → "0"
             {
                 PrintResult([
@@ -164,6 +158,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 5 <= 5 → "1"
             {
                 PrintResult([
@@ -173,6 +168,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 6 <= 5 → "0"
             {
                 PrintResult([
@@ -210,6 +206,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 2.5 < 1.5 → "0"
             {
                 PrintResult([
@@ -247,6 +244,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 2.5 <= 2.5 → "1"
             {
                 PrintResult([
@@ -256,6 +254,7 @@ public class IntComparisonTest
                 ]),
                 "1"
             },
+
             // 3.0 <= 2.5 → "0"
             {
                 PrintResult([
@@ -266,5 +265,15 @@ public class IntComparisonTest
                 "0"
             },
         };
+    }
+
+    private static List<Instruction> PrintResult(List<Instruction> setup)
+    {
+        return [
+            ..setup,
+            new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+            new Instruction(InstructionCode.Push, 0),
+            new Instruction(InstructionCode.Halt),
+        ];
     }
 }

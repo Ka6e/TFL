@@ -130,17 +130,12 @@ public sealed class ResolveTypesPass : AbstractPass
 
     public override void Visit(ReadStatement s)
     {
-        Runtime.ValueType? variableType = null;
-
-        if (s.Variable is VariableDeclarationStatement varDecl)
+        if (s.Variable is ConstDeclarationStatement)
         {
-            variableType = varDecl.Type;
-        }
-        else if (s.Variable is ConstDeclarationStatement constDecl)
-        {
-            variableType = constDecl.Type;
+            throw new TypeErrorException("Cannot read into a const variable");
         }
 
+        Runtime.ValueType variableType = ((AbstractVariableDeclarationStatemnt)s.Variable!).ResultType;
         s.ResultType = variableType ?? Runtime.ValueType.Int;
     }
 

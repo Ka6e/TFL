@@ -330,7 +330,7 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -421,7 +421,7 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -437,7 +437,7 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
     }
 
     [Fact]

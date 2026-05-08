@@ -37,14 +37,15 @@ public sealed class ResolveTypesPass : AbstractPass
     public override void Visit(UnaryOperationExpression e)
     {
         base.Visit(e);
-        if (e.Operand.ResultType != ValueType.Bool)
+        ValueType? resultType = GetUnaryOperationResultType(e.Operation, e.Operand.ResultType);
+        if (resultType is null)
         {
             throw new TypeErrorException(
-                $"Unary operation {e.Operation} is allowed only for {ValueType.Bool}"
+                $"Unary operation {e.Operation} is not allowed for type {e.ResultType}"
             );
         }
 
-        e.ResultType = e.Operand.ResultType;
+        e.ResultType = resultType ?? ValueType.Void;
     }
 
     public override void Visit(LengthExpression e)
@@ -241,6 +242,34 @@ public sealed class ResolveTypesPass : AbstractPass
                 return null;
             default:
                 throw new InvalidOperationException($"Unknown binary operation {operaion}");
+        }
+    }
+
+    private static ValueType? GetUnaryOperationResultType(UnaryOperation operation, ValueType valueType)
+    {
+        switch (operation)
+        {
+            case UnaryOperation.Minus:
+                if (valueType == ValueType.Int)
+                {
+                    return ValueType.Int;
+                }
+
+                if (valueType == ValueType.Float)
+                {
+                    return ValueType.Float;
+                }
+
+                return null;
+            case UnaryOperation.LogicalNot:
+                if (valueType == ValueType.Bool)
+                {
+                    return ValueType.Bool;
+                }
+
+                return null;
+            default:
+                throw new InvalidOperationException($"Unknown binary operation {operation}");
         }
     }
 }

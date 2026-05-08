@@ -403,13 +403,11 @@ public class VirtualMachineCodegen : IAstVisitor
 
         _builder.AppendJump(InstructionCode.JumpIfFalse, shortCircuitBlock);
 
-        _builder.Append(new Instruction(InstructionCode.Pop));
         e.Right.Accept(this);
         _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
         _builder.InsertPoint = shortCircuitBlock;
         _builder.Append(new Instruction(InstructionCode.Push, new Value(false)));
-        _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
         _builder.InsertPoint = finalBlock;
     }
@@ -423,13 +421,11 @@ public class VirtualMachineCodegen : IAstVisitor
 
         _builder.AppendJump(InstructionCode.JumpIfTrue, shortCircuitBlock);
 
-        _builder.Append(new Instruction(InstructionCode.Pop));
         e.Right.Accept(this);
         _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
         _builder.InsertPoint = shortCircuitBlock;
         _builder.Append(new Instruction(InstructionCode.Push, new Value(true)));
-        _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
         _builder.InsertPoint = finalBlock;
     }

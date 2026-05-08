@@ -139,13 +139,12 @@ public sealed class ResolveTypesPass : AbstractPass
     public override void Visit(IfElseStatement s)
     {
         base.Visit(s);
-        s.ResultType = s.ElseStatement!.ResultType;
+        s.ResultType = ValueType.Void;
     }
 
     public override void Visit(WhileStatement s)
     {
         base.Visit(s);
-
         s.ResultType = ValueType.Void;
     }
 
@@ -197,12 +196,39 @@ public sealed class ResolveTypesPass : AbstractPass
                 }
 
                 return null;
+            case BinaryOperation.LessThan:
+            case BinaryOperation.GreaterThan:
+            case BinaryOperation.LessThanOrEqual:
+            case BinaryOperation.GreaterThanOrEqual:
+                if (left == ValueType.Float && right == ValueType.Float)
+                {
+                    return ValueType.Bool;
+                }
 
+                if (left == ValueType.String && right == ValueType.String)
+                {
+                    return ValueType.Bool;
+                }
+
+                if (left == ValueType.Int && right == ValueType.Int)
+                {
+                    return ValueType.Bool;
+                }
+
+                return null;
             case BinaryOperation.Equal:
             case BinaryOperation.NotEqual:
                 if (left == right && left != ValueType.Void)
                 {
-                    return ValueType.Int;
+                    return ValueType.Bool;
+                }
+
+                return null;
+            case BinaryOperation.LogicalAnd:
+            case BinaryOperation.LogicalOr:
+                if (left == ValueType.Bool && right == ValueType.Bool)
+                {
+                    return ValueType.Bool;
                 }
 
                 return null;

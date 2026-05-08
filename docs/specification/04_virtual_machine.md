@@ -23,6 +23,7 @@ graph LR
     VARS --> VM
     RET --> VM
     VM --> BF --> ENV
+```
 
 ## Модель виртуальной машины
 

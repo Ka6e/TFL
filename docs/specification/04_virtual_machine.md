@@ -199,4 +199,4 @@ graph LR
 | 3 | `ReadF` | `readf() → float` | Читает вещественное число из stdin, помещает результат в стек вычислений |
 | 4 | `ReadS` | `reads() → string` | Читает строку из stdin, помещает результат в стек вычислений |
 | 5 | `Length` | `length(string) → int` | Снимает `EVAL[^1]`, помещает в стек длину строки в Unicode code points как `int` |
-| 6 | `Substr` | `substr(s: string, start: int, length: int) → string` | Снимает `EVAL[^3]` (длина), `EVAL[^2]` (начало), `EVAL[^1]` (строка). Возвращает подстроку в code points |
+| 6 | `Substr` | `substr(s: string, start: int, length: int) → string` | Снимает `EVAL[^1]` (длина), `EVAL[^2]` (начало), `EVAL[^3]` (строка). Возвращает подстроку в code points |

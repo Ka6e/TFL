@@ -57,7 +57,7 @@ public class BuiltinFunctions
             throw new InvalidOperationException("length expects string");
         }
 
-        return new Value(value.AsString().Length);
+        return new Value(value.AsString().EnumerateRunes().Count());
     }
 
     public Value Substr(Value source, Value start, Value length)

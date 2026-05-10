@@ -322,9 +322,11 @@ public class Lexer
 
     private void SkipWhiteSpace()
     {
-        while (char.IsWhiteSpace(_scanner.Peek()))
+        char c = _scanner.Peek();
+        while (c == ' ' || c == '\t' || c == '\n')
         {
             _scanner.Advance();
+            c = _scanner.Peek();
         }
     }
 

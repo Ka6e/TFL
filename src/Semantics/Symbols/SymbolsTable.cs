@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.SymbolStore;
+using System.Diagnostics;
 
 using Ast.Statements;
 
@@ -22,24 +21,28 @@ public sealed class SymbolsTable
 
     public AbstractVariableDeclarationStatemnt GetVariableDeclaration(string name)
     {
-        if (!_variables.TryGetValue(name, out Statement? declaration))
+        if (_variables.TryGetValue(name, out Statement? declaration))
         {
-            throw UnknownSymbolException.UndefinedVariableOrFunction(name);
+            return declaration switch
+            {
+                AbstractVariableDeclarationStatemnt v => v,
+                _ => throw new UnreachableException(),
+            };
         }
 
-        return declaration switch
+        if (_parent != null)
         {
-            AbstractVariableDeclarationStatemnt varible => varible,
-            _ => throw new UnreachableException(),
-        };
+            return _parent.GetVariableDeclaration(name);
+        }
+
+        throw UnknownSymbolException.UndefinedVariableOrFunction(name);
     }
 
     public void DeclareVariable(Statement symbol)
     {
         string name = symbol switch
         {
-            VariableDeclarationStatement v => v.Name,
-            ConstDeclarationStatement c => c.Name,
+            AbstractVariableDeclarationStatemnt v => v.Name,
             _ => throw new UnreachableException(),
         };
 

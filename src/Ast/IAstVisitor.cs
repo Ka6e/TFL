@@ -45,4 +45,6 @@ public interface IAstVisitor
     void Visit(WhileStatement s);
 
     void Visit(FunctionDeclarationStatement s);
+
+    void Visit(FunctionCallStatement s);
 }

@@ -72,16 +72,16 @@ public class BuiltinFunctions
         int len = length.AsInt();
 
         Rune[] runes = str.EnumerateRunes().ToArray();
+        int stringLength = runes.Length;
 
-        if (startIndex < 0 || startIndex >= runes.Length || len <= 0)
+        if (startIndex < 0 || len < 0 || startIndex + len > stringLength)
         {
-            return new Value("");
+            throw new InvalidOperationException(
+                $"substr: out of range (start={startIndex}, length={len}, string_length={stringLength})");
         }
 
-        int actualLen = Math.Min(len, runes.Length - startIndex);
-
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < actualLen; i++)
+        for (int i = 0; i < len; i++)
         {
             sb.Append(runes[startIndex + i].ToString());
         }

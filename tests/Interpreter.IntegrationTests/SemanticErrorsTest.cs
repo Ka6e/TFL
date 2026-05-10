@@ -531,6 +531,6 @@ public class SemanticErrorsTest
         environment.AddInput(1);
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 }

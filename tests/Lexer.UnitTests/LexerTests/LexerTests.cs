@@ -60,14 +60,14 @@ public class LexerTests
         return new TheoryData<string, List<Token>>
         {
             {
-                // Пропуск пробельных символов.
-                "x \t\r\n\fy", [
+                // Р”РѕРїСѓСЃС‚РёРјС‹Рµ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹ РїРѕ СЃРїРµРєРµ: РїСЂРѕР±РµР», С‚Р°Р±СѓР»СЏС†РёСЏ, РїРµСЂРµРІРѕРґ СЃС‚СЂРѕРєРё.
+                "x \t\n y", [
                     new Token(TokenType.Identifier, new TokenValue("x")),
                     new Token(TokenType.Identifier, new TokenValue("y")),
                 ]
             },
             {
-                // Пропуск комментариев.
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
                 "# comments # \na / # should be # \nb * c # ignored #", [
                     new Token(TokenType.Identifier, new TokenValue("a")),
                     new Token(TokenType.Divide),
@@ -77,7 +77,7 @@ public class LexerTests
                 ]
             },
             {
-                // Пропуск вложенных комментариев.
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
                 "a / b # nested # comments # are allowed # \n* c", [
                     new Token(TokenType.Identifier, new TokenValue("a")),
                     new Token(TokenType.Divide),

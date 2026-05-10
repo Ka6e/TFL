@@ -369,6 +369,13 @@ public class VirtualMachineCodegen : IAstVisitor
         _builder.AppendJump(InstructionCode.Call, functionBlock);
     }
 
+    public void Visit(FunctionCallStatement s)
+    {
+        s.Call.Accept(this);
+        // Discard the return value (void functions push Value.Void, non-void push their result).
+        _builder.Append(new Instruction(InstructionCode.Pop));
+    }
+
     public void Visit(LengthExpression e)
     {
         e.Operand.Accept(this);

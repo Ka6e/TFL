@@ -13,6 +13,7 @@ namespace Semantics.Passes;
 /// <exception cref="TypeErrorException">Бросается при несоответствии типов данных в процессе вычисления типов.</exception>
 public sealed class ResolveTypesPass : AbstractPass
 {
+    private ValueType? _currentFunctionReturnType = null;
     public override void Visit(LiteralExpression e)
     {
         base.Visit(e);
@@ -131,12 +132,51 @@ public sealed class ResolveTypesPass : AbstractPass
     public override void Visit(ReadStatement s)
     {
         if (s.Variable is ConstDeclarationStatement)
-        {
             throw new TypeErrorException("Cannot read into a const variable");
-        }
 
         Runtime.ValueType variableType = ((AbstractVariableDeclarationStatemnt)s.Variable!).ResultType;
-        s.ResultType = variableType ?? Runtime.ValueType.Int;
+
+        if (variableType == ValueType.Bool)
+            throw new TypeErrorException("read does not support bool variables");
+
+        s.ResultType = variableType;
+    }
+
+    public override void Visit(ReturnStatement s)
+    {
+        s.Expression?.Accept(this);
+        s.ResultType = ValueType.Void;
+    }
+
+    public override void Visit(FunctionDeclarationStatement s)
+    {
+        ValueType? savedReturnType = _currentFunctionReturnType;
+        _currentFunctionReturnType = s.ReturnType;
+
+        foreach (AbstractParametrStatement param in s.Parameters)
+        {
+            if (param is ParameterStatement p)
+                param.ResultType = p.Type;
+        }
+
+        s.Body.Accept(this);
+        s.ResultType = ValueType.Void;
+
+        _currentFunctionReturnType = savedReturnType;
+    }
+
+    public override void Visit(FunctionCallExpression e)
+    {
+        base.Visit(e);
+
+        FunctionDeclarationStatement func = (FunctionDeclarationStatement)e.Function;
+        e.ResultType = func.ReturnType;
+    }
+
+    public override void Visit(FunctionCallStatement s)
+    {
+        s.Call.Accept(this);
+        s.ResultType = ValueType.Void;
     }
 
     public override void Visit(IfElseStatement s)

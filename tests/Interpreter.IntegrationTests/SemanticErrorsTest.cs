@@ -1,7 +1,5 @@
 ﻿using Interpreter;
 
-using Runtime;
-
 using Semantics.Exceptions;
 
 using Tests.TestLibrary.TestDoubles;
@@ -330,7 +328,22 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unary_minus_on_bool()
+    {
+        const string code = """
+            main {
+                print(-true);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -421,7 +434,7 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -437,7 +450,121 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_break_outside_while()
+    {
+        const string code = """
+            main {
+                break;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<BreakContinueOutsideLoopException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_continue_outside_while()
+    {
+        const string code = """
+            main {
+                continue;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<BreakContinueOutsideLoopException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_break_in_if_outside_while()
+    {
+        const string code = """
+            main {
+                if (true) { break; }
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<BreakContinueOutsideLoopException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_return_outside_function()
+    {
+        const string code = """
+            main {
+                return;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_return_with_value_from_void_function()
+    {
+        const string code = """
+            func doNothing(): void {
+                return 42;
+            }
+            main {
+                doNothing();
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_return_type_mismatch_in_function()
+    {
+        const string code = """
+            func getNumber(): int {
+                return 1.5;
+            }
+            main {
+                print(getNumber());
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_non_void_function_without_return()
+    {
+        const string code = """
+            func getNumber(): int {
+                var x: int = 1;
+            }
+            main {
+                print(getNumber());
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]

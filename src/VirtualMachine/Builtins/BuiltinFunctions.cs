@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Globalization;
 
 using Runtime;
 
@@ -57,7 +57,7 @@ public class BuiltinFunctions
             throw new InvalidOperationException("length expects string");
         }
 
-        return new Value(value.AsString().EnumerateRunes().Count());
+        return new Value(new StringInfo(value.AsString()).LengthInTextElements);
     }
 
     public Value Substr(Value source, Value start, Value length)
@@ -71,8 +71,8 @@ public class BuiltinFunctions
         int startIndex = start.AsInt();
         int len = length.AsInt();
 
-        Rune[] runes = str.EnumerateRunes().ToArray();
-        int stringLength = runes.Length;
+        StringInfo stringInfo = new StringInfo(str);
+        int stringLength = stringInfo.LengthInTextElements;
 
         if (startIndex < 0 || len < 0 || startIndex + len > stringLength)
         {
@@ -80,12 +80,11 @@ public class BuiltinFunctions
                 $"substr: out of range (start={startIndex}, length={len}, string_length={stringLength})");
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < len; i++)
+        if (len == 0)
         {
-            sb.Append(runes[startIndex + i].ToString());
+            return new Value(string.Empty);
         }
 
-        return new Value(sb.ToString());
+        return new Value(stringInfo.SubstringByTextElements(startIndex, len));
     }
 }

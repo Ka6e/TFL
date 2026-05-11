@@ -320,13 +320,6 @@ public class Parser
         return new ReturnStatement(expr);
     }
 
-    // private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
-    // {
-    //     Match(TokenType.Func);
-    //     string name = Match(TokenType.Identifier).Value!.ToString();
-    //     Match(TokenType.OpenParenthesis);
-    // }
-
     /// <summary>
     /// continue_stmt =
     ///    "continue",

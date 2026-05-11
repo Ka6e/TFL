@@ -92,13 +92,13 @@ public class CheckTypesPass : AbstractPass
     public override void Visit(BreakStatement s)
     {
         if (_loopDepth == 0)
-            throw new TypeErrorException("'break' is not allowed outside a while loop");
+            throw new BreakContinueOutsideLoopException("break");
     }
 
     public override void Visit(ContinueStatement s)
     {
         if (_loopDepth == 0)
-            throw new TypeErrorException("'continue' is not allowed outside a while loop");
+            throw new BreakContinueOutsideLoopException("continue");
     }
 
     public override void Visit(ReturnStatement s)

@@ -490,4 +490,36 @@ public class BuiltinFunctionsTest
 
         Assert.Equal("🚀", environment.Output);
     }
+
+    [Fact]
+    public void Length_counts_unicode_symbols_not_utf16_units()
+    {
+        const string code = """
+        main {
+            print(length("🗿🗿🗿"));
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("3", environment.Output);
+    }
+
+    [Fact]
+    public void Substr_with_unicode_emoji_uses_symbol_positions()
+    {
+        const string code = """
+        main {
+            print(substr("🗿🗿🗿", 1, 2));
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+        interpreter.Execute(code);
+
+        Assert.Equal("🗿🗿", environment.Output);
+    }
 }

@@ -41,7 +41,7 @@ public sealed class ResolveTypesPass : AbstractPass
         if (resultType is null)
         {
             throw new TypeErrorException(
-                $"Unary operation {e.Operation} is not allowed for type {e.ResultType}"
+                $"Unary operation {e.Operation} is not allowed for type {e.Operand.ResultType}"
             );
         }
 

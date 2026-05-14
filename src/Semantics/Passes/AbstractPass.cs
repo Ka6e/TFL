@@ -16,7 +16,6 @@ public abstract class AbstractPass : IAstVisitor
     {
     }
 
-
     public virtual void Visit(BlockStatement s)
     {
         foreach (Statement statement in s.Statements)

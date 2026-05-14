@@ -421,7 +421,7 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -437,7 +437,23 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_logical_not_applied_to_string()
+    {
+        const string code = """
+            main {
+                var x: string = "";
+                print(!x);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]

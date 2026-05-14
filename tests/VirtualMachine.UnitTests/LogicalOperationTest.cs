@@ -7,16 +7,6 @@ namespace VirtualMachine.UnitTests;
 
 public class LogicalOperationTest
 {
-    private static List<Instruction> PrintResult(List<Instruction> setup)
-    {
-        return [
-            ..setup,
-            new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
-            new Instruction(InstructionCode.Push, 0),
-            new Instruction(InstructionCode.Halt),
-        ];
-    }
-
     [Theory]
     [MemberData(nameof(GetAndData))]
     public void Can_apply_logical_and(List<Instruction> program, string expected)
@@ -42,6 +32,7 @@ public class LogicalOperationTest
                 ]),
                 "1"
             },
+
             // 1 && 0 → "0"
             {
                 PrintResult([
@@ -51,6 +42,7 @@ public class LogicalOperationTest
                 ]),
                 "0"
             },
+
             // 0 && 1 → "0"
             {
                 PrintResult([
@@ -60,6 +52,7 @@ public class LogicalOperationTest
                 ]),
                 "0"
             },
+
             // 0 && 0 → "0"
             {
                 PrintResult([
@@ -97,6 +90,7 @@ public class LogicalOperationTest
                 ]),
                 "1"
             },
+
             // 0 || 1 → "1"
             {
                 PrintResult([
@@ -106,6 +100,7 @@ public class LogicalOperationTest
                 ]),
                 "1"
             },
+
             // 1 || 1 → "1"
             {
                 PrintResult([
@@ -115,6 +110,7 @@ public class LogicalOperationTest
                 ]),
                 "1"
             },
+
             // 0 || 0 → "0"
             {
                 PrintResult([
@@ -151,6 +147,7 @@ public class LogicalOperationTest
                 ]),
                 "1"
             },
+
             // !1 → "0"
             {
                 PrintResult([
@@ -159,6 +156,7 @@ public class LogicalOperationTest
                 ]),
                 "0"
             },
+
             // !42 → "0" (любое ненулевое значение)
             {
                 PrintResult([
@@ -167,6 +165,7 @@ public class LogicalOperationTest
                 ]),
                 "0"
             },
+
             // !!1 → "1" (двойное отрицание)
             {
                 PrintResult([
@@ -177,5 +176,15 @@ public class LogicalOperationTest
                 "1"
             },
         };
+    }
+
+    private static List<Instruction> PrintResult(List<Instruction> setup)
+    {
+        return [
+            ..setup,
+            new Instruction(InstructionCode.CallBuiltin, (int)BuiltinFunctionCode.Print),
+            new Instruction(InstructionCode.Push, 0),
+            new Instruction(InstructionCode.Halt),
+        ];
     }
 }

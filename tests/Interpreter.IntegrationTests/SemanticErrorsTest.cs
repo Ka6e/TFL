@@ -289,6 +289,96 @@ public class SemanticErrorsTest
     }
 
     [Fact]
+    public void Throws_on_string_divide_string()
+    {
+        const string code = """
+            main {
+                print("a" / "b");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_string_modulo_string()
+    {
+        const string code = """
+            main {
+                print("a" % "b");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_minus_string()
+    {
+        const string code = """
+            main {
+                print(1 - "hello");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_float_multiply_string()
+    {
+        const string code = """
+            main {
+                print(1.5 * "hello");
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_divide_bool()
+    {
+        const string code = """
+            main {
+                print(10 / true);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_bool_multiply_int()
+    {
+        const string code = """
+            main {
+                print(true * 5);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
     public void Throws_on_string_multiply_int()
     {
         const string code = """
@@ -330,7 +420,23 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unary_minus_on_bool()
+    {
+        const string code = """
+            main {
+                var b: bool = true;
+                print(-b);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -421,7 +527,7 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -437,7 +543,23 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_logical_not_applied_to_string()
+    {
+        const string code = """
+            main {
+                var s: string = "test";
+                print(!s);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]
@@ -476,6 +598,66 @@ public class SemanticErrorsTest
         const string code = """
             main {
                 print(true < false);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_greater_than_with_bool_operands()
+    {
+        const string code = """
+            main {
+                print(true > false);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_less_than_with_mixed_types()
+    {
+        const string code = """
+            main {
+                print(1 < 1.5);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_equal_with_mixed_types()
+    {
+        const string code = """
+            main {
+                print(1 == 1.5);
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_not_equal_with_mixed_types()
+    {
+        const string code = """
+            main {
+                print(1 != "hello");
             }
             """;
 

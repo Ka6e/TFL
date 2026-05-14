@@ -1,4 +1,4 @@
-﻿using Ast.Expressions;
+using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
 
@@ -20,7 +20,6 @@ public interface IAstVisitor
 
     void Visit(SubstrExpression e);
 
-    void Visit(FunctionCallExpression e);
 
     void Visit(BlockStatement s);
 
@@ -34,7 +33,6 @@ public interface IAstVisitor
 
     void Visit(PrintStatement s);
 
-    void Visit(ReturnStatement s);
 
     void Visit(IfElseStatement s);
 
@@ -44,5 +42,4 @@ public interface IAstVisitor
 
     void Visit(WhileStatement s);
 
-    void Visit(FunctionDeclarationStatement s);
 }

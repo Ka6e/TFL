@@ -1,4 +1,4 @@
-﻿using Ast.Program;
+using Ast.Program;
 
 using Semantics.Passes;
 using Semantics.Symbols;
@@ -22,6 +22,7 @@ public class SemanticsChecker
             new ResolveNamePass(globalSymbols),
             new ResolveTypesPass(),
             new CheckTypesPass(),
+            new CheckBreakContinuePass(),
 
         ];
     }

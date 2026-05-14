@@ -1,4 +1,4 @@
-﻿using Ast;
+using Ast;
 using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
@@ -16,13 +16,6 @@ public abstract class AbstractPass : IAstVisitor
     {
     }
 
-    public void Visit(FunctionCallExpression e)
-    {
-        foreach (Expression arg in e.Arguments)
-        {
-            arg.Accept(this);
-        }
-    }
 
     public virtual void Visit(BlockStatement s)
     {
@@ -56,10 +49,6 @@ public abstract class AbstractPass : IAstVisitor
         s.Expression.Accept(this);
     }
 
-    public virtual void Visit(ReturnStatement s)
-    {
-        s.Expression?.Accept(this);
-    }
 
     public virtual void Visit(IfElseStatement s)
     {
@@ -82,15 +71,6 @@ public abstract class AbstractPass : IAstVisitor
         s.Block.Accept(this);
     }
 
-    public void Visit(FunctionDeclarationStatement s)
-    {
-        foreach (AbstractParametrStatement param in s.Parameters)
-        {
-            param.Accept(this);
-        }
-
-        s.Body.Accept(this);
-    }
 
     public virtual void Visit(BinaryOperationExpression e)
     {

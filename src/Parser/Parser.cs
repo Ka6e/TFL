@@ -1,4 +1,4 @@
-﻿using Ast.Expressions;
+using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
 
@@ -79,7 +79,7 @@ public class Parser
             TokenType.While => ParseWhileStatement(),
             TokenType.Break => ParseBreakStatement(),
             TokenType.Continue => ParseContinueStatement(),
-            TokenType.Return => ParseReturnStatement(),
+
             _ => ParseBlock(),
         };
     }
@@ -254,26 +254,7 @@ public class Parser
         return new BreakStatement();
     }
 
-    private ReturnStatement ParseReturnStatement()
-    {
-        Match(TokenType.Return);
 
-        Expression? expr = null;
-        if (_tokens.Peek().Type != TokenType.Semicolon)
-        {
-            expr = ParseExpression();
-        }
-
-        Match(TokenType.Semicolon);
-        return new ReturnStatement(expr);
-    }
-
-    // private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
-    // {
-    //     Match(TokenType.Func);
-    //     string name = Match(TokenType.Identifier).Value!.ToString();
-    //     Match(TokenType.OpenParenthesis);
-    // }
 
     /// <summary>
     /// continue_stmt =

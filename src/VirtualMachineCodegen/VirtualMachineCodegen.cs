@@ -1,4 +1,4 @@
-﻿using Ast;
+using Ast;
 using Ast.Expressions;
 using Ast.Program;
 using Ast.Statements;
@@ -32,15 +32,6 @@ public class VirtualMachineCodegen : IAstVisitor
     public List<Instruction> Generate(ProgramNode program)
     {
         _symbolsTable = new CodegenSymbolsTable(null);
-
-        foreach (Statement stmt in program.Block.Statements)
-        {
-            if (stmt is FunctionDeclarationStatement func)
-            {
-                BasicBlock functionBlock = _builder.CreateBasicBlock();
-                _symbolsTable.AddFunctionEntry(func.Name, functionBlock);
-            }
-        }
 
         program.Block.Accept(this);
 
@@ -206,67 +197,16 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(BreakStatement s)
     {
-        if (_currentLoopFinalBlockStack.Count == 0)
-        {
-            throw new InvalidOperationException("break outside of loop");
-        }
-
         BasicBlock loopFinalBlock = _currentLoopFinalBlockStack.Peek();
         _builder.AppendJump(InstructionCode.Jump, loopFinalBlock);
     }
 
     public void Visit(ContinueStatement s)
     {
-        if (_currentLoopStartBlockStack.Count == 0)
-        {
-            throw new InvalidOperationException("continue outside of loop");
-        }
-
         BasicBlock loopStartBlock = _currentLoopStartBlockStack.Peek();
         _builder.AppendJump(InstructionCode.Jump, loopStartBlock);
     }
 
-    public void Visit(ReturnStatement s)
-    {
-        if (s.Expression != null)
-        {
-            s.Expression.Accept(this);
-        }
-        else
-        {
-            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
-        }
-
-        _builder.Append(new Instruction(InstructionCode.Return));
-    }
-
-    public void Visit(FunctionDeclarationStatement s)
-    {
-        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(s.Name);
-
-        BasicBlock previousBlock = _builder.InsertPoint;
-        _builder.InsertPoint = functionBlock;
-
-        PushLexicalScope();
-
-        for (int i = s.Parameters.Count - 1; i >= 0; i--)
-        {
-            AbstractParametrStatement param = s.Parameters[i];
-            _builder.Append(new Instruction(InstructionCode.DefineVar, param.Name));
-        }
-
-        s.Body.Accept(this);
-
-        if (s.ReturnType == ValueType.Void)
-        {
-            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
-            _builder.Append(new Instruction(InstructionCode.Return));
-        }
-
-        PopLexicalScope();
-
-        _builder.InsertPoint = previousBlock;
-    }
 
     public void Visit(LiteralExpression e)
     {
@@ -358,16 +298,6 @@ public class VirtualMachineCodegen : IAstVisitor
         }
     }
 
-    public void Visit(FunctionCallExpression e)
-    {
-        foreach (Expression arg in e.Arguments)
-        {
-            arg.Accept(this);
-        }
-
-        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(e.Name);
-        _builder.AppendJump(InstructionCode.Call, functionBlock);
-    }
 
     public void Visit(LengthExpression e)
     {

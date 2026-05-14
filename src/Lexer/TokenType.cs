@@ -1,4 +1,4 @@
-﻿namespace Lexemes;
+namespace Lexemes;
 
 public enum TokenType
 {
@@ -57,25 +57,12 @@ public enum TokenType
     /// </summary>
     Continue,
 
-    /// <summary>
-    /// Ключевое слово return
-    /// </summary>
-    Return,
 
     /// <summary>
     /// Ключевое слово while
     /// </summary>
     While,
 
-    /// <summary>
-    /// Ключевое слово func
-    /// </summary>
-    Func,
-
-    /// <summary>
-    /// Ключевое слово void
-    /// </summary>
-    Void,
 
     /// <summary>
     /// Идентификатор

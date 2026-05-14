@@ -1,4 +1,4 @@
-﻿using Interpreter;
+using Interpreter;
 
 using Runtime;
 
@@ -532,5 +532,69 @@ public class SemanticErrorsTest
         Interpreter interpreter = new(environment);
 
         Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_break_outside_while()
+    {
+        const string code = """
+            main {
+                break;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidBreakContinueException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_continue_outside_while()
+    {
+        const string code = """
+            main {
+                continue;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidBreakContinueException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_break_inside_if_but_outside_while()
+    {
+        const string code = """
+            main {
+                if (true) {
+                    break;
+                }
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidBreakContinueException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_continue_inside_if_but_outside_while()
+    {
+        const string code = """
+            main {
+                if (true) {
+                    continue;
+                }
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidBreakContinueException>(() => interpreter.Execute(code));
     }
 }

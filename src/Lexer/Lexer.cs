@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 
 namespace Lexemes;
@@ -22,10 +22,7 @@ public class Lexer
         { "else", TokenType.Else },
         { "continue", TokenType.Continue },
         { "break", TokenType.Break },
-        { "return", TokenType.Return },
         { "while", TokenType.While },
-        { "func", TokenType.Func },
-        { "void", TokenType.Void },
         { "true", TokenType.BoolLiteral },
         { "false", TokenType.BoolLiteral },
     };

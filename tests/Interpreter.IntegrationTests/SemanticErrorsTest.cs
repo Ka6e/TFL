@@ -563,4 +563,64 @@ public class SemanticErrorsTest
 
         Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
     }
+
+    [Fact]
+    public void Throws_on_break_outside_while()
+    {
+        const string code = """
+            main {
+                break;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidLoopControlStatementException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_continue_outside_while()
+    {
+        const string code = """
+            main {
+                continue;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidLoopControlStatementException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_break_in_if_outside_while()
+    {
+        const string code = """
+            main {
+                if (true) { break; }
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidLoopControlStatementException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_continue_in_if_outside_while()
+    {
+        const string code = """
+            main {
+                if (true) { continue; }
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidLoopControlStatementException>(() => interpreter.Execute(code));
+    }
 }

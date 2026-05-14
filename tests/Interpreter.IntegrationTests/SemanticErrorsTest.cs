@@ -623,4 +623,94 @@ public class SemanticErrorsTest
 
         Assert.Throws<InvalidLoopControlStatementException>(() => interpreter.Execute(code));
     }
+
+    [Fact]
+    public void Throws_on_string_divided_by_int()
+    {
+        const string code = """
+        main {
+            print("hello" / 2);
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_bool_plus_bool()
+    {
+        const string code = """
+        main {
+            print(true + false);
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_int_less_than_float()
+    {
+        const string code = """
+        main {
+            print(1 < 1.5);
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_bool_equal_to_int()
+    {
+        const string code = """
+        main {
+            print(true == 1);
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_logical_and_with_string_operands()
+    {
+        const string code = """
+        main {
+            print("hello" && "world");
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_logical_or_with_float_operands()
+    {
+        const string code = """
+        main {
+            print(1.0 || 2.0);
+        }
+        """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
 }

@@ -52,36 +52,36 @@ public class BuiltinFunctions
 
     public Value Length(Value value)
     {
-        if (!value.IsString())
-        {
-            throw new InvalidOperationException("length expects string");
-        }
+        string str = value.AsString();
 
-        return new Value(value.AsString().Length);
+        int runeCount = str.EnumerateRunes().Count();
+
+        return new Value(runeCount);
     }
 
     public Value Substr(Value source, Value start, Value length)
     {
-        if (!source.IsString())
-        {
-            throw new InvalidOperationException("substr: first argument must be string");
-        }
-
         string str = source.AsString();
         int startIndex = start.AsInt();
-        int len = length.AsInt();
+        int requestedLength = length.AsInt();
 
         Rune[] runes = str.EnumerateRunes().ToArray();
+        int totalRunes = runes.Length;
 
-        if (startIndex < 0 || startIndex >= runes.Length || len <= 0)
+        if (startIndex < 0 || requestedLength < 0 || startIndex + requestedLength > totalRunes)
         {
-            return new Value("");
+            throw new InvalidOperationException(
+                $"substr: invalid arguments (start={startIndex}, length={requestedLength}, string_length={totalRunes})"
+            );
         }
 
-        int actualLen = Math.Min(len, runes.Length - startIndex);
+        if (requestedLength == 0)
+        {
+            return new Value(string.Empty);
+        }
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < actualLen; i++)
+        for (int i = 0; i < requestedLength; i++)
         {
             sb.Append(runes[startIndex + i].ToString());
         }

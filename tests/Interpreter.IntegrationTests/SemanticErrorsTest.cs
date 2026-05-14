@@ -330,7 +330,21 @@ public class SemanticErrorsTest
         FakeEnvironment environment = new();
         Interpreter interpreter = new(environment);
 
-        Assert.Throws<InvalidOperationException>(() => interpreter.Execute(code));
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unary_minus_on_bool()
+    {
+        const string code = """
+                            main {
+                                print(-true);
+                            }
+                            """;
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
 
     [Fact]

@@ -44,8 +44,6 @@
 
 ## Функции substr и length
 
-- [x] substr корректно обрабатывает Unicode-символы 
-    - `print(substr("Hello, 🚀", 7, 1));` → "🚀"
 - [x] substr возвращает середину строки
     - `print(substr("hello", 1, 3));` → "ell"
 - [x] substr возвращает префикс
@@ -64,12 +62,18 @@
     - `var sub: string = substr(s, 0, 7); print(sub);` → "program"
 - [x] результат substr можно конкатенировать
     - `print(substr(s, 0, 5) + "!");` → "hello!"
+- [x] substr корректно обрабатывает Unicode-символы 
+    - `print(substr("Hello, 🚀", 7, 1));` → "🚀"
+- [x] substr с Unicode-эмодзи использует позиции символов
+    - `print(substr("🗿🗿🗿", 1, 2));` → "🗿🗿"
 - [x] length возвращает длину строки
     - `print(length("hello"));` → "5"
 - [x] length пустой строки равен 0
     - `print(length(""));` → "0"
 - [x] length работает с переменной-строкой
     - `var s: string = "abc"; print(length(s));` → "3"
+- [x] length считает символы Unicode, а не UTF-16 units
+    - `print(length("🗿🗿🗿"));` → "3"
 
 ## Выражения (int)
 
@@ -102,6 +106,19 @@
     - `print(1 != 1);` → "0"
     - `print(1 == 1);` → "1"
     - `print(1 == 2);` → "0"
+- [x] Операторы отношения
+    - `print(1 < 2);` → "1"
+    - `print(2 < 1);` → "0"
+    - `print(1 < 1);` → "0"
+    - `print(1 > 2);` → "0"
+    - `print(2 > 1);` → "1"
+    - `print(1 > 1);` → "0"
+    - `print(1 <= 2);` → "1"
+    - `print(1 <= 1);` → "1"
+    - `print(2 <= 1);` → "0"
+    - `print(1 >= 2);` → "0"
+    - `print(1 >= 1);` → "1"
+    - `print(2 >= 1);` → "1"
 
 ## Выражения (float)
 
@@ -124,6 +141,7 @@
     - `print(3.5 % 2.0);` → "1.5"
 - [x] Сложные выражения
     - `print(1.5 + 2.0 * 3.0);` → "7.5"
+    - `print((1.5 + 2.5) * 0.5);` → "2"
     - `print(2.5 + 3.0 * 4.0 - 10.0 / 2.0);` → "9.5"
     - `print((2.0 + 3.0) * (4.0 - 10.0) / 2.0);` → "-15"
 - [x] Операторы сравнения
@@ -131,6 +149,12 @@
     - `print(1.5 == 2.5);` → "0"
     - `print(1.5 != 2.5);` → "1"
     - `print(1.5 != 1.5);` → "0"
+- [x] Операторы отношения
+    - `print(1.0 < 2.0);` → "1"
+    - `print(2.0 < 1.0);` → "0"
+    - `print(1.5 <= 1.5);` → "1"
+    - `print(2.5 > 1.5);` → "1"
+    - `print(1.5 >= 2.5);` → "0"
 
 ## Выражения (string)
 
@@ -149,6 +173,35 @@
     - `print("hello" != "hello");` → "0"
     - `print("" == "");` → "1"
     - `print("" != "x");` → "1"
+- [x] Операторы отношения
+    - `print("abc" < "abd");` → "1"
+    - `print("abc" > "abd");` → "0"
+    - `print("abc" <= "abc");` → "1"
+    - `print("xyz" >= "abc");` → "1"
+
+## Логические выражения (bool)
+
+- [x] Логическое НЕ
+    - `print(!true);` → "0"
+    - `print(!false);` → "1"
+- [x] Логическое И
+    - `print(true && true);` → "1"
+    - `print(true && false);` → "0"
+    - `print(false && true);` → "0"
+    - `print(false && false);` → "0"
+- [x] Логическое ИЛИ
+    - `print(true || true);` → "1"
+    - `print(true || false);` → "1"
+    - `print(false || true);` → "1"
+    - `print(false || false);` → "0"
+- [x] Сравнение bool
+    - `print(true == true);` → "1"
+    - `print(true == false);` → "0"
+    - `print(true != false);` → "1"
+- [x] Короткая схема для &&
+    - `var b: bool = false && (x == 1); print(b);` → "0"
+- [x] Короткая схема для ||
+    - `var b: bool = true || (x == 1); print(b);` → "1"
 
 ## Переменные и константы (int)
 
@@ -188,6 +241,57 @@
     - `var a: string = "hello"; var b: string = " world"; var c: string = a + b; print(c);` → "hello world"
 - [x] Значение по умолчанию — пустая строка
     - `var s: string; print(s);` → ""
+
+## Переменные (bool)
+
+- [x] Объявление и использование
+    - `var b: bool = true; print(b);` → "1"
+- [x] Значение по умолчанию — false
+    - `var b: bool; print(b);` → "0"
+- [x] Присваивание
+    - `var b: bool = false; b = true; print(b);` → "1"
+- [x] Константы bool
+    - `const yes: bool = true; const no: bool = false; print(yes); print(no);` → "10"
+- [x] false выводится как 0
+    - `print(false);` → "0"
+- [x] true выводится как 1
+    - `print(true);` → "1"
+
+## Управляющие конструкции (if/else)
+
+- [x] if выполняет then-ветвь при true
+    - `if (true) { print(1); }` → "1"
+- [x] if пропускает тело при false
+    - `if (false) { print(1); }` → ""
+- [x] if-else выполняет then-ветвь
+    - `if (x > 3) { print(1); } else { print(0); }` → "1"
+- [x] if-else выполняет else-ветвь
+    - `if (x > 3) { print(1); } else { print(0); }` → "0"
+- [x] Цепочка else-if берет первую истинную ветвь
+    - `if (x > 10) ... else if (x > 3) ... else ...` → "2"
+- [x] Цепочка else-if берет else-ветвь
+    - `if (x > 10) ... else if (x > 3) ... else ...` → "1"
+- [x] if с выражением сравнения
+    - `if (a < b) { print(1); }` → "1"
+- [x] if с логическим И
+    - `if (x > 3 && x < 10) { print(1); } else { print(0); }` → "1"
+- [x] if с логическим ИЛИ
+    - `if (x > 10 || x < 5) { print(1); } else { print(0); }` → "1"
+
+## Управляющие конструкции (while)
+
+- [x] while выполняет тело пока условие true
+    - `while (i < 3) { print(i); i = i + 1; }` → "012"
+- [x] while не выполняет тело при изначально ложном условии
+    - `while (i < 3) { ... }` → ""
+- [x] while с break выходит из цикла
+    - `while (true) { if (i >= 3) { break; } print(i); i = i + 1; }` → "012"
+- [x] while с continue пропускает остаток тела
+    - `while (i < 5) { i = i + 1; if (i == 3) { continue; } print(i); }` → "1245"
+- [x] Вложенные циклы while
+    - `while (i < 2) { while (j < 2) { print(i); print(j); j = j + 1; } i = i + 1; }` → "00011011"
+- [x] while с bool-переменной в условии
+    - `while (running) { count = count + 1; if (count >= 3) { running = false; } } print(count);` → "3"
 
 ## Семантические ошибки (общие)
 
@@ -238,8 +342,34 @@
     - `print("hello" * 2);` → ошибка
 - [x] float + string
     - `print(1.5 + "x");` → ошибка
+- [x] string / int
+    - `print("hello" / 2);` → ошибка
+- [x] bool + bool
+    - `print(true + false);` → ошибка
+- [x] int < float
+    - `print(1 < 1.5);` → ошибка
+- [x] bool == int
+    - `print(true == 1);` → ошибка
+- [x] string && string
+    - `print("hello" && "world");` → ошибка
+- [x] float || float
+    - `print(1.0 || 2.0);` → ошибка
 - [x] Унарный минус к строке
     - `print(-"hello");` → ошибка
+- [x] Унарный минус к bool
+    - `print(-true);` → ошибка
+- [x] ! к int
+    - `print(!x);` где x: int → ошибка
+- [x] ! к float
+    - `print(!x);` где x: float → ошибка
+- [x] ! к string
+    - `print(!x);` где x: string → ошибка
+- [x] && с int
+    - `print(1 && 0);` → ошибка
+- [x] || с int
+    - `print(0 || 1);` → ошибка
+- [x] < с bool
+    - `print(true < false);` → ошибка
 - [x] length от int
     - `print(length(42));` → ошибка
 - [x] length от float
@@ -253,3 +383,23 @@
     - `print(substr("hello", "a", 1));` → ошибка
 - [x] Третий аргумент не int
     - `print(substr("hello", 0, "bad"));` → ошибка
+
+## Семантические ошибки (управляющие конструкции)
+
+- [x] Условие if не bool
+    - `if (x) { print(1); }` где x: int → ошибка
+- [x] Условие while не bool
+    - `while (x) { ... }` где x: int → ошибка
+- [x] break вне while
+    - `break;` → ошибка
+- [x] continue вне while
+    - `continue;` → ошибка
+- [x] break в if вне while
+    - `if (true) { break; }` → ошибка
+- [x] continue в if вне while
+    - `if (true) { continue; }` → ошибка
+
+## Семантические ошибки (read)
+
+- [x] Чтение в bool-переменную
+    - `var b: bool; read(b);` → ошибка

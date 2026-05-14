@@ -13,7 +13,6 @@ public class VirtualMachine
     private int _exitCode;
     private readonly Stack<Value> _evaluationStack;
     private VariablesTable? _variables;
-    private readonly Stack<ReturnContext> _returnStack;
     private Value _result;
 
     public VirtualMachine(IEnvironment environment, IReadOnlyList<Instruction> instructions)
@@ -28,7 +27,6 @@ public class VirtualMachine
 
         _evaluationStack = new Stack<Value>();
         _variables = new VariablesTable();
-        _returnStack = [];
         _result = Value.Void;
     }
 
@@ -448,24 +446,6 @@ public class VirtualMachine
                         break;
                     }
 
-                case InstructionCode.Call:
-                    {
-                        _returnStack.Push(new ReturnContext(
-                            _instructionPointer,
-                            _variables
-                        ));
-                        _instructionPointer = instruction.Operand.AsInt();
-                        break;
-                    }
-
-                case InstructionCode.Return:
-                    {
-                        ReturnContext context = _returnStack.Pop();
-                        _instructionPointer = context.InstructionPointer;
-                        _variables = context.Variables;
-                        break;
-                    }
-
                 case InstructionCode.StoreResult:
                     {
                         _result = _evaluationStack.Pop();
@@ -474,19 +454,7 @@ public class VirtualMachine
 
                 case InstructionCode.PushVars:
                     {
-                        int variableTableDepth = instruction.Operand.AsInt();
-                        VariablesTable? parentTable;
-
-                        if (variableTableDepth != 0)
-                        {
-                            parentTable = _variables!.GetAncestor(variableTableDepth);
-                        }
-                        else
-                        {
-                            parentTable = null;
-                        }
-
-                        _variables = new VariablesTable(parentTable);
+                        _variables = new VariablesTable(_variables);
                         break;
                     }
 
@@ -544,9 +512,11 @@ public class VirtualMachine
                     Value substrLength = _evaluationStack.Pop();
                     Value substrStart = _evaluationStack.Pop();
                     Value substrSource = _evaluationStack.Pop();
+
                     _evaluationStack.Push(
                         _builtinFunctions.Substr(substrSource, substrStart, substrLength)
                     );
+
                     break;
                 }
 
@@ -565,18 +535,12 @@ public class VirtualMachine
         InstructionCode lastInstructionCode = instructions[^1].Code;
 
         if (lastInstructionCode != InstructionCode.Halt
-            && lastInstructionCode != InstructionCode.Return
             && lastInstructionCode != InstructionCode.Jump)
         {
             throw new InvalidOperationException(
-                $"Last instruction must be {InstructionCode.Halt}," +
-                $" {InstructionCode.Return} or {InstructionCode.Jump}, got {lastInstructionCode}"
+                $"Last instruction must be {InstructionCode.Halt}" +
+                $" or {InstructionCode.Jump}, got {lastInstructionCode}"
             );
         }
     }
-
-    private record struct ReturnContext(
-        int InstructionPointer,
-        VariablesTable? Variables
-    );
 }

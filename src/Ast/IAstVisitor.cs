@@ -20,8 +20,6 @@ public interface IAstVisitor
 
     void Visit(SubstrExpression e);
 
-    void Visit(FunctionCallExpression e);
-
     void Visit(BlockStatement s);
 
     void Visit(AssignmentStatement s);
@@ -34,8 +32,6 @@ public interface IAstVisitor
 
     void Visit(PrintStatement s);
 
-    void Visit(ReturnStatement s);
-
     void Visit(IfElseStatement s);
 
     void Visit(ContinueStatement s);
@@ -43,6 +39,4 @@ public interface IAstVisitor
     void Visit(BreakStatement s);
 
     void Visit(WhileStatement s);
-
-    void Visit(FunctionDeclarationStatement s);
 }

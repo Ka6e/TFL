@@ -6,36 +6,13 @@ public class VariablesTable
 {
     private readonly VariablesTable? _parent;
     private readonly Dictionary<string, Value> _variables = new();
-    private readonly int _depth;
 
     public VariablesTable(VariablesTable? parent = null)
     {
         _parent = parent;
-        _depth = (parent?._depth ?? 0) + 1;
     }
 
     public VariablesTable? Parent => _parent;
-
-    /// <summary>
-    /// Получает таблицу с указанной глубиной.
-    /// Это необходимо для поддержки захвата функцией окружающей её области видимости.
-    /// </summary>
-    public VariablesTable GetAncestor(int depth)
-    {
-        if (depth <= 0)
-        {
-            throw new InvalidOperationException($"Invalid variables table depth {depth}");
-        }
-
-        if (depth > _depth)
-        {
-            throw new InvalidOperationException(
-                $"No variables table with depth {depth}: current depth is {_depth}"
-            );
-        }
-
-        return GetAncestorImpl(depth);
-    }
 
     /// <summary>
     /// Объявляет переменную с указанным именем и начальным значением.
@@ -86,15 +63,5 @@ public class VariablesTable
         }
 
         throw new InvalidOperationException($"Variable {name} not found");
-    }
-
-    private VariablesTable GetAncestorImpl(int depth)
-    {
-        if (_depth == depth)
-        {
-            return this;
-        }
-
-        return _parent!.GetAncestor(depth);
     }
 }

@@ -22,7 +22,7 @@ public class SemanticsChecker
             new ResolveNamePass(globalSymbols),
             new ResolveTypesPass(),
             new CheckTypesPass(),
-
+            new CheckLoopControlPass(),
         ];
     }
 

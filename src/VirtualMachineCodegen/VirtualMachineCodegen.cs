@@ -33,6 +33,12 @@ public class VirtualMachineCodegen : IAstVisitor
     {
         _symbolsTable = new CodegenSymbolsTable(null);
 
+        foreach (FunctionDeclarationStatement func in program.Functions)
+        {
+            BasicBlock functionBlock = _builder.CreateBasicBlock();
+            _symbolsTable.AddFunctionEntry(func.Name, functionBlock);
+        }
+
         foreach (Statement stmt in program.Block.Statements)
         {
             if (stmt is FunctionDeclarationStatement func)
@@ -143,7 +149,7 @@ public class VirtualMachineCodegen : IAstVisitor
             s.Condition.Accept(this);
             _builder.AppendJump(InstructionCode.JumpIfFalse, elseBlock);
 
-            s.Block.Accept(this);  // ← без PushLexicalScope
+            s.Block.Accept(this);
             _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
             _builder.InsertPoint = elseBlock;

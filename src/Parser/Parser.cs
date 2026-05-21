@@ -351,6 +351,7 @@ public class Parser
         }
         catch
         {
+            Match(TokenType.Void);
             return ValueType.Void;
         }
     }

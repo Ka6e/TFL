@@ -147,3 +147,30 @@
     - Push 1 (true), JumpIfFalse 4 (не срабатывает), Push 99, Print → "99"
 - [x] Реализация if/else через JumpIfFalse и Jump
     - if (1 < 5) { print 1 } else { print 0 } → "1"
+
+## Вызов пользовательских функций (Call/Return)
+
+- [x] Call прыгает на функцию, Return возвращает управление вызывающей стороне со значением
+    - func constant(): int { return 42; } → "42"
+- [x] Call с одним аргументом: параметр определяется через DefineVar, значение возвращается
+    - func double(n): n + n → double(5) → "10"
+- [x] Call с двумя аргументами определяет параметры в правильном порядке (стек LIFO)
+    - func add(a, b): a + b → add(3, 4) → "7"
+- [x] Return восстанавливает переменные вызывающей стороны
+    - переменная outer = 99 доступна после возврата из функции → "99"
+- [x] Функция может быть вызвана несколько раз
+    - inc(1), inc(2), inc(3) → "234"
+- [x] Вложенные вызовы: outer вызывает inner, стек возвратов восстанавливается корректно
+    - outer() { return inner() + 10; } inner() { return 5; } → "15"
+
+## Таблица переменных: GetAncestor
+
+- [x] GetAncestor(depth) возвращает саму таблицу при совпадении глубины
+- [x] GetAncestor(1) из дочерней таблицы возвращает корень (проверяется через переменную)
+- [x] GetAncestor(1) из внучатой таблицы возвращает корень
+- [x] GetAncestor(2) из внучатой таблицы возвращает промежуточную таблицу
+- [x] GetAncestor(3) из внучатой таблицы возвращает её саму
+- [x] GetAncestor(0) бросает InvalidOperationException
+- [x] GetAncestor(-1) бросает InvalidOperationException
+- [x] GetAncestor(depth > длины цепочки) бросает InvalidOperationException
+- [x] GetAncestor корректен на каждой глубине (параметризованный тест: depth 1, 2, 3)

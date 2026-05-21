@@ -16,7 +16,7 @@
 - [x] Слово с суффиксом → идентификатор: `mainX`, `variable`, `consts`, `integer`, `reading`
 - [x] Суффиксы length/substr → идентификатор: `lengths`, `length2`, `length_x`, `substrings`, `substr2`, `substr_x`
 - [x] Суффиксы float/string → идентификатор: `floater`, `strings`
-- [x] Суффиксы новых ключевых слов → идентификатор: `iff`, `elsewhere`, `whileTrue`, `breaker`, `continues`, `returned`, `functional`, `voidable`, `boolean`
+- [x] Суффиксы новых ключевых слов → идентификатор: `funcX`, `functions`, `func2`, `func_name`, `returning`, `returns`, `return2`, `voidX`, `breaking`, `continuing`, `whileX`
 
 ## Литералы
 
@@ -79,6 +79,11 @@
 - [x] Объявление переменной с типом string: `var s : string = "hello";`
 - [x] Вызов substr: `substr(s, 0, 3)`
 - [x] Вызов length: `length(s)`
+- [x] Заголовок функции с параметрами: `func add(a: int, b: int): int`
+- [x] Заголовок void-функции: `func greet(): void`
+- [x] Оператор return с выражением: `return a + b;`
+- [x] Оператор return без выражения: `return;`
+- [x] Полное объявление функции с телом: `func add(a: int, b: int): int { return a + b; }`
 
 ## Ошибки
 

@@ -295,7 +295,6 @@ public class Parser
         return new ContinueStatement();
     }
 
-
     private ReturnStatement ParseReturnStatement()
     {
         Match(TokenType.Return);

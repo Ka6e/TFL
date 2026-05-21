@@ -28,7 +28,6 @@ public class KeywordsTests
                     new Token(TokenType.IntegerType),
                 ]
             },
-
             { "func",   [new Token(TokenType.Func)] },
             { "return", [new Token(TokenType.Return)] },
             { "void",   [new Token(TokenType.Void)] },

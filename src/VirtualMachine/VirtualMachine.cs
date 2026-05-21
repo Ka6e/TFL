@@ -474,19 +474,7 @@ public class VirtualMachine
 
                 case InstructionCode.PushVars:
                     {
-                        int variableTableDepth = instruction.Operand.AsInt();
-                        VariablesTable? parentTable;
-
-                        if (variableTableDepth != 0)
-                        {
-                            parentTable = _variables!.GetAncestor(variableTableDepth);
-                        }
-                        else
-                        {
-                            parentTable = null;
-                        }
-
-                        _variables = new VariablesTable(parentTable);
+                        _variables = new VariablesTable(_variables);
                         break;
                     }
 

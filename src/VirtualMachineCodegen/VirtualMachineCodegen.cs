@@ -33,25 +33,31 @@ public class VirtualMachineCodegen : IAstVisitor
     {
         _symbolsTable = new CodegenSymbolsTable(null);
 
+        BasicBlock mainBlock = _builder.InsertPoint;
+
         foreach (FunctionDeclarationStatement func in program.Functions)
         {
             BasicBlock functionBlock = _builder.CreateBasicBlock();
             _symbolsTable.AddFunctionEntry(func.Name, functionBlock);
         }
 
+        _builder.InsertPoint = mainBlock;
+
         foreach (Statement stmt in program.Block.Statements)
         {
-            if (stmt is FunctionDeclarationStatement func)
+            if (stmt is not FunctionDeclarationStatement)
             {
-                BasicBlock functionBlock = _builder.CreateBasicBlock();
-                _symbolsTable.AddFunctionEntry(func.Name, functionBlock);
+                stmt.Accept(this);
             }
         }
 
-        program.Block.Accept(this);
-
         _builder.Append(new Instruction(InstructionCode.Push, 0));
         _builder.Append(new Instruction(InstructionCode.Halt));
+
+        foreach (FunctionDeclarationStatement func in program.Functions)
+        {
+            func.Accept(this);
+        }
 
         return _builder.Finish();
     }
@@ -67,7 +73,10 @@ public class VirtualMachineCodegen : IAstVisitor
 
         foreach (Statement stmt in s.Statements)
         {
-            stmt.Accept(this);
+            if (stmt is not FunctionDeclarationStatement)
+            {
+                stmt.Accept(this);
+            }
         }
 
         PopLexicalScope();
@@ -103,6 +112,7 @@ public class VirtualMachineCodegen : IAstVisitor
     public void Visit(PrintStatement s)
     {
         s.Expression.Accept(this);
+
         _builder.Append(new Instruction(
             InstructionCode.CallBuiltin,
             (int)BuiltinFunctionCode.Print));
@@ -132,11 +142,17 @@ public class VirtualMachineCodegen : IAstVisitor
         }
         else
         {
-            throw new InvalidOperationException($"Unsupported type for read: {s.ResultType}");
+            throw new InvalidOperationException(
+                $"Unsupported type for read: {s.ResultType}");
         }
 
-        _builder.Append(new Instruction(InstructionCode.CallBuiltin, (int)readFunction));
-        _builder.Append(new Instruction(InstructionCode.StoreVar, s.Name));
+        _builder.Append(new Instruction(
+            InstructionCode.CallBuiltin,
+            (int)readFunction));
+
+        _builder.Append(new Instruction(
+            InstructionCode.StoreVar,
+            s.Name));
     }
 
     public void Visit(IfElseStatement s)
@@ -147,10 +163,16 @@ public class VirtualMachineCodegen : IAstVisitor
             BasicBlock finalBlock = _builder.CreateBasicBlock();
 
             s.Condition.Accept(this);
-            _builder.AppendJump(InstructionCode.JumpIfFalse, elseBlock);
+
+            _builder.AppendJump(
+                InstructionCode.JumpIfFalse,
+                elseBlock);
 
             s.Block.Accept(this);
-            _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+            _builder.AppendJump(
+                InstructionCode.Jump,
+                finalBlock);
 
             _builder.InsertPoint = elseBlock;
 
@@ -167,7 +189,10 @@ public class VirtualMachineCodegen : IAstVisitor
                 s.ElseStatement.Accept(this);
             }
 
-            _builder.AppendJump(InstructionCode.Jump, finalBlock);
+            _builder.AppendJump(
+                InstructionCode.Jump,
+                finalBlock);
+
             _builder.InsertPoint = finalBlock;
         }
         else
@@ -175,10 +200,16 @@ public class VirtualMachineCodegen : IAstVisitor
             BasicBlock finalBlock = _builder.CreateBasicBlock();
 
             s.Condition.Accept(this);
-            _builder.AppendJump(InstructionCode.JumpIfFalse, finalBlock);
+
+            _builder.AppendJump(
+                InstructionCode.JumpIfFalse,
+                finalBlock);
 
             s.Block.Accept(this);
-            _builder.AppendJump(InstructionCode.Jump, finalBlock);
+
+            _builder.AppendJump(
+                InstructionCode.Jump,
+                finalBlock);
 
             _builder.InsertPoint = finalBlock;
         }
@@ -192,15 +223,23 @@ public class VirtualMachineCodegen : IAstVisitor
         _currentLoopStartBlockStack.Push(loopBlock);
         _currentLoopFinalBlockStack.Push(finalBlock);
 
-        _builder.AppendJump(InstructionCode.Jump, loopBlock);
+        _builder.AppendJump(
+            InstructionCode.Jump,
+            loopBlock);
+
         _builder.InsertPoint = loopBlock;
 
         s.Expression.Accept(this);
-        _builder.AppendJump(InstructionCode.JumpIfFalse, finalBlock);
+
+        _builder.AppendJump(
+            InstructionCode.JumpIfFalse,
+            finalBlock);
 
         s.Block.Accept(this);
 
-        _builder.AppendJump(InstructionCode.Jump, loopBlock);
+        _builder.AppendJump(
+            InstructionCode.Jump,
+            loopBlock);
 
         _currentLoopFinalBlockStack.Pop();
         _currentLoopStartBlockStack.Pop();
@@ -210,14 +249,22 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(BreakStatement s)
     {
-        BasicBlock loopFinalBlock = _currentLoopFinalBlockStack.Peek();
-        _builder.AppendJump(InstructionCode.Jump, loopFinalBlock);
+        BasicBlock loopFinalBlock =
+            _currentLoopFinalBlockStack.Peek();
+
+        _builder.AppendJump(
+            InstructionCode.Jump,
+            loopFinalBlock);
     }
 
     public void Visit(ContinueStatement s)
     {
-        BasicBlock loopStartBlock = _currentLoopStartBlockStack.Peek();
-        _builder.AppendJump(InstructionCode.Jump, loopStartBlock);
+        BasicBlock loopStartBlock =
+            _currentLoopStartBlockStack.Peek();
+
+        _builder.AppendJump(
+            InstructionCode.Jump,
+            loopStartBlock);
     }
 
     public void Visit(ReturnStatement s)
@@ -228,36 +275,60 @@ public class VirtualMachineCodegen : IAstVisitor
         }
         else
         {
-            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
+            _builder.Append(new Instruction(
+                InstructionCode.Push,
+                Value.Void));
         }
 
-        _builder.Append(new Instruction(InstructionCode.Return));
+        _builder.Append(new Instruction(
+            InstructionCode.PopVars));
+
+        _builder.Append(new Instruction(
+            InstructionCode.Return));
     }
 
     public void Visit(FunctionDeclarationStatement s)
     {
-        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(s.Name);
+        BasicBlock functionBlock =
+            _symbolsTable!.GetFunctionEntry(s.Name);
 
-        BasicBlock previousBlock = _builder.InsertPoint;
+        BasicBlock previousBlock =
+            _builder.InsertPoint;
+
         _builder.InsertPoint = functionBlock;
 
         PushLexicalScope();
 
         for (int i = s.Parameters.Count - 1; i >= 0; i--)
         {
-            AbstractParametrStatement param = s.Parameters[i];
-            _builder.Append(new Instruction(InstructionCode.DefineVar, param.Name));
+            AbstractParametrStatement param =
+                s.Parameters[i];
+
+            _builder.Append(new Instruction(
+                InstructionCode.DefineVar,
+                param.Name));
         }
 
-        s.Body.Accept(this);
+        foreach (Statement stmt in s.Body.Statements)
+        {
+            if (stmt is not FunctionDeclarationStatement)
+            {
+                stmt.Accept(this);
+            }
+        }
 
         if (s.ReturnType == ValueType.Void)
         {
-            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
-            _builder.Append(new Instruction(InstructionCode.Return));
-        }
+            _builder.Append(new Instruction(
+                InstructionCode.Push,
+                Value.Void));
 
-        PopLexicalScope();
+            _builder.Append(new Instruction(
+                InstructionCode.PopVars));
+
+            _builder.Append(new Instruction(
+                InstructionCode.Return));
+        }
 
         _builder.InsertPoint = previousBlock;
     }
@@ -268,7 +339,8 @@ public class VirtualMachineCodegen : IAstVisitor
 
         if (s.Expression.ResultType != ValueType.Void)
         {
-            _builder.Append(new Instruction(InstructionCode.Pop));
+            _builder.Append(new Instruction(
+                InstructionCode.Pop));
         }
     }
 
@@ -278,12 +350,16 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(LiteralExpression e)
     {
-        _builder.Append(new Instruction(InstructionCode.Push, e.Value));
+        _builder.Append(new Instruction(
+            InstructionCode.Push,
+            e.Value));
     }
 
     public void Visit(VariableExpression e)
     {
-        _builder.Append(new Instruction(InstructionCode.LoadVar, e.Name));
+        _builder.Append(new Instruction(
+            InstructionCode.LoadVar,
+            e.Name));
     }
 
     public void Visit(BinaryOperationExpression e)
@@ -291,47 +367,80 @@ public class VirtualMachineCodegen : IAstVisitor
         switch (e.Operation)
         {
             case BinaryOperation.Add:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Add);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Add);
                 break;
 
             case BinaryOperation.Subtract:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Subtract);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Subtract);
                 break;
 
             case BinaryOperation.Multiply:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Multiply);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Multiply);
                 break;
 
             case BinaryOperation.Divide:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Divide);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Divide);
                 break;
 
             case BinaryOperation.Module:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Modulo);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Modulo);
                 break;
 
             case BinaryOperation.Equal:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Equal);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Equal);
                 break;
 
             case BinaryOperation.NotEqual:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.NotEqual);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.NotEqual);
                 break;
 
             case BinaryOperation.LessThan:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.Less);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.Less);
                 break;
 
             case BinaryOperation.LessThanOrEqual:
-                GenerateBinaryOperation(e.Left, e.Right, InstructionCode.LessOrEqual);
+                GenerateBinaryOperation(
+                    e.Left,
+                    e.Right,
+                    InstructionCode.LessOrEqual);
                 break;
 
             case BinaryOperation.GreaterThan:
-                GenerateBinaryOperation(e.Right, e.Left, InstructionCode.Less);
+                GenerateBinaryOperation(
+                    e.Right,
+                    e.Left,
+                    InstructionCode.Less);
                 break;
 
             case BinaryOperation.GreaterThanOrEqual:
-                GenerateBinaryOperation(e.Right, e.Left, InstructionCode.LessOrEqual);
+                GenerateBinaryOperation(
+                    e.Right,
+                    e.Left,
+                    InstructionCode.LessOrEqual);
                 break;
 
             case BinaryOperation.LogicalAnd:
@@ -343,7 +452,8 @@ public class VirtualMachineCodegen : IAstVisitor
                 break;
 
             default:
-                throw new NotImplementedException($"Unsupported binary operation: {e.Operation}");
+                throw new NotImplementedException(
+                    $"Unsupported binary operation: {e.Operation}");
         }
     }
 
@@ -354,15 +464,18 @@ public class VirtualMachineCodegen : IAstVisitor
         switch (e.Operation)
         {
             case UnaryOperation.Minus:
-                _builder.Append(new Instruction(InstructionCode.Negate));
+                _builder.Append(new Instruction(
+                    InstructionCode.Negate));
                 break;
 
             case UnaryOperation.LogicalNot:
-                _builder.Append(new Instruction(InstructionCode.Not));
+                _builder.Append(new Instruction(
+                    InstructionCode.Not));
                 break;
 
             default:
-                throw new NotImplementedException($"Unsupported unary operation: {e.Operation}");
+                throw new NotImplementedException(
+                    $"Unsupported unary operation: {e.Operation}");
         }
     }
 
@@ -373,8 +486,12 @@ public class VirtualMachineCodegen : IAstVisitor
             arg.Accept(this);
         }
 
-        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(e.Name);
-        _builder.AppendJump(InstructionCode.Call, functionBlock);
+        BasicBlock functionBlock =
+            _symbolsTable!.GetFunctionEntry(e.Name);
+
+        _builder.AppendJump(
+            InstructionCode.Call,
+            functionBlock);
     }
 
     public void Visit(LengthExpression e)
@@ -408,43 +525,72 @@ public class VirtualMachineCodegen : IAstVisitor
         _builder.Append(new Instruction(code));
     }
 
-    private void GenerateLogicalAnd(BinaryOperationExpression e)
+    private void GenerateLogicalAnd(
+        BinaryOperationExpression e)
     {
-        BasicBlock shortCircuitBlock = _builder.CreateBasicBlock();
-        BasicBlock finalBlock = _builder.CreateBasicBlock();
+        BasicBlock shortCircuitBlock =
+            _builder.CreateBasicBlock();
+
+        BasicBlock finalBlock =
+            _builder.CreateBasicBlock();
 
         e.Left.Accept(this);
 
-        _builder.AppendJump(InstructionCode.JumpIfFalse, shortCircuitBlock);
+        _builder.AppendJump(
+            InstructionCode.JumpIfFalse,
+            shortCircuitBlock);
 
         e.Right.Accept(this);
-        _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
-        _builder.InsertPoint = shortCircuitBlock;
-        _builder.Append(new Instruction(InstructionCode.Push, new Value(false)));
+        _builder.AppendJump(
+            InstructionCode.Jump,
+            finalBlock);
 
-        _builder.InsertPoint = finalBlock;
+        _builder.InsertPoint =
+            shortCircuitBlock;
+
+        _builder.Append(new Instruction(
+            InstructionCode.Push,
+            new Value(false)));
+
+        _builder.InsertPoint =
+            finalBlock;
     }
 
-    private void GenerateLogicalOr(BinaryOperationExpression e)
+    private void GenerateLogicalOr(
+        BinaryOperationExpression e)
     {
-        BasicBlock shortCircuitBlock = _builder.CreateBasicBlock();
-        BasicBlock finalBlock = _builder.CreateBasicBlock();
+        BasicBlock shortCircuitBlock =
+            _builder.CreateBasicBlock();
+
+        BasicBlock finalBlock =
+            _builder.CreateBasicBlock();
 
         e.Left.Accept(this);
 
-        _builder.AppendJump(InstructionCode.JumpIfTrue, shortCircuitBlock);
+        _builder.AppendJump(
+            InstructionCode.JumpIfTrue,
+            shortCircuitBlock);
 
         e.Right.Accept(this);
-        _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
-        _builder.InsertPoint = shortCircuitBlock;
-        _builder.Append(new Instruction(InstructionCode.Push, new Value(true)));
+        _builder.AppendJump(
+            InstructionCode.Jump,
+            finalBlock);
 
-        _builder.InsertPoint = finalBlock;
+        _builder.InsertPoint =
+            shortCircuitBlock;
+
+        _builder.Append(new Instruction(
+            InstructionCode.Push,
+            new Value(true)));
+
+        _builder.InsertPoint =
+            finalBlock;
     }
 
-    private static Value GetDefaultValue(ValueType type)
+    private static Value GetDefaultValue(
+        ValueType type)
     {
         if (type == ValueType.Int)
         {
@@ -471,13 +617,20 @@ public class VirtualMachineCodegen : IAstVisitor
     private void PushLexicalScope()
     {
         int parentScopeDepth = _symbolsTable?.Depth ?? 0;
+
         _symbolsTable = new CodegenSymbolsTable(_symbolsTable);
-        _builder.Append(new Instruction(InstructionCode.PushVars, parentScopeDepth));
+
+        _builder.Append(new Instruction(
+            InstructionCode.PushVars,
+            parentScopeDepth));
     }
 
     private void PopLexicalScope()
     {
-        _builder.Append(new Instruction(InstructionCode.PopVars));
-        _symbolsTable = _symbolsTable!.Parent;
+        _builder.Append(new Instruction(
+            InstructionCode.PopVars));
+
+        _symbolsTable =
+            _symbolsTable!.Parent;
     }
 }

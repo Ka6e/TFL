@@ -2,14 +2,14 @@
 
 namespace Ast.Statements;
 
-public sealed class ReturnStatement : Statement
+public class FunctionCallStatement : Statement
 {
-    public ReturnStatement(Expression? expression)
+    public FunctionCallStatement(FunctionCallExpression expression)
     {
         Expression = expression;
     }
 
-    public Expression? Expression { get; }
+    public FunctionCallExpression Expression { get; }
 
     public override void Accept(IAstVisitor visitor)
     {

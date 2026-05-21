@@ -1,5 +1,7 @@
 ﻿namespace Ast.Statements;
 
+using ValueType = Runtime.ValueType;
+
 public class FunctionDeclarationStatement : AbstractFunctionDeclarationStatement
 {
     public FunctionDeclarationStatement(
@@ -16,7 +18,6 @@ public class FunctionDeclarationStatement : AbstractFunctionDeclarationStatement
     public ValueType ReturnType { get; }
 
     public BlockStatement Body { get; }
-
 
     public override void Accept(IAstVisitor visitor)
     {

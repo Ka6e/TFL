@@ -4,10 +4,13 @@ namespace Ast.Program;
 
 public class ProgramNode : AstNode
 {
-    public ProgramNode(BlockStatement block)
+    public ProgramNode(IReadOnlyList<FunctionDeclarationStatement> functions, BlockStatement block)
     {
+        Functions = functions;
         Block = block;
     }
+
+    public IReadOnlyList<FunctionDeclarationStatement> Functions { get; }
 
     public BlockStatement Block { get; }
 

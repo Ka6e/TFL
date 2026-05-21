@@ -16,6 +16,11 @@ public abstract class AbstractPass : IAstVisitor
     {
     }
 
+    public void Visit(FunctionCallStatement s)
+    {
+        s.Expression.Accept(this);
+    }
+
     public virtual void Visit(BlockStatement s)
     {
         foreach (Statement statement in s.Statements)
@@ -71,9 +76,21 @@ public abstract class AbstractPass : IAstVisitor
 
     public void Visit(ReturnStatement s)
     {
-        
-        
-        throw new NotImplementedException();
+        s.Expression?.Accept(this);
+    }
+
+    public void Visit(FunctionDeclarationStatement s)
+    {
+        foreach (AbstractParametrStatement param in s.Parameters)
+        {
+            param.Accept(this);
+        }
+
+        s.Body.Accept(this);
+    }
+
+    public void Visit(ParametrDeclaration s)
+    {
     }
 
     public virtual void Visit(BinaryOperationExpression e)
@@ -98,9 +115,10 @@ public abstract class AbstractPass : IAstVisitor
 
     public void Visit(FunctionCallExpression e)
     {
-        
-        
-
+        foreach (Expression arg in e.Arguments)
+        {
+            arg.Accept(this);
+        }
     }
 
     public virtual void Visit(SubstrExpression e)

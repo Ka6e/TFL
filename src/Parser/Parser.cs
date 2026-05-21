@@ -25,8 +25,16 @@ public class Parser
     /// </summary>
     public ProgramNode ParseProgram()
     {
+        List<FunctionDeclarationStatement> function = new();
+
+        while (_tokens.Peek().Type == TokenType.Func)
+        {
+            function.Add(ParseFunctionDeclarationStatement());
+        }
+
         Match(TokenType.Main);
-        return new ProgramNode(ParseBlock());
+        BlockStatement mainBlock = ParseBlock();
+        return new ProgramNode(function, mainBlock);
     }
 
     /// <summary>
@@ -72,7 +80,7 @@ public class Parser
         {
             TokenType.Var => ParseVarDecl(),
             TokenType.Const => ParseConstDecl(),
-            TokenType.Identifier => ParseAssignment(),
+            TokenType.Identifier => ParseIdentifierStatement(),
             TokenType.Print => ParsePrintStatement(),
             TokenType.Read => ParseReadStatement(),
             TokenType.If => ParseIfElseStatement(),
@@ -80,7 +88,7 @@ public class Parser
             TokenType.Break => ParseBreakStatement(),
             TokenType.Continue => ParseContinueStatement(),
             TokenType.Return => ParseReturnStatement(),
-                _ => ParseBlock(),
+            _ => ParseBlock(),
         };
     }
 
@@ -149,6 +157,26 @@ public class Parser
         Match(TokenType.Semicolon);
 
         return new AssignmentStatement(name, expr);
+    }
+
+    private FunctionCallStatement ParseFunctionCallStatement()
+    {
+        FunctionCallExpression expr = ParseFunctionCallExpression();
+        Match(TokenType.Semicolon);
+
+        return new FunctionCallStatement(expr);
+    }
+
+    private Statement ParseIdentifierStatement()
+    {
+        Token next = _tokens.Peek(1);
+
+        return next.Type switch
+        {
+            TokenType.Assign => ParseAssignment(),
+            TokenType.OpenParenthesis => ParseFunctionCallStatement(),
+            _ => throw new Exception("Expected assignment or function call"),
+        };
     }
 
     /// <summary>
@@ -273,13 +301,58 @@ public class Parser
         Match(TokenType.Return);
 
         Expression? expr = null;
-        if (_tokens.Peek().Type == TokenType.Semicolon)
+        if (_tokens.Peek().Type != TokenType.Semicolon)
         {
             expr = ParseExpression();
         }
 
         Match(TokenType.Semicolon);
         return new ReturnStatement(expr);
+    }
+
+    private FunctionDeclarationStatement ParseFunctionDeclarationStatement()
+    {
+        Match(TokenType.Func);
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.OpenParenthesis);
+        List<AbstractParametrStatement> parameters = new List<AbstractParametrStatement>();
+        if (_tokens.Peek().Type != TokenType.CloseParenthesis)
+        {
+            parameters.Add(ParseParametrDeclaration());
+            while (_tokens.Peek().Type == TokenType.Comma)
+            {
+                Match(TokenType.Comma);
+                parameters.Add(ParseParametrDeclaration());
+            }
+        }
+
+        Match(TokenType.CloseParenthesis);
+        Match(TokenType.Colon);
+        ValueType type = ParseReturnType();
+        BlockStatement block = ParseBlock();
+
+        return new FunctionDeclarationStatement(name, parameters, type, block);
+    }
+
+    private ParametrDeclaration ParseParametrDeclaration()
+    {
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.Colon);
+        ValueType type = ParseType();
+
+        return new ParametrDeclaration(name, type);
+    }
+
+    private ValueType ParseReturnType()
+    {
+        try
+        {
+            return ParseType();
+        }
+        catch
+        {
+            return ValueType.Void;
+        }
     }
 
     /// <summary>
@@ -499,6 +572,11 @@ public class Parser
                 _tokens.Advance();
                 return new LiteralExpression(new Value(t.Value!.ToBool()));
             case TokenType.Identifier:
+                if (_tokens.Peek(1).Type == TokenType.OpenParenthesis)
+                {
+                    return ParseFunctionCallExpression();
+                }
+
                 string name = Match(TokenType.Identifier).Value!.ToString();
                 return new VariableExpression(name);
             case TokenType.OpenParenthesis:
@@ -535,6 +613,25 @@ public class Parser
                     ]
                 );
         }
+    }
+
+    private FunctionCallExpression ParseFunctionCallExpression()
+    {
+        string name = Match(TokenType.Identifier).Value!.ToString();
+        Match(TokenType.OpenParenthesis);
+        List<Expression> arguments = new();
+        if (_tokens.Peek().Type != TokenType.CloseParenthesis)
+        {
+            arguments.Add(ParseExpression());
+            while (_tokens.Peek().Type == TokenType.Comma)
+            {
+                Match(TokenType.Comma);
+                arguments.Add(ParseExpression());
+            }
+        }
+
+        Match(TokenType.CloseParenthesis);
+        return new FunctionCallExpression(name, arguments);
     }
 
     private Token Match(TokenType expected)

@@ -22,6 +22,8 @@ public interface IAstVisitor
 
     void Visit(SubstrExpression e);
 
+    void Visit(FunctionCallStatement s);
+
     void Visit(BlockStatement s);
 
     void Visit(AssignmentStatement s);
@@ -45,4 +47,6 @@ public interface IAstVisitor
     void Visit(ReturnStatement s);
 
     void Visit(FunctionDeclarationStatement s);
+
+    void Visit(ParametrDeclaration s);
 }

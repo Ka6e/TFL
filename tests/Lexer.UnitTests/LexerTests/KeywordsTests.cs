@@ -29,12 +29,21 @@ public class KeywordsTests
                 ]
             },
 
+            { "func",   [new Token(TokenType.Func)] },
+            { "return", [new Token(TokenType.Return)] },
+            { "void",   [new Token(TokenType.Void)] },
+
             // слова, начинающиеся как ключевые — должны быть Identifier
-            { "mainX",    [new Token(TokenType.Identifier, new TokenValue("mainX"))] },
-            { "variable", [new Token(TokenType.Identifier, new TokenValue("variable"))] },
-            { "consts",   [new Token(TokenType.Identifier, new TokenValue("consts"))] },
-            { "integer",  [new Token(TokenType.Identifier, new TokenValue("integer"))] },
-            { "reading",  [new Token(TokenType.Identifier, new TokenValue("reading"))] },
+            { "mainX",     [new Token(TokenType.Identifier, new TokenValue("mainX"))] },
+            { "variable",  [new Token(TokenType.Identifier, new TokenValue("variable"))] },
+            { "consts",    [new Token(TokenType.Identifier, new TokenValue("consts"))] },
+            { "integer",   [new Token(TokenType.Identifier, new TokenValue("integer"))] },
+            { "reading",   [new Token(TokenType.Identifier, new TokenValue("reading"))] },
+            { "funcX",     [new Token(TokenType.Identifier, new TokenValue("funcX"))] },
+            { "functions", [new Token(TokenType.Identifier, new TokenValue("functions"))] },
+            { "returning", [new Token(TokenType.Identifier, new TokenValue("returning"))] },
+            { "returns2",  [new Token(TokenType.Identifier, new TokenValue("returns2"))] },
+            { "voidX",     [new Token(TokenType.Identifier, new TokenValue("voidX"))] },
         };
     }
 }

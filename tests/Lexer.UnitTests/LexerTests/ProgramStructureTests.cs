@@ -244,6 +244,107 @@ public class ProgramStructureTests
     }
 
     [Fact]
+    public void Can_tokenize_func_declaration_header()
+    {
+        List<Token> actual = LexerHelper.Tokenize("func add(a: int, b: int): int");
+        List<Token> expected =
+        [
+            new Token(TokenType.Func),
+            new Token(TokenType.Identifier, new TokenValue("add")),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.Comma),
+            new Token(TokenType.Identifier, new TokenValue("b")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_void_func_declaration_header()
+    {
+        List<Token> actual = LexerHelper.Tokenize("func greet(): void");
+        List<Token> expected =
+        [
+            new Token(TokenType.Func),
+            new Token(TokenType.Identifier, new TokenValue("greet")),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Colon),
+            new Token(TokenType.Void),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_return_statement()
+    {
+        List<Token> actual = LexerHelper.Tokenize("return a + b;");
+        List<Token> expected =
+        [
+            new Token(TokenType.Return),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Plus),
+            new Token(TokenType.Identifier, new TokenValue("b")),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_bare_return_statement()
+    {
+        List<Token> actual = LexerHelper.Tokenize("return;");
+        List<Token> expected =
+        [
+            new Token(TokenType.Return),
+            new Token(TokenType.Semicolon),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Can_tokenize_full_func_declaration()
+    {
+        List<Token> actual = LexerHelper.Tokenize(
+            """
+            func add(a: int, b: int): int {
+                return a + b;
+            }
+            """);
+        List<Token> expected =
+        [
+            new Token(TokenType.Func),
+            new Token(TokenType.Identifier, new TokenValue("add")),
+            new Token(TokenType.OpenParenthesis),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.Comma),
+            new Token(TokenType.Identifier, new TokenValue("b")),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.CloseParenthesis),
+            new Token(TokenType.Colon),
+            new Token(TokenType.IntegerType),
+            new Token(TokenType.OpenBrace),
+            new Token(TokenType.Return),
+            new Token(TokenType.Identifier, new TokenValue("a")),
+            new Token(TokenType.Plus),
+            new Token(TokenType.Identifier, new TokenValue("b")),
+            new Token(TokenType.Semicolon),
+            new Token(TokenType.CloseBrace),
+        ];
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
     public void Can_tokenize_unicode_string_literal()
     {
         List<Token> actual = LexerHelper.Tokenize("var s : string = \"Hello, 🚀\";");

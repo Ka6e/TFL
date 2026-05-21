@@ -29,11 +29,19 @@ public class KeywordTokenMappingTests
     {
         return new TheoryData<string, TokenType>
         {
-            { "main",  TokenType.Main },
-            { "var",   TokenType.Var },
-            { "const", TokenType.Const },
-            { "read",  TokenType.Read },
-            { "print", TokenType.Print },
+            { "main",     TokenType.Main },
+            { "var",      TokenType.Var },
+            { "const",    TokenType.Const },
+            { "read",     TokenType.Read },
+            { "print",    TokenType.Print },
+            { "if",       TokenType.If },
+            { "else",     TokenType.Else },
+            { "while",    TokenType.While },
+            { "break",    TokenType.Break },
+            { "continue", TokenType.Continue },
+            { "func",     TokenType.Func },
+            { "return",   TokenType.Return },
+            { "void",     TokenType.Void },
         };
     }
 
@@ -44,6 +52,7 @@ public class KeywordTokenMappingTests
             { "int",    TokenType.IntegerType },
             { "float",  TokenType.FloatType },
             { "string", TokenType.StringType },
+            { "bool",   TokenType.BooleanType },
         };
     }
 
@@ -60,18 +69,29 @@ public class KeywordTokenMappingTests
     {
         return new TheoryData<string, string>
         {
-            { "lengths",  "lengths" },
-            { "length2",  "length2" },
-            { "length_x", "length_x" },
-            { "main2",    "main2" },
-            { "printer",  "printer" },
-            { "reading",  "reading" },
-            { "strings",  "strings" },
-            { "floater",  "floater" },
-            { "integer",  "integer" },
+            { "lengths",    "lengths" },
+            { "length2",    "length2" },
+            { "length_x",   "length_x" },
+            { "main2",      "main2" },
+            { "printer",    "printer" },
+            { "reading",    "reading" },
+            { "strings",    "strings" },
+            { "floater",    "floater" },
+            { "integer",    "integer" },
             { "substrings", "substrings" },
             { "substr2",    "substr2" },
             { "substr_x",   "substr_x" },
+            { "funcX",      "funcX" },
+            { "functions",  "functions" },
+            { "func2",      "func2" },
+            { "func_name",  "func_name" },
+            { "returning",  "returning" },
+            { "returns",    "returns" },
+            { "return2",    "return2" },
+            { "voidX",      "voidX" },
+            { "breaking",   "breaking" },
+            { "continuing", "continuing" },
+            { "whileX",     "whileX" },
         };
     }
 }

@@ -1,4 +1,6 @@
-﻿using Ast.Expressions;
+﻿using Ast;
+using Ast.Expressions;
+using Ast.Program;
 using Ast.Statements;
 
 using Semantics.Exceptions;
@@ -15,9 +17,21 @@ public sealed class ResolveNamePass : AbstractPass
         _symbols = globalSymbols;
     }
 
+    public override void Visit(ProgramNode p)
+    {
+        // Регистрируем все функции до обхода тел — это позволяет вызывать функции
+        // до их объявления и поддерживает взаимную рекурсию.
+        foreach (FunctionDeclarationStatement f in p.Functions)
+        {
+            _symbols.DeclareFunction(f);
+        }
+
+        base.Visit(p);
+    }
+
     public override void Visit(FunctionDeclarationStatement s)
     {
-        // s.ReturnType = _symbols = new SymbolsTable(_symbols);
+        _symbols = new SymbolsTable(_symbols);
         try
         {
             base.Visit(s);
@@ -31,8 +45,6 @@ public sealed class ResolveNamePass : AbstractPass
     public override void Visit(ParametrDeclaration d)
     {
         base.Visit(d);
-
-        // d.Type =
         _symbols.DeclareVariable(d);
     }
 
@@ -77,7 +89,12 @@ public sealed class ResolveNamePass : AbstractPass
     public override void Visit(VariableExpression e)
     {
         base.Visit(e);
-
         e.Variable = _symbols.GetVariableDeclaration(e.Name);
+    }
+
+    public override void Visit(FunctionCallExpression e)
+    {
+        base.Visit(e);
+        e.Function = _symbols.GetFunctionDeclaration(e.Name);
     }
 }

@@ -15,6 +15,8 @@ namespace Semantics.Passes;
 /// <exception cref="TypeErrorException">Бросается при несоответствии типов данных в процессе проверки.</exception>
 public class CheckTypesPass : AbstractPass
 {
+    private FunctionDeclarationStatement? _currentFunction;
+
     public override void Visit(BinaryOperationExpression e)
     {
         base.Visit(e);
@@ -56,14 +58,47 @@ public class CheckTypesPass : AbstractPass
 
     public override void Visit(FunctionDeclarationStatement s)
     {
-        base.Visit(s);
-        // CheckAreSameTypes("function body",, s.ReturnType);
+        FunctionDeclarationStatement? previousFunction = _currentFunction;
+        _currentFunction = s;
+        try
+        {
+            base.Visit(s);
+        }
+        finally
+        {
+            _currentFunction = previousFunction;
+        }
     }
 
     public override void Visit(ReturnStatement s)
     {
         base.Visit(s);
-        
+
+        if (_currentFunction == null)
+        {
+            return;
+        }
+
+        ValueType expectedType = _currentFunction.ReturnType;
+
+        if (s.Expression != null)
+        {
+            if (expectedType == ValueType.Void)
+            {
+                throw new TypeErrorException(
+                    $"Cannot return a value from void function '{_currentFunction.Name}'");
+            }
+
+            CheckAreSameTypes("return statement", s.Expression, expectedType);
+        }
+        else
+        {
+            if (expectedType != ValueType.Void)
+            {
+                throw new TypeErrorException(
+                    $"return without value in non-void function '{_currentFunction.Name}'");
+            }
+        }
     }
 
     public override void Visit(VariableDeclarationStatement s)
@@ -114,6 +149,12 @@ public class CheckTypesPass : AbstractPass
         FunctionCallExpression e,
         AbstractFunctionDeclarationStatement function)
     {
+        if (e.Arguments.Count != function.Parameters.Count)
+        {
+            throw new TypeErrorException(
+                $"Function '{e.Name}' expects {function.Parameters.Count} argument(s), but got {e.Arguments.Count}");
+        }
+
         for (int i = 0, iMax = e.Arguments.Count; i < iMax; i++)
         {
             Expression argument = e.Arguments[i];

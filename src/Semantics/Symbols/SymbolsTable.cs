@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.SymbolStore;
-using System.Runtime.InteropServices.JavaScript;
 
 using Ast.Statements;
 
@@ -11,43 +9,48 @@ namespace Semantics.Symbols;
 public sealed class SymbolsTable
 {
     private readonly SymbolsTable? _parent;
-    private readonly Dictionary<string, Statement> _variables;
-    private readonly Dictionary<string, AbstractFunctionDeclarationStatement?> _functions;
+    private readonly Dictionary<string, Statement> _variables = [];
+    private readonly Dictionary<string, AbstractFunctionDeclarationStatement> _functions = [];
 
     public SymbolsTable(SymbolsTable? parent)
     {
         _parent = parent;
-        _variables = [];
     }
 
     public SymbolsTable? Parent => _parent;
 
     public AbstractVariableDeclarationStatemnt GetVariableDeclaration(string name)
     {
-        if (!_variables.TryGetValue(name, out Statement? declaration))
+        if (_variables.TryGetValue(name, out Statement? declaration))
         {
-            throw UnknownSymbolException.UndefinedVariableOrFunction(name);
+            return declaration switch
+            {
+                AbstractVariableDeclarationStatemnt variable => variable,
+                _ => throw new UnreachableException(),
+            };
         }
 
-        return declaration switch
+        if (_parent != null)
         {
-            AbstractVariableDeclarationStatemnt varible => varible,
-            _ => throw new UnreachableException(),
-        };
+            return _parent.GetVariableDeclaration(name);
+        }
+
+        throw UnknownSymbolException.UndefinedVariableOrFunction(name);
     }
 
     public AbstractFunctionDeclarationStatement GetFunctionDeclaration(string name)
     {
-        if (!_functions.TryGetValue(name, out AbstractFunctionDeclarationStatement? declaration))
+        if (_functions.TryGetValue(name, out AbstractFunctionDeclarationStatement? declaration))
         {
-            throw DuplicateSymbolException.DuplicateVariableOrFunction(name);
+            return declaration;
         }
 
-        return declaration switch
+        if (_parent != null)
         {
-            AbstractFunctionDeclarationStatement function => function,
-            _ => throw new UnreachableException(),
-        };
+            return _parent.GetFunctionDeclaration(name);
+        }
+
+        throw UnknownSymbolException.UndefinedVariableOrFunction(name);
     }
 
     public void DeclareVariable(Statement symbol)
@@ -56,6 +59,7 @@ public sealed class SymbolsTable
         {
             VariableDeclarationStatement v => v.Name,
             ConstDeclarationStatement c => c.Name,
+            AbstractParametrStatement p => p.Name,
             _ => throw new UnreachableException(),
         };
 

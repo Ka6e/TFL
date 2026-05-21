@@ -69,6 +69,13 @@ public abstract class AbstractPass : IAstVisitor
         s.Block.Accept(this);
     }
 
+    public void Visit(ReturnStatement s)
+    {
+        
+        
+        throw new NotImplementedException();
+    }
+
     public virtual void Visit(BinaryOperationExpression e)
     {
         e.Left.Accept(this);
@@ -87,6 +94,13 @@ public abstract class AbstractPass : IAstVisitor
     public virtual void Visit(LengthExpression e)
     {
         e.Operand.Accept(this);
+    }
+
+    public void Visit(FunctionCallExpression e)
+    {
+        
+        
+
     }
 
     public virtual void Visit(SubstrExpression e)

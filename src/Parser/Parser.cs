@@ -79,7 +79,8 @@ public class Parser
             TokenType.While => ParseWhileStatement(),
             TokenType.Break => ParseBreakStatement(),
             TokenType.Continue => ParseContinueStatement(),
-            _ => ParseBlock(),
+            TokenType.Return => ParseReturnStatement(),
+                _ => ParseBlock(),
         };
     }
 
@@ -264,6 +265,21 @@ public class Parser
         Match(TokenType.Semicolon);
 
         return new ContinueStatement();
+    }
+
+
+    private ReturnStatement ParseReturnStatement()
+    {
+        Match(TokenType.Return);
+
+        Expression? expr = null;
+        if (_tokens.Peek().Type == TokenType.Semicolon)
+        {
+            expr = ParseExpression();
+        }
+
+        Match(TokenType.Semicolon);
+        return new ReturnStatement(expr);
     }
 
     /// <summary>

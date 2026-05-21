@@ -85,6 +85,16 @@
 - [x] Оператор return без выражения: `return;`
 - [x] Полное объявление функции с телом: `func add(a: int, b: int): int { return a + b; }`
 
+## Вызовы функций
+
+- [x] Вызов без аргументов: `f()` → [Identifier, OpenParen, CloseParen]
+- [x] Вызов с одним аргументом: `double(x)` → [Identifier, OpenParen, Identifier, CloseParen]
+- [x] Вызов с двумя аргументами: `add(a, b)` → [..., Comma, ...]
+- [x] Вызов с литеральными аргументами: `add(3, 4)` → [..., IntLiteral, Comma, IntLiteral, ...]
+- [x] Вложенный вызов: `outer(inner())` → outer(...inner()...)
+- [x] Вызов как оператор: `greet();` → [..., Semicolon]
+- [x] Вызов внутри print: `print(double(5));`
+
 ## Ошибки
 
 - [x] Неизвестный символ: `@`, `$`, `?` → Error

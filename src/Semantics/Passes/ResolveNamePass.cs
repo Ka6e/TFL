@@ -15,6 +15,27 @@ public sealed class ResolveNamePass : AbstractPass
         _symbols = globalSymbols;
     }
 
+    public override void Visit(FunctionDeclarationStatement s)
+    {
+        // s.ReturnType = _symbols = new SymbolsTable(_symbols);
+        try
+        {
+            base.Visit(s);
+        }
+        finally
+        {
+            _symbols = _symbols.Parent!;
+        }
+    }
+
+    public override void Visit(ParametrDeclaration d)
+    {
+        base.Visit(d);
+
+        // d.Type =
+        _symbols.DeclareVariable(d);
+    }
+
     public override void Visit(VariableDeclarationStatement s)
     {
         _symbols.DeclareVariable(s);

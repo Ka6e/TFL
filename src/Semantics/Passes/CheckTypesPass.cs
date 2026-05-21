@@ -48,6 +48,24 @@ public class CheckTypesPass : AbstractPass
         }
     }
 
+    public override void Visit(FunctionCallExpression e)
+    {
+        base.Visit(e);
+        CheckFunctionArgumentTypes(e, e.Function);
+    }
+
+    public override void Visit(FunctionDeclarationStatement s)
+    {
+        base.Visit(s);
+        // CheckAreSameTypes("function body",, s.ReturnType);
+    }
+
+    public override void Visit(ReturnStatement s)
+    {
+        base.Visit(s);
+        
+    }
+
     public override void Visit(VariableDeclarationStatement s)
     {
         base.Visit(s);
@@ -89,6 +107,23 @@ public class CheckTypesPass : AbstractPass
         if (!ValueTypeUtil.AreCompatibleTypes(expression.ResultType, expectedType))
         {
             throw new TypeErrorException(category, expectedType, expression.ResultType);
+        }
+    }
+
+    private static void CheckFunctionArgumentTypes(
+        FunctionCallExpression e,
+        AbstractFunctionDeclarationStatement function)
+    {
+        for (int i = 0, iMax = e.Arguments.Count; i < iMax; i++)
+        {
+            Expression argument = e.Arguments[i];
+            AbstractParametrStatement param = function.Parameters[i];
+            if (!ValueTypeUtil.AreCompatibleTypes(argument.ResultType, param.ResultType))
+            {
+                throw new TypeErrorException(
+                    $"Cannot apply argument #{i} of type {argument.ResultType} to function {e.Name} parameter {param.Name} which has type {param.ResultType}"
+                );
+            }
         }
     }
 }

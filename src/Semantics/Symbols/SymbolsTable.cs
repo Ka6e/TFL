@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
+using System.Runtime.InteropServices.JavaScript;
 
 using Ast.Statements;
 
@@ -11,6 +12,7 @@ public sealed class SymbolsTable
 {
     private readonly SymbolsTable? _parent;
     private readonly Dictionary<string, Statement> _variables;
+    private readonly Dictionary<string, AbstractFunctionDeclarationStatement?> _functions;
 
     public SymbolsTable(SymbolsTable? parent)
     {
@@ -34,6 +36,20 @@ public sealed class SymbolsTable
         };
     }
 
+    public AbstractFunctionDeclarationStatement GetFunctionDeclaration(string name)
+    {
+        if (!_functions.TryGetValue(name, out AbstractFunctionDeclarationStatement? declaration))
+        {
+            throw DuplicateSymbolException.DuplicateVariableOrFunction(name);
+        }
+
+        return declaration switch
+        {
+            AbstractFunctionDeclarationStatement function => function,
+            _ => throw new UnreachableException(),
+        };
+    }
+
     public void DeclareVariable(Statement symbol)
     {
         string name = symbol switch
@@ -46,6 +62,14 @@ public sealed class SymbolsTable
         if (!_variables.TryAdd(name, symbol))
         {
             throw DuplicateSymbolException.DuplicateVariableOrFunction(name);
+        }
+    }
+
+    public void DeclareFunction(AbstractFunctionDeclarationStatement symbol)
+    {
+        if (!_functions.TryAdd(symbol.Name, symbol))
+        {
+            throw DuplicateSymbolException.DuplicateVariableOrFunction(symbol.Name);
         }
     }
 }

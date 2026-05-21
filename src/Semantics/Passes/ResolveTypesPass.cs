@@ -34,6 +34,17 @@ public sealed class ResolveTypesPass : AbstractPass
         e.ResultType = resultType ?? ValueType.Void;
     }
 
+    public override void Visit(FunctionCallExpression e)
+    {
+        base.Visit(e);
+        e.ResultType = e.Function.ResultType;
+    }
+
+    public override void Visit(ParametrDeclaration d)
+    {
+        d.ResultType = d.Type;
+    }
+
     public override void Visit(UnaryOperationExpression e)
     {
         base.Visit(e);

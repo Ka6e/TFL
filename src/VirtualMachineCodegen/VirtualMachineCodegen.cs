@@ -15,6 +15,7 @@ namespace VirtualMachineCodegen;
 public class VirtualMachineCodegen : IAstVisitor
 {
     private readonly InstructionsBuilder _builder = new();
+    private CodegenSymbolsTable? _symbolsTable;
 
     /// <summary>
     /// Стек со ссылками на блоки после текущих циклов while.
@@ -30,6 +31,17 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public List<Instruction> Generate(ProgramNode program)
     {
+        _symbolsTable = new CodegenSymbolsTable(null);
+
+        foreach (Statement stmt in program.Block.Statements)
+        {
+            if (stmt is FunctionDeclarationStatement func)
+            {
+                BasicBlock functionBlock = _builder.CreateBasicBlock();
+                _symbolsTable.AddFunctionEntry(func.Name, functionBlock);
+            }
+        }
+
         program.Block.Accept(this);
 
         _builder.Append(new Instruction(InstructionCode.Push, 0));
@@ -216,6 +228,62 @@ public class VirtualMachineCodegen : IAstVisitor
         _builder.AppendJump(InstructionCode.Jump, loopStartBlock);
     }
 
+    public void Visit(ReturnStatement s)
+    {
+        if (s.Expression != null)
+        {
+            s.Expression.Accept(this);
+        }
+        else
+        {
+            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
+        }
+
+        _builder.Append(new Instruction(InstructionCode.Return));
+    }
+
+    public void Visit(FunctionDeclarationStatement s)
+    {
+        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(s.Name);
+
+        BasicBlock previousBlock = _builder.InsertPoint;
+        _builder.InsertPoint = functionBlock;
+
+        PushLexicalScope();
+
+        for (int i = s.Parameters.Count - 1; i >= 0; i--)
+        {
+            AbstractParametrStatement param = s.Parameters[i];
+            _builder.Append(new Instruction(InstructionCode.DefineVar, param.Name));
+        }
+
+        s.Body.Accept(this);
+
+        if (s.ReturnType == ValueType.Void)
+        {
+            _builder.Append(new Instruction(InstructionCode.Push, Value.Void));
+            _builder.Append(new Instruction(InstructionCode.Return));
+        }
+
+        PopLexicalScope();
+
+        _builder.InsertPoint = previousBlock;
+    }
+
+    public void Visit(FunctionCallStatement s)
+    {
+        s.Expression.Accept(this);
+
+        if (s.Expression.ResultType != ValueType.Void)
+        {
+            _builder.Append(new Instruction(InstructionCode.Pop));
+        }
+    }
+
+    public void Visit(ParametrDeclaration s)
+    {
+    }
+
     public void Visit(LiteralExpression e)
     {
         _builder.Append(new Instruction(InstructionCode.Push, e.Value));
@@ -304,6 +372,17 @@ public class VirtualMachineCodegen : IAstVisitor
             default:
                 throw new NotImplementedException($"Unsupported unary operation: {e.Operation}");
         }
+    }
+
+    public void Visit(FunctionCallExpression e)
+    {
+        foreach (Expression arg in e.Arguments)
+        {
+            arg.Accept(this);
+        }
+
+        BasicBlock functionBlock = _symbolsTable!.GetFunctionEntry(e.Name);
+        _builder.AppendJump(InstructionCode.Call, functionBlock);
     }
 
     public void Visit(LengthExpression e)
@@ -399,11 +478,14 @@ public class VirtualMachineCodegen : IAstVisitor
 
     private void PushLexicalScope()
     {
-        _builder.Append(new Instruction(InstructionCode.PushVars, 0));
+        int parentScopeDepth = _symbolsTable?.Depth ?? 0;
+        _symbolsTable = new CodegenSymbolsTable(_symbolsTable);
+        _builder.Append(new Instruction(InstructionCode.PushVars, parentScopeDepth));
     }
 
     private void PopLexicalScope()
     {
         _builder.Append(new Instruction(InstructionCode.PopVars));
+        _symbolsTable = _symbolsTable!.Parent;
     }
 }

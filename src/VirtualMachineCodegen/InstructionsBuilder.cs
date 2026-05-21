@@ -99,6 +99,7 @@ public class InstructionsBuilder
     {
         return code switch
         {
+            InstructionCode.Call => true,
             InstructionCode.Jump => true,
             InstructionCode.JumpIfFalse => true,
             InstructionCode.JumpIfTrue => true,

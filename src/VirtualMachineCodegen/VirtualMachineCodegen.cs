@@ -208,22 +208,12 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(BreakStatement s)
     {
-        if (_currentLoopFinalBlockStack.Count == 0)
-        {
-            throw new InvalidOperationException("break outside of loop");
-        }
-
         BasicBlock loopFinalBlock = _currentLoopFinalBlockStack.Peek();
         _builder.AppendJump(InstructionCode.Jump, loopFinalBlock);
     }
 
     public void Visit(ContinueStatement s)
     {
-        if (_currentLoopStartBlockStack.Count == 0)
-        {
-            throw new InvalidOperationException("continue outside of loop");
-        }
-
         BasicBlock loopStartBlock = _currentLoopStartBlockStack.Peek();
         _builder.AppendJump(InstructionCode.Jump, loopStartBlock);
     }

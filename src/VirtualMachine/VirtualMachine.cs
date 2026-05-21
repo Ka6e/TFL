@@ -487,7 +487,6 @@ public class VirtualMachine
                         }
 
                         _variables = new VariablesTable(parentTable);
-                        _variables = new VariablesTable(_variables);
                         break;
                     }
 

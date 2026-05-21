@@ -57,10 +57,14 @@ public class VirtualMachineCodegen : IAstVisitor
 
     public void Visit(BlockStatement s)
     {
+        PushLexicalScope();
+
         foreach (Statement stmt in s.Statements)
         {
             stmt.Accept(this);
         }
+
+        PopLexicalScope();
     }
 
     public void Visit(VariableDeclarationStatement s)
@@ -139,9 +143,7 @@ public class VirtualMachineCodegen : IAstVisitor
             s.Condition.Accept(this);
             _builder.AppendJump(InstructionCode.JumpIfFalse, elseBlock);
 
-            PushLexicalScope();
-            s.Block.Accept(this);
-            PopLexicalScope();
+            s.Block.Accept(this);  // ← без PushLexicalScope
             _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
             _builder.InsertPoint = elseBlock;
@@ -152,9 +154,7 @@ public class VirtualMachineCodegen : IAstVisitor
             }
             else if (s.ElseStatement is BlockStatement elseBlockStmt)
             {
-                PushLexicalScope();
                 elseBlockStmt.Accept(this);
-                PopLexicalScope();
             }
             else
             {
@@ -162,7 +162,6 @@ public class VirtualMachineCodegen : IAstVisitor
             }
 
             _builder.AppendJump(InstructionCode.Jump, finalBlock);
-
             _builder.InsertPoint = finalBlock;
         }
         else
@@ -172,9 +171,7 @@ public class VirtualMachineCodegen : IAstVisitor
             s.Condition.Accept(this);
             _builder.AppendJump(InstructionCode.JumpIfFalse, finalBlock);
 
-            PushLexicalScope();
             s.Block.Accept(this);
-            PopLexicalScope();
             _builder.AppendJump(InstructionCode.Jump, finalBlock);
 
             _builder.InsertPoint = finalBlock;
@@ -195,9 +192,8 @@ public class VirtualMachineCodegen : IAstVisitor
         s.Expression.Accept(this);
         _builder.AppendJump(InstructionCode.JumpIfFalse, finalBlock);
 
-        PushLexicalScope();
         s.Block.Accept(this);
-        PopLexicalScope();
+
         _builder.AppendJump(InstructionCode.Jump, loopBlock);
 
         _currentLoopFinalBlockStack.Pop();

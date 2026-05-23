@@ -23,6 +23,7 @@ public class SemanticsChecker
             new ResolveTypesPass(),
             new CheckTypesPass(),
             new CheckLoopControlPass(),
+            new CheckReturnPathPass(),
         ];
     }
 

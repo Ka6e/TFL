@@ -21,7 +21,7 @@ public abstract class AbstractPass : IAstVisitor
     {
     }
 
-    public void Visit(FunctionCallStatement s)
+    public virtual void Visit(FunctionCallStatement s)
     {
         s.Expression.Accept(this);
     }

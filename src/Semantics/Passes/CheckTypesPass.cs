@@ -16,6 +16,7 @@ namespace Semantics.Passes;
 public class CheckTypesPass : AbstractPass
 {
     private FunctionDeclarationStatement? _currentFunction;
+    private bool _allowVoidExpression = false;
 
     public override void Visit(BinaryOperationExpression e)
     {
@@ -50,10 +51,24 @@ public class CheckTypesPass : AbstractPass
         }
     }
 
+    public override void Visit(FunctionCallStatement s)
+    {
+        _allowVoidExpression = true;
+        base.Visit(s);
+        _allowVoidExpression = false;
+    }
+
     public override void Visit(FunctionCallExpression e)
     {
+        bool allowed = _allowVoidExpression;
+        _allowVoidExpression = false;
         base.Visit(e);
         CheckFunctionArgumentTypes(e, e.Function);
+
+        if (!allowed && e.ResultType == ValueType.Void)
+        {
+            throw new TypeErrorException($"Cannot use void function '{e.Name}' as a value expression");
+        }
     }
 
     public override void Visit(FunctionDeclarationStatement s)
@@ -76,7 +91,7 @@ public class CheckTypesPass : AbstractPass
 
         if (_currentFunction == null)
         {
-            return;
+            throw new InvalidReturnStatementException("return statement is not allowed outside a function");
         }
 
         ValueType expectedType = _currentFunction.ReturnType;

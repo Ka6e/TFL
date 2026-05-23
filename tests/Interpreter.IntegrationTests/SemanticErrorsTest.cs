@@ -713,4 +713,253 @@ public class SemanticErrorsTest
 
         Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
     }
+
+    [Fact]
+    public void Throws_on_return_outside_function()
+    {
+        const string code = """
+            main {
+                return;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidReturnStatementException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_return_with_value_outside_function()
+    {
+        const string code = """
+            main {
+                return 5;
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<InvalidReturnStatementException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_missing_return_in_non_void_function()
+    {
+        const string code = """
+            func f(): int {
+                var x: int = 5;
+            }
+            main {
+                print(f());
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<MissingReturnException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_missing_return_when_only_if_without_else()
+    {
+        const string code = """
+            func f(x: int): int {
+                if (x > 0) {
+                    return x;
+                }
+            }
+            main {
+                print(f(5));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<MissingReturnException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_missing_return_when_while_loop_only()
+    {
+        const string code = """
+            func f(x: int): int {
+                while (x > 0) {
+                    return x;
+                }
+            }
+            main {
+                print(f(5));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<MissingReturnException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unreachable_code_after_return()
+    {
+        const string code = """
+            func f(): int {
+                return 1;
+                print("unreachable");
+            }
+            main {
+                print(f());
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<UnreachableCodeException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unreachable_code_after_guaranteed_if_else_return()
+    {
+        const string code = """
+            func f(x: int): int {
+                if (x > 0) {
+                    return x;
+                } else {
+                    return 0;
+                }
+                print("unreachable");
+            }
+            main {
+                print(f(5));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<UnreachableCodeException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_unreachable_code_in_nested_block()
+    {
+        const string code = """
+            func f(): int {
+                if (true) {
+                    return 1;
+                    print("unreachable inside if");
+                } else {
+                    return 2;
+                }
+            }
+            main {
+                print(f());
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<UnreachableCodeException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_void_function_used_as_expression()
+    {
+        const string code = """
+            func greet(): void {
+                print("hello");
+            }
+            main {
+                print(greet());
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_void_function_assigned_to_variable()
+    {
+        const string code = """
+            func greet(): void {
+                print("hello");
+            }
+            main {
+                var x: int = greet();
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Throws_on_void_function_in_binary_expression()
+    {
+        const string code = """
+            func greet(): void {
+                print("hello");
+            }
+            main {
+                var x: int = 1 + greet();
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Assert.Throws<TypeErrorException>(() => interpreter.Execute(code));
+    }
+
+    [Fact]
+    public void Void_function_as_statement_is_valid()
+    {
+        const string code = """
+            func greet(): void {
+                print("hello");
+            }
+            main {
+                greet();
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Exception? ex = Record.Exception(() => interpreter.Execute(code));
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void Non_void_function_with_all_paths_returning_is_valid()
+    {
+        const string code = """
+            func f(x: int): int {
+                if (x > 0) {
+                    return x;
+                } else {
+                    return 0;
+                }
+            }
+            main {
+                print(f(5));
+            }
+            """;
+
+        FakeEnvironment environment = new();
+        Interpreter interpreter = new(environment);
+
+        Exception? ex = Record.Exception(() => interpreter.Execute(code));
+        Assert.Null(ex);
+    }
 }
